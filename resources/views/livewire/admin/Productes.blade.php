@@ -1431,7 +1431,7 @@
                                             <input type="number" class="form-control" id="available_stock"
                                                 wire:model="available_stock" min="0" value="0">
                                             @if($barcodeMode === 'edit')
-                                                <small class="text-info"><i class="bi bi-info-circle me-1"></i>Enter quantity to ADD to existing stock</small>
+                                            <small class="text-info"><i class="bi bi-info-circle me-1"></i>Enter quantity to ADD to existing stock</small>
                                             @endif
                                             @error('available_stock')
                                             <span class="text-danger small">* {{ $message }}</span>
@@ -1445,7 +1445,7 @@
                                             <input type="number" class="form-control" id="damage_stock"
                                                 wire:model="damage_stock" min="0" value="0">
                                             @if($barcodeMode === 'edit')
-                                                <small class="text-info"><i class="bi bi-info-circle me-1"></i>Enter quantity to ADD to existing damage stock</small>
+                                            <small class="text-info"><i class="bi bi-info-circle me-1"></i>Enter quantity to ADD to existing damage stock</small>
                                             @endif
                                             @error('damage_stock')
                                             <span class="text-danger small">* {{ $message }}</span>
