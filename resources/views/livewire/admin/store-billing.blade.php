@@ -558,9 +558,47 @@
     </aside>
 
     {{-- MODALS WRAPPER --}}
-    @if($showPaymentModal || $showSaleDiscountModal || $showCustomerModal || $showSaleModal || $showCloseRegisterModal)
+    @if($showPaymentModal || $showSaleDiscountModal || $showCustomerModal || $showSaleModal || $showCloseRegisterModal || $showWalkingCustomerModal)
     <div class="fixed inset-0 z-[3000] flex items-center justify-center p-4">
         <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity"></div>
+
+        {{-- WALKING CUSTOMER DETAILS MODAL --}}
+        @if($showWalkingCustomerModal)
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden relative transform transition-all">
+            <div class="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                <h3 class="font-black text-xs uppercase tracking-widest text-[#e67e22]">
+                    <i class="material-symbols-outlined align-middle mr-2">person</i>CUSTOMER DETAILS
+                </h3>
+                <button class="text-slate-400 hover:text-slate-600" wire:click="skipWalkingCustomerDetails">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div class="p-6 space-y-4">
+                <p class="text-xs text-slate-500 font-bold">Enter customer details for this sale (optional)</p>
+                <div>
+                    <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1.5 block">Customer Name</label>
+                    <input type="text" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold focus:ring-2 focus:ring-[#e67e22]/20 focus:border-[#e67e22] outline-none" 
+                        wire:model="walkingCustomerName" placeholder="Enter customer name..."
+                        x-init="$nextTick(() => $el.focus())">
+                </div>
+                <div>
+                    <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1.5 block">Contact Number</label>
+                    <input type="text" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold focus:ring-2 focus:ring-[#e67e22]/20 focus:border-[#e67e22] outline-none" 
+                        wire:model="walkingCustomerPhone" placeholder="07xxxxxxxx">
+                </div>
+            </div>
+            <div class="p-4 border-t border-slate-100 bg-slate-50 flex justify-between gap-3">
+                <button class="px-6 py-2.5 text-[10px] font-black uppercase text-slate-400 hover:text-slate-600 transition-colors" 
+                    wire:click="skipWalkingCustomerDetails">
+                    Skip
+                </button>
+                <button class="px-8 py-2.5 bg-[#e67e22] text-white rounded-lg text-[10px] font-black uppercase shadow-lg shadow-orange-500/20 hover:bg-orange-600 transition-colors" 
+                    wire:click="saveWalkingCustomerDetails">
+                    Continue to Payment
+                </button>
+            </div>
+        </div>
+        @endif
         
         {{-- CUSTOMER MODAL --}}
         @if($showCustomerModal)

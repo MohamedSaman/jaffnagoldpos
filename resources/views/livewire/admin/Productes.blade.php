@@ -71,7 +71,7 @@
         .table th {
             border-top: none;
             font-weight: 600;
-            
+
             font-size: 0.85rem;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -358,9 +358,10 @@
         /* Table responsive for dropdowns */
         .table-responsive {
             overflow: visible !important;
-            
+
         }
-        .table-responsive.view{
+
+        .table-responsive.view {
             min-height: 100px !important;
         }
 
@@ -553,19 +554,15 @@
                                             <th class="ps-4">No</th>
                                             <th>Code</th>
                                             <th>Product Name</th>
-                                            
+
                                             <th>Brand</th>
                                             <th>Model</th>
                                             @if ($isStaff)
-                                                @if ($staffType === 'shop_staff')
-                                                <th>Wholesale Price</th>
-                                                @else
-                                                <th>Distributor Price</th>
-                                                @endif
+                                            <th>Wholesale Price</th>
                                             @endif
                                             <th>Stock</th>
                                             <th>Status</th>
-                                            
+
                                             @if (!$isStaff)
                                             <th class="text-end pe-5">Actions</th>
                                             @endif
@@ -584,7 +581,7 @@
                                             <td wire:click="viewProductDetails({{ $product->id }})">
                                                 <span class="fw-medium text-dark">{{ $product->product_name }}</span>
                                             </td>
-                                            
+
                                             <td wire:click="viewProductDetails({{ $product->id }})">
                                                 <span class="fw-medium text-dark">{{ $product->brand }}</span>
                                             </td>
@@ -592,15 +589,9 @@
                                                 <span class="fw-medium text-dark">{{ $product->model }}</span>
                                             </td>
                                             @if ($isStaff)
-                                                @if ($staffType === 'shop_staff')
-                                                <td wire:click="viewProductDetails({{ $product->id }})">
-                                                    <span class="fw-medium text-primary">Rs.{{ number_format($product->wholesale_price ?? 0, 2) }}</span>
-                                                </td>
-                                                @else
-                                                <td wire:click="viewProductDetails({{ $product->id }})">
-                                                    <span class="fw-medium text-primary">Rs.{{ number_format($product->distributor_price ?? 0, 2) }}</span>
-                                                </td>
-                                                @endif
+                                            <td wire:click="viewProductDetails({{ $product->id }})">
+                                                <span class="fw-medium text-primary">Rs.{{ number_format($product->wholesale_price ?? 0, 2) }}</span>
+                                            </td>
                                             @endif
                                             <td wire:click="viewProductDetails({{ $product->id }})">
                                                 @php
@@ -890,19 +881,19 @@
                                     </p>
 
                                     @php
-                                        // Compute totals: for variant products sum all variant stocks (available & damaged),
-                                        // otherwise use the single stock record
-                                        $available = 0;
-                                        $damaged = 0;
-                                        if ($viewProduct) {
-                                            if (method_exists($viewProduct, 'hasVariants') && $viewProduct->hasVariants()) {
-                                                $available = $viewProduct->stocks->sum('available_stock');
-                                                $damaged = $viewProduct->stocks->sum('damage_stock');
-                                            } else {
-                                                $available = $viewProduct->stock->available_stock ?? 0;
-                                                $damaged = $viewProduct->stock->damage_stock ?? 0;
-                                            }
-                                        }
+                                    // Compute totals: for variant products sum all variant stocks (available & damaged),
+                                    // otherwise use the single stock record
+                                    $available = 0;
+                                    $damaged = 0;
+                                    if ($viewProduct) {
+                                    if (method_exists($viewProduct, 'hasVariants') && $viewProduct->hasVariants()) {
+                                    $available = $viewProduct->stocks->sum('available_stock');
+                                    $damaged = $viewProduct->stocks->sum('damage_stock');
+                                    } else {
+                                    $available = $viewProduct->stock->available_stock ?? 0;
+                                    $damaged = $viewProduct->stock->damage_stock ?? 0;
+                                    }
+                                    }
                                     @endphp
 
                                     <div class="row g-2 mb-3">
@@ -1006,37 +997,29 @@
                                         </div>
                                         @if(!$viewProduct || !$viewProduct->hasVariants())
                                         <div class="row g-3">
-                                            <div class="col-md-3">
+                                            <div class="col-md-4">
                                                 <div class="price-card text-center p-3 border rounded-3 h-100">
-                                                    <small class="text-muted d-block mb-2">Cost (Supplier)</small>
+                                                    <small class="text-muted d-block mb-2">Supplier Price</small>
                                                     <h4 class="fw-bold text-secondary mb-0">
                                                         Rs.{{ number_format($viewProduct->price->supplier_price ?? 0, 2) }}
                                                     </h4>
                                                 </div>
                                             </div>
-                                            <div class="col-md-3">
-                                                <div class="price-card text-center p-3 border rounded-3 h-100">
-                                                    <small class="text-muted d-block mb-2">Wholesale Price</small>
-                                                    <h4 class="fw-bold text-secondary mb-0">
-                                                        Rs.{{ number_format($viewProduct->price->wholesale_price ?? 0, 2) }}
-                                                    </h4>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <div class="price-card text-center p-3 border rounded-3 h-100">
-                                                    <small class="text-muted d-block mb-2">Distributor Price</small>
-                                                    <h4 class="fw-bold text-secondary mb-0">
-                                                        Rs.{{ number_format($viewProduct->price->distributor_price ?? 0, 2) }}
-                                                    </h4>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-3">
+                                            <div class="col-md-4">
                                                 <div
                                                     class="price-card text-center p-3 border border-success rounded-3 bg-success bg-opacity-10 h-100">
                                                     <small class="text-success d-block mb-2 fw-semibold">Retail
                                                         Price</small>
                                                     <h4 class="fw-bold text-success mb-0">
                                                         Rs.{{ number_format($viewProduct->price->retail_price ?? 0, 2) }}
+                                                    </h4>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="price-card text-center p-3 border rounded-3 h-100">
+                                                    <small class="text-muted d-block mb-2">Wholesale Price</small>
+                                                    <h4 class="fw-bold text-secondary mb-0">
+                                                        Rs.{{ number_format($viewProduct->price->wholesale_price ?? 0, 2) }}
                                                     </h4>
                                                 </div>
                                             </div>
@@ -1053,41 +1036,39 @@
                                                             <tr>
                                                                 <th>Value</th>
                                                                 <th>Cost</th>
-                                                                <th>Wholesale</th>
-                                                                <th>Distributor</th>
                                                                 <th>Retail</th>
+                                                                <th>Wholesale</th>
                                                                 <th>Available</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
                                                             @php
-                                                                // Prefer values prepared by the component (which now preserves DB order)
-                                                                $variantValues = $viewProduct->sorted_variant_values ?? [];
+                                                            // Prefer values prepared by the component (which now preserves DB order)
+                                                            $variantValues = $viewProduct->sorted_variant_values ?? [];
 
-                                                                if (empty($variantValues)) {
-                                                                    if ($viewProduct->variant && is_array($viewProduct->variant->variant_values)) {
-                                                                        // Use the variant values as stored in DB (preserve order)
-                                                                        $variantValues = $viewProduct->variant->variant_values;
-                                                                    } elseif (isset($viewProduct->prices) && $viewProduct->prices->isNotEmpty()) {
-                                                                        // Keep the order provided by the prices collection
-                                                                        $variantValues = $viewProduct->prices->pluck('variant_value')->unique()->toArray();
-                                                                    } else {
-                                                                        $variantValues = [];
-                                                                    }
-                                                                }
+                                                            if (empty($variantValues)) {
+                                                            if ($viewProduct->variant && is_array($viewProduct->variant->variant_values)) {
+                                                            // Use the variant values as stored in DB (preserve order)
+                                                            $variantValues = $viewProduct->variant->variant_values;
+                                                            } elseif (isset($viewProduct->prices) && $viewProduct->prices->isNotEmpty()) {
+                                                            // Keep the order provided by the prices collection
+                                                            $variantValues = $viewProduct->prices->pluck('variant_value')->unique()->toArray();
+                                                            } else {
+                                                            $variantValues = [];
+                                                            }
+                                                            }
                                                             @endphp
 
                                                             @foreach($variantValues as $value)
                                                             @php
-                                                                $price = $viewProduct->prices->firstWhere('variant_value', $value) ?? null;
-                                                                $stock = $viewProduct->stocks->firstWhere('variant_value', $value) ?? null;
+                                                            $price = $viewProduct->prices->firstWhere('variant_value', $value) ?? null;
+                                                            $stock = $viewProduct->stocks->firstWhere('variant_value', $value) ?? null;
                                                             @endphp
                                                             <tr>
                                                                 <td>{{ $value }}</td>
                                                                 <td>Rs.{{ number_format($price->supplier_price ?? 0, 2) }}</td>
-                                                                <td>Rs.{{ number_format($price->wholesale_price ?? 0, 2) }}</td>
-                                                                <td>Rs.{{ number_format($price->distributor_price ?? 0, 2) }}</td>
                                                                 <td>Rs.{{ number_format($price->retail_price ?? 0, 2) }}</td>
+                                                                <td>Rs.{{ number_format($price->wholesale_price ?? 0, 2) }}</td>
                                                                 <td>{{ $stock->available_stock ?? 0 }}</td>
                                                             </tr>
                                                             @endforeach
@@ -1167,11 +1148,58 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title fw-bold">
+                            @if($barcodeMode === 'edit')
+                            <i class="bi bi-pencil-square text-white me-2"></i> Update Product (Barcode Found)
+                            @else
                             <i class="bi bi-plus-circle text-white me-2"></i> Create New Product
+                            @endif
                         </h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body p-4">
+                        <!-- Barcode Scanner Field -->
+                        <div class="card mb-4 border-warning">
+                            <div class="card-header bg-warning bg-opacity-10">
+                                <h5 class="card-title mb-0">
+                                    <i class="bi bi-upc-scan text-warning me-2"></i> Barcode Scanner
+                                </h5>
+                            </div>
+                            <div class="card-body p-4">
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <div class="mb-1">
+                                            <label for="barcode_input" class="form-label fw-semibold">Scan or Enter Barcode:</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="bi bi-upc-scan"></i></span>
+                                                <input type="text" class="form-control form-control-lg" id="barcode_input"
+                                                    wire:model.live.debounce.500ms="barcode"
+                                                    placeholder="Scan barcode or type to auto-lookup..." autofocus>
+                                            </div>
+                                            @error('barcode')
+                                            <span class="text-danger small">* {{ $message }}</span>
+                                            @enderror
+                                            @if($barcodeMode === 'edit')
+                                            <div class="alert alert-info mt-2 mb-0 py-2">
+                                                <i class="bi bi-info-circle me-1"></i>
+                                                <strong>Update Mode:</strong> This barcode matches an existing product. Changes will update the existing record.
+                                            </div>
+                                            @else
+                                            <small class="text-muted">Scan a barcode to auto-load existing product or create new</small>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="mb-1">
+                                            <label for="purchaseDate" class="form-label fw-semibold">
+                                                <i class="bi bi-calendar-event me-1"></i> Purchase Date:
+                                            </label>
+                                            <input type="date" class="form-control" id="purchaseDate" wire:model="purchaseDate">
+                                            <small class="text-muted">Date for purchase record (auto-created)</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <div class="card mb-4">
                             <div class="card-header">
                                 <h5 class="card-title mb-0">
@@ -1322,13 +1350,13 @@
                                     <div class="col-12">
                                         <label class="form-label fw-semibold">Pricing Mode:</label>
                                         <div class="btn-group w-100" role="group">
-                                            <input type="radio" class="btn-check" id="pricing_mode_single" 
+                                            <input type="radio" class="btn-check" id="pricing_mode_single"
                                                 wire:model.live="pricing_mode" value="single" checked>
                                             <label class="btn btn-outline-primary" for="pricing_mode_single">
                                                 <i class="bi bi-tag me-2"></i>Single Price
                                             </label>
-                                            
-                                            <input type="radio" class="btn-check" id="pricing_mode_variant" 
+
+                                            <input type="radio" class="btn-check" id="pricing_mode_variant"
                                                 wire:model.live="pricing_mode" value="variant">
                                             <label class="btn btn-outline-primary" for="pricing_mode_variant">
                                                 <i class="bi bi-tags me-2"></i>Variant-Based Pricing
@@ -1336,9 +1364,9 @@
                                         </div>
                                         <small class="text-muted d-block mt-2">
                                             @if($pricing_mode === 'single')
-                                                Single price applies to all units of this product
+                                            Single price applies to all units of this product
                                             @else
-                                                Different prices for each variant (e.g., size, color)
+                                            Different prices for each variant (e.g., size, color)
                                             @endif
                                         </small>
                                     </div>
@@ -1347,25 +1375,26 @@
                                 @if($pricing_mode === 'single')
                                 <!-- Single Price Mode -->
                                 <div class="row">
-                                    <div class="col-md-3">
+                                    <div class="col-md-4">
                                         <div class="mb-1">
                                             <label for="supplier_price" class="form-label fw-semibold">
-                                                <i class="bi bi-cash-stack text-secondary"></i> Cost Price:
+                                                <i class="bi bi-cash-stack text-secondary"></i> Supplier Price:
                                             </label>
                                             <div class="input-group">
                                                 <span class="input-group-text">Rs.</span>
                                                 <input type="number" step="0.01" class="form-control"
-                                                    id="supplier_price" wire:model="supplier_price">
+                                                    id="supplier_price" wire:model.live="supplier_price">
                                             </div>
                                             @error('supplier_price')
                                             <span class="text-danger small">* {{ $message }}</span>
                                             @enderror
                                         </div>
                                     </div>
-                                    <div class="col-md-3">
+                                    <div class="col-md-4">
                                         <div class="mb-1">
                                             <label for="retail_price" class="form-label fw-semibold">
                                                 <i class="bi bi-shop text-success"></i> Retail Price:
+                                                <small class="text-muted">(auto: cost × 1.8)</small>
                                             </label>
                                             <div class="input-group">
                                                 <span class="input-group-text">Rs.</span>
@@ -1377,10 +1406,11 @@
                                             @enderror
                                         </div>
                                     </div>
-                                    <div class="col-md-3">
+                                    <div class="col-md-4">
                                         <div class="mb-1">
                                             <label for="wholesale_price" class="form-label fw-semibold">
                                                 <i class="bi bi-boxes text-info"></i> Wholesale Price:
+                                                <small class="text-muted">(auto: cost × 1.5)</small>
                                             </label>
                                             <div class="input-group">
                                                 <span class="input-group-text">Rs.</span>
@@ -1392,21 +1422,6 @@
                                             @enderror
                                         </div>
                                     </div>
-                                    <div class="col-md-3">
-                                        <div class="mb-1">
-                                            <label for="distributor_price" class="form-label fw-semibold">
-                                                <i class="bi bi-truck text-warning"></i> Distributor Price:
-                                            </label>
-                                            <div class="input-group">
-                                                <span class="input-group-text">Rs.</span>
-                                                <input type="number" step="0.01" class="form-control" id="distributor_price"
-                                                    wire:model="distributor_price">
-                                            </div>
-                                            @error('distributor_price')
-                                            <span class="text-danger small">* {{ $message }}</span>
-                                            @enderror
-                                        </div>
-                                    </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-4">
@@ -1414,7 +1429,10 @@
                                             <label for="available_stock" class="form-label fw-semibold">Available
                                                 Stock:</label>
                                             <input type="number" class="form-control" id="available_stock"
-                                                wire:model="available_stock">
+                                                wire:model="available_stock" min="0" value="0">
+                                            @if($barcodeMode === 'edit')
+                                                <small class="text-info"><i class="bi bi-info-circle me-1"></i>Enter quantity to ADD to existing stock</small>
+                                            @endif
                                             @error('available_stock')
                                             <span class="text-danger small">* {{ $message }}</span>
                                             @enderror
@@ -1425,7 +1443,10 @@
                                             <label for="damage_stock" class="form-label fw-semibold">Damage
                                                 Stock:</label>
                                             <input type="number" class="form-control" id="damage_stock"
-                                                wire:model="damage_stock">
+                                                wire:model="damage_stock" min="0" value="0">
+                                            @if($barcodeMode === 'edit')
+                                                <small class="text-info"><i class="bi bi-info-circle me-1"></i>Enter quantity to ADD to existing damage stock</small>
+                                            @endif
                                             @error('damage_stock')
                                             <span class="text-danger small">* {{ $message }}</span>
                                             @enderror
@@ -1448,7 +1469,7 @@
                                         <label class="form-label fw-semibold">
                                             <i class="bi bi-folder2-open text-primary me-2"></i>Select Variant Type:
                                         </label>
-                                        <select class="form-select form-select-lg" 
+                                        <select class="form-select form-select-lg"
                                             wire:model="variant_id" wire:change="selectVariant($event.target.value)">
                                             <option value="">-- Choose a variant --</option>
                                             @foreach($availableVariants as $variant)
@@ -1478,16 +1499,15 @@
                                                     <tr>
                                                         <th class="text-center">Value</th>
                                                         <th class="text-center">Cost Price</th>
-                                                        <th class="text-center">Wholesale</th>
-                                                        <th class="text-center">Distributor</th>
                                                         <th class="text-center">Retail</th>
+                                                        <th class="text-center">Wholesale</th>
                                                         <th class="text-center">Stock</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     @php
-                                                        // Preserve the order of variant price keys as provided (DB order)
-                                                        $variantPriceKeys = array_values(array_keys($variant_prices ?? []));
+                                                    // Preserve the order of variant price keys as provided (DB order)
+                                                    $variantPriceKeys = array_values(array_keys($variant_prices ?? []));
                                                     @endphp
 
                                                     @foreach($variantPriceKeys as $value)
@@ -1499,7 +1519,7 @@
                                                         <td>
                                                             <div class="input-group input-group-sm">
                                                                 <span class="input-group-text">Rs.</span>
-                                                                <input type="number" step="0.01" class="form-control" 
+                                                                <input type="number" step="0.01" class="form-control"
                                                                     wire:model.defer="variant_prices.{{ $value }}.supplier_price"
                                                                     placeholder="0.00" id="supplier_{{ $value }}">
                                                             </div>
@@ -1507,33 +1527,10 @@
                                                             <span class="text-danger small">* {{ $message }}</span>
                                                             @enderror
                                                         </td>
-                                                        
                                                         <td>
                                                             <div class="input-group input-group-sm">
                                                                 <span class="input-group-text">Rs.</span>
-                                                                <input type="number" step="0.01" class="form-control" 
-                                                                    wire:model.defer="variant_prices.{{ $value }}.wholesale_price"
-                                                                    placeholder="0.00" id="wholesale_{{ $value }}">
-                                                            </div>
-                                                            @error("variant_prices.{$value}.wholesale_price")
-                                                            <span class="text-danger small">* {{ $message }}</span>
-                                                            @enderror
-                                                        </td>
-                                                        <td>
-                                                            <div class="input-group input-group-sm">
-                                                                <span class="input-group-text">Rs.</span>
-                                                                <input type="number" step="0.01" class="form-control" 
-                                                                    wire:model.defer="variant_prices.{{ $value }}.distributor_price"
-                                                                    placeholder="0.00" id="distributor_{{ $loop->index }}">
-                                                            </div>
-                                                            @error("variant_prices.{$value}.distributor_price")
-                                                            <span class="text-danger small">* {{ $message }}</span>
-                                                            @enderror
-                                                        </td>
-                                                        <td>
-                                                            <div class="input-group input-group-sm">
-                                                                <span class="input-group-text">Rs.</span>
-                                                                <input type="number" step="0.01" class="form-control" 
+                                                                <input type="number" step="0.01" class="form-control"
                                                                     wire:model.defer="variant_prices.{{ $value }}.retail_price"
                                                                     placeholder="0.00" id="retail_{{ $loop->index }}">
                                                             </div>
@@ -1542,7 +1539,18 @@
                                                             @enderror
                                                         </td>
                                                         <td>
-                                                            <input type="number" class="form-control form-control-sm" 
+                                                            <div class="input-group input-group-sm">
+                                                                <span class="input-group-text">Rs.</span>
+                                                                <input type="number" step="0.01" class="form-control"
+                                                                    wire:model.defer="variant_prices.{{ $value }}.wholesale_price"
+                                                                    placeholder="0.00" id="wholesale_{{ $value }}">
+                                                            </div>
+                                                            @error("variant_prices.{$value}.wholesale_price")
+                                                            <span class="text-danger small">* {{ $message }}</span>
+                                                            @enderror
+                                                        </td>
+                                                        <td>
+                                                            <input type="number" class="form-control form-control-sm"
                                                                 wire:model.defer="variant_prices.{{ $value }}.stock"
                                                                 placeholder="0" id="stock_{{ $loop->index }}">
                                                             @error("variant_prices.{$value}.stock")
@@ -1561,943 +1569,920 @@
                                     <i class="bi bi-exclamation-triangle me-2"></i>
                                     Loading variant data or the selected variant has no values.
                                 </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                @elseif(!empty($variant_id))
-                                <div class="alert alert-warning">
-                                    <i class="bi bi-exclamation-triangle me-2"></i>
-                                    Loading variant data...
-                                </div>
-                                @endif
-                                @endif
                             </div>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" wire:click="createProduct">
-                            <span wire:loading wire:target="createProduct">
-                                <i class="spinner-border spinner-border-sm"></i> Creating...
-                            </span>
-                            <span wire:loading.remove wire:target="createProduct">
-                                Save Product
-                            </span>
-                        </button>
+                    @elseif(!empty($variant_id))
+                    <div class="alert alert-warning">
+                        <i class="bi bi-exclamation-triangle me-2"></i>
+                        Loading variant data...
                     </div>
+                    @endif
+                    @endif
                 </div>
             </div>
         </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" wire:click="saveProduct">
+                <span wire:loading wire:target="saveProduct">
+                    <i class="spinner-border spinner-border-sm"></i>
+                    {{ $barcodeMode === 'edit' ? 'Updating...' : 'Creating...' }}
+                </span>
+                <span wire:loading.remove wire:target="saveProduct">
+                    {{ $barcodeMode === 'edit' ? 'Update Product' : 'Save Product' }}
+                </span>
+            </button>
+        </div>
+    </div>
+</div>
+</div>
 
-        <!-- Import Products Modal -->
-        <div wire:ignore.self class="modal fade" id="importProductsModal" tabindex="-1"
-            aria-labelledby="importProductsModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header bg-success text-white">
-                        <h5 class="modal-title fw-bold">
-                            <i class="bi bi-file-earmark-excel me-2"></i> Import Products from Excel
-                        </h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                            aria-label="Close"></button>
+<!-- Import Products Modal -->
+<div wire:ignore.self class="modal fade" id="importProductsModal" tabindex="-1"
+    aria-labelledby="importProductsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title fw-bold">
+                    <i class="bi bi-file-earmark-excel me-2"></i> Import Products from Excel
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="alert alert-info border-0 mb-4">
+                    <h6 class="alert-heading fw-bold">
+                        <i class="bi bi-info-circle me-2"></i>Excel File Requirements
+                    </h6>
+                    <hr>
+                    <p class="mb-2">Your Excel file must contain the following columns:</p>
+                    <ul class="mb-2">
+                        <li><strong>CODE</strong> - Product code (required, unique)</li>
+                        <li><strong>NAME</strong> - Product name (required)</li>
+                        <li><strong>SUPPLIER PRICE</strong> - Cost price (optional)</li>
+                        <li><strong>RETAIL PRICE</strong> - Retail selling price (optional)</li>
+                        <li><strong>WHOLESALE PRICE</strong> - Wholesale selling price (optional)</li>
+                        <li><strong>AVAILABLE STOCK</strong> - Product quantity in stock (optional)</li>
+                    </ul>
+                    <p class="mb-2"><strong>Note:</strong> Other product fields will be set to default values:
+                    </p>
+                    <ul class="mb-0">
+                        <li>Brand: Default Brand</li>
+                        <li>Category: Default Category</li>
+                        <li>Supplier: Default Supplier</li>
+                        <li>Status: Active</li>
+                        <li>If Available Stock is provided, Total Stock will be set to that value</li>
+                    </ul>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                        <h6 class="card-title mb-0">
+                            <i class="bi bi-table me-2"></i>Excel Format Example
+                        </h6>
+                        <button type="button" class="btn btn-sm btn-outline-success"
+                            wire:click="downloadTemplate">
+                            <i class="bi bi-download me-1"></i>Download Template
+                        </button>
                     </div>
-                    <div class="modal-body p-4">
-                        <div class="alert alert-info border-0 mb-4">
-                            <h6 class="alert-heading fw-bold">
-                                <i class="bi bi-info-circle me-2"></i>Excel File Requirements
-                            </h6>
-                            <hr>
-                            <p class="mb-2">Your Excel file must contain the following columns:</p>
-                            <ul class="mb-2">
-                                <li><strong>CODE</strong> - Product code (required, unique)</li>
-                                <li><strong>NAME</strong> - Product name (required)</li>
-                                <li><strong>SUPPLIER PRICE</strong> - Cost price (optional)</li>
-                                <li><strong>RETAIL PRICE</strong> - Retail selling price (optional)</li>
-                                <li><strong>WHOLESALE PRICE</strong> - Wholesale selling price (optional)</li>
-                                <li><strong>AVAILABLE STOCK</strong> - Product quantity in stock (optional)</li>
-                            </ul>
-                            <p class="mb-2"><strong>Note:</strong> Other product fields will be set to default values:
-                            </p>
-                            <ul class="mb-0">
-                                <li>Brand: Default Brand</li>
-                                <li>Category: Default Category</li>
-                                <li>Supplier: Default Supplier</li>
-                                <li>Status: Active</li>
-                                <li>If Available Stock is provided, Total Stock will be set to that value</li>
-                            </ul>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-bordered mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>CODE</th>
+                                        <th>NAME</th>
+                                        <th>SUPPLIER PRICE</th>
+                                        <th>RETAIL PRICE</th>
+                                        <th>WHOLESALE PRICE</th>
+                                        <th>AVAILABLE STOCK</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>HM0001</td>
+                                        <td>Flasher Musical 12 V</td>
+                                        <td>100.00</td>
+                                        <td>150.00</td>
+                                        <td>140.00</td>
+                                        <td>50</td>
+                                    </tr>
+                                    <tr>
+                                        <td>HM0002</td>
+                                        <td>Flasher Musical 24 V</td>
+                                        <td>120.00</td>
+                                        <td>180.00</td>
+                                        <td>170.00</td>
+                                        <td>30</td>
+                                    </tr>
+                                    <tr>
+                                        <td>HM0003</td>
+                                        <td>Flasher Electrical 12 V</td>
+                                        <td>90.00</td>
+                                        <td>140.00</td>
+                                        <td>130.00</td>
+                                        <td>40</td>
+                                    </tr>
+                                    <tr>
+                                        <td>HM0004</td>
+                                        <td>Flasher Electrical 24 V</td>
+                                        <td>110.00</td>
+                                        <td>160.00</td>
+                                        <td>150.00</td>
+                                        <td>25</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-1">
+                    <label for="importFile" class="form-label fw-semibold">
+                        <i class="bi bi-upload me-2"></i>Select Excel File
+                    </label>
+                    <input type="file" class="form-control" id="importFile" wire:model="importFile"
+                        accept=".xlsx,.xls,.csv">
+
+                    @error('importFile')
+                    <span class="text-danger small mt-1 d-block">
+                        <i class="bi bi-exclamation-circle me-1"></i>{{ $message }}
+                    </span>
+                    @enderror
+
+                    <div class="form-text">
+                        <i class="bi bi-info-circle me-1"></i>
+                        Accepted formats: .xlsx, .xls, .csv (Max size: 10MB)
+                    </div>
+
+                    @if($importFile)
+                    <div class="alert alert-success mt-3 mb-0">
+                        <i class="bi bi-check-circle me-2"></i>
+                        File selected: <strong>{{ $importFile->getClientOriginalName() }}</strong>
+                    </div>
+                    @endif
+                </div>
+
+                <div class="alert alert-warning border-0 mb-0">
+                    <i class="bi bi-exclamation-triangle me-2"></i>
+                    <strong>Important:</strong> Duplicate product codes will be skipped. You can edit imported
+                    products later to add missing details.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-lg me-2"></i>Cancel
+                </button>
+                <button type="button" class="btn btn-success" wire:click="importProducts" @if(!$importFile)
+                    disabled @endif>
+                    <span wire:loading wire:target="importProducts">
+                        <i class="spinner-border spinner-border-sm me-2"></i>Importing...
+                    </span>
+                    <span wire:loading.remove wire:target="importProducts">
+                        <i class="bi bi-upload me-2"></i>Import Products
+                    </span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Product Modal -->
+<div wire:ignore.self wire:key="edit-modal-{{ $editId ?? 'new' }}" class="modal fade" id="editProductModal"
+    tabindex="-1" aria-labelledby="editProductModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold">
+                    <i class="bi bi-pencil-square text-white me-2"></i> Edit Product
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-info-circle text-primary me-2"></i> Basic Information
+                        </h5>
+                    </div>
+
+                    <div class="card-body p-4">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-1">
+                                    <label for="editCode" class="form-label fw-semibold">Code:</label>
+                                    <input type="text" class="form-control" id="editCode" wire:model="editCode">
+                                    @error('editCode')
+                                    <span class="text-danger small">* {{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="mb-1">
+                                    <label for="editName" class="form-label fw-semibold">Name:</label>
+                                    <input type="text" class="form-control" id="editName" wire:model="editName">
+                                    @error('editName')
+                                    <span class="text-danger small">* {{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="mb-1">
+                                    <label for="editModel" class="form-label fw-semibold">Model:</label>
+                                    <input type="text" class="form-control" id="editModel"
+                                        wire:model="editModel">
+                                    @error('editModel')
+                                    <span class="text-danger small">* {{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-diagram-3 text-primary me-2"></i> Classification
+                        </h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-1">
+                                    <label for="editCategory" class="form-label fw-semibold">Category:</label>
+                                    <select class="form-select" id="editCategory" wire:model="editCategory">
+                                        <option value="">Select Category</option>
+                                        @foreach ($categories as $category)
+                                        <option value="{{ $category->id }}" {{ $category->id == 1 ? 'selected' :
+                                                    '' }}>{{ $category->category_name }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('editCategory')
+                                    <span class="text-danger small">* {{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-1">
+                                    <label for="editBrand" class="form-label fw-semibold">Brand:</label>
+                                    <select class="form-select" id="editBrand" wire:model="editBrand">
+                                        <option value="">Select Brand</option>
+                                        @foreach ($brands as $brand)
+                                        <option value="{{ $brand->id }}" {{ $brand->id == 1 ? 'selected' : ''
+                                                    }}>{{ $brand->brand_name }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('editBrand')
+                                    <span class="text-danger small">* {{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-card-text text-primary me-2"></i> Product Information
+                        </h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-1">
+                                    <label for="editImage" class="form-label fw-semibold">Image:</label>
+                                    <input type="text" class="form-control" id="editImage"
+                                        wire:model="editImage">
+                                    @error('editImage')
+                                    <span class="text-danger small">* {{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="mb-1">
+                                    <label for="editDescription"
+                                        class="form-label fw-semibold">Description:</label>
+                                    <textarea class="form-control" id="editDescription" rows="3"
+                                        wire:model="editDescription"></textarea>
+                                    @error('editDescription')
+                                    <span class="text-danger small">* {{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-cash text-primary me-2"></i> Pricing and Inventory
+                        </h5>
+                    </div>
+                    <div class="card-body p-4">
+                        @if($pricing_mode === 'single')
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-1">
+                                    <label for="editSupplierPrice" class="form-label fw-semibold">Supplier
+                                        Price:</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">Rs.</span>
+                                        <input type="number" step="0.01" class="form-control"
+                                            id="editSupplierPrice" wire:model.live="editSupplierPrice">
+                                    </div>
+                                    @error('editSupplierPrice')
+                                    <span class="text-danger small">* {{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-1">
+                                    <label for="editRetailPrice" class="form-label fw-semibold">Retail
+                                        Price:
+                                        <small class="text-muted">(auto: cost × 1.8)</small>
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">Rs.</span>
+                                        <input type="number" step="0.01" class="form-control"
+                                            id="editRetailPrice" wire:model="editRetailPrice">
+                                    </div>
+                                    @error('editRetailPrice')
+                                    <span class="text-danger small">* {{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-1">
+                                    <label for="editWholesalePrice" class="form-label fw-semibold">Wholesale
+                                        Price:
+                                        <small class="text-muted">(auto: cost × 1.5)</small>
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">Rs.</span>
+                                        <input type="number" step="0.01" class="form-control"
+                                            id="editWholesalePrice" wire:model="editWholesalePrice">
+                                    </div>
+                                    @error('editWholesalePrice')
+                                    <span class="text-danger small">* {{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-1">
+                                    <label for="editStatus" class="form-label fw-semibold">Status:</label>
+                                    <select class="form-select" id="editStatus" wire:model="editStatus">
+                                        <option value="active">Active</option>
+                                        <option value="inactive">Inactive</option>
+                                    </select>
+                                    @error('editStatus')
+                                    <span class="text-danger small">* {{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+                        @else
+
+                        <div class="alert alert-info border-info">
+                            <i class="bi bi-info-circle me-2"></i>
+                            <strong>Note:</strong> Select an existing variant type to edit prices and stock for each value.
                         </div>
 
-                        <div class="card mb-4">
-                            <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                                <h6 class="card-title mb-0">
-                                    <i class="bi bi-table me-2"></i>Excel Format Example
-                                </h6>
-                                <button type="button" class="btn btn-sm btn-outline-success"
-                                    wire:click="downloadTemplate">
-                                    <i class="bi bi-download me-1"></i>Download Template
-                                </button>
+                        {{-- Variant selector (show when there are available variants) --}}
+                        @if(!empty($availableVariants))
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <label class="form-label fw-semibold">
+                                    <i class="bi bi-folder2-open text-primary me-2"></i>Select Variant Type:
+                                </label>
+                                <select class="form-select form-select-lg"
+                                    wire:model.live="variant_id" wire:change="selectVariant($event.target.value)">
+                                    <option value="">-- Choose a variant --</option>
+                                    @foreach($availableVariants as $variant)
+                                    <option value="{{ $variant['id'] }}">
+                                        {{ $variant['variant_name'] }} ({{ count($variant['variant_values'] ?? []) }} values)
+                                    </option>
+                                    @endforeach
+                                </select>
+                                @error('variant_id')
+                                <span class="text-danger small">* {{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+                        @endif
+
+                        {{-- If the product has exactly one variant value, show inline editable inputs immediately --}}
+                        @if(count($variant_prices) === 1)
+                        @php
+                        $variantPriceKeys = array_keys($variant_prices ?? []);
+                        $singleKey = $variantPriceKeys[0] ?? null;
+                        $singlePrices = $singleKey ? ($variant_prices[$singleKey] ?? []) : [];
+                        $variantName = '';
+                        foreach($availableVariants as $v) {
+                        if(($v['id'] ?? null) == $variant_id) { $variantName = $v['variant_name']; break; }
+                        }
+                        @endphp
+
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <label class="form-label fw-semibold">
+                                    <i class="bi bi-folder2-open text-primary me-2"></i>Variant Type:
+                                    <strong class="ms-2">{{ $variantName ?: 'Variant' }}</strong>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">Cost Price:</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">Rs.</span>
+                                    <input type="number" step="0.01" class="form-control"
+                                        wire:model.defer="variant_prices.{{ $singleKey }}.supplier_price"
+                                        placeholder="0.00">
+                                </div>
+                                @error("variant_prices.{$singleKey}.supplier_price")
+                                <span class="text-danger small">* {{ $message }}</span>
+                                @enderror
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">Retail Price:</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">Rs.</span>
+                                    <input type="number" step="0.01" class="form-control"
+                                        wire:model.defer="variant_prices.{{ $singleKey }}.retail_price"
+                                        placeholder="0.00">
+                                </div>
+                                @error("variant_prices.{$singleKey}.retail_price")
+                                <span class="text-danger small">* {{ $message }}</span>
+                                @enderror
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">Wholesale Price:</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">Rs.</span>
+                                    <input type="number" step="0.01" class="form-control"
+                                        wire:model.defer="variant_prices.{{ $singleKey }}.wholesale_price"
+                                        placeholder="0.00">
+                                </div>
+                                @error("variant_prices.{$singleKey}.wholesale_price")
+                                <span class="text-danger small">* {{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Available Stock:</label>
+                                <input type="number" class="form-control"
+                                    wire:model.defer="variant_prices.{{ $singleKey }}.stock" placeholder="0">
+                                @error("variant_prices.{$singleKey}.stock")
+                                <span class="text-danger small">* {{ $message }}</span>
+                                @enderror
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Damage Stock:</label>
+                                <input type="number" class="form-control"
+                                    wire:model.defer="variant_prices.{{ $singleKey }}.damage_stock" placeholder="0">
+                                @error("variant_prices.{$singleKey}.damage_stock")
+                                <span class="text-danger small">* {{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+
+                        @elseif(!empty($variant_id) && count($variant_prices) > 0)
+                        <div class="card">
+                            <div class="card-header bg-light">
+                                <h6 class="mb-0">Edit Variant Pricing & Stock</h6>
                             </div>
                             <div class="card-body p-0">
                                 <div class="table-responsive">
-                                    <table class="table table-bordered mb-0">
+                                    <table class="table table-bordered table-hover mb-0">
                                         <thead class="table-light">
                                             <tr>
-                                                <th>CODE</th>
-                                                <th>NAME</th>
-                                                <th>SUPPLIER PRICE</th>
-                                                <th>RETAIL PRICE</th>
-                                                <th>WHOLESALE PRICE</th>
-                                                <th>AVAILABLE STOCK</th>
+                                                <th class="text-center">Value</th>
+                                                <th class="text-center">Cost Price</th>
+                                                <th class="text-center">Retail</th>
+                                                <th class="text-center">Wholesale</th>
+                                                <th class="text-center">Stock</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr>
-                                                <td>HM0001</td>
-                                                <td>Flasher Musical 12 V</td>
-                                                <td>100.00</td>
-                                                <td>150.00</td>
-                                                <td>140.00</td>
-                                                <td>50</td>
+                                            @php
+                                            // Preserve the order of variant price keys as provided (DB order)
+                                            $variantPriceKeys = array_values(array_keys($variant_prices ?? []));
+                                            @endphp
+
+                                            @foreach($variantPriceKeys as $value)
+                                            @php $prices = $variant_prices[$value] ?? []; @endphp
+                                            <tr wire:key="edit-variant-price-{{ $value }}">
+                                                <td class="text-center align-middle">
+                                                    <strong class="text-primary">{{ $variant_key_map[$value] ?? $value }}</strong>
+                                                </td>
+                                                <td>
+                                                    <div class="input-group input-group-sm">
+                                                        <span class="input-group-text">Rs.</span>
+                                                        <input type="number" step="0.01" class="form-control"
+                                                            wire:model.defer="variant_prices.{{ $value }}.supplier_price"
+                                                            placeholder="0.00" id="edit_supplier_{{ $value }}">
+                                                    </div>
+                                                    @error("variant_prices.{$value}.supplier_price")
+                                                    <span class="text-danger small">* {{ $message }}</span>
+                                                    @enderror
+                                                </td>
+                                                <td>
+                                                    <div class="input-group input-group-sm">
+                                                        <span class="input-group-text">Rs.</span>
+                                                        <input type="number" step="0.01" class="form-control"
+                                                            wire:model.defer="variant_prices.{{ $value }}.retail_price"
+                                                            placeholder="0.00" id="edit_retail_{{ $loop->index }}">
+                                                    </div>
+                                                    @error("variant_prices.{$value}.retail_price")
+                                                    <span class="text-danger small">* {{ $message }}</span>
+                                                    @enderror
+                                                </td>
+                                                <td>
+                                                    <div class="input-group input-group-sm">
+                                                        <span class="input-group-text">Rs.</span>
+                                                        <input type="number" step="0.01" class="form-control"
+                                                            wire:model.defer="variant_prices.{{ $value }}.wholesale_price"
+                                                            placeholder="0.00" id="edit_wholesale_{{ $value }}">
+                                                    </div>
+                                                    @error("variant_prices.{$value}.wholesale_price")
+                                                    <span class="text-danger small">* {{ $message }}</span>
+                                                    @enderror
+                                                </td>
+                                                <td>
+                                                    <input type="number" class="form-control form-control-sm"
+                                                        wire:model.defer="variant_prices.{{ $value }}.stock"
+                                                        placeholder="0" id="edit_stock_{{ $loop->index }}">
+                                                    @error("variant_prices.{$value}.stock")
+                                                    <span class="text-danger small">* {{ $message }}</span>
+                                                    @enderror
+                                                </td>
                                             </tr>
-                                            <tr>
-                                                <td>HM0002</td>
-                                                <td>Flasher Musical 24 V</td>
-                                                <td>120.00</td>
-                                                <td>180.00</td>
-                                                <td>170.00</td>
-                                                <td>30</td>
-                                            </tr>
-                                            <tr>
-                                                <td>HM0003</td>
-                                                <td>Flasher Electrical 12 V</td>
-                                                <td>90.00</td>
-                                                <td>140.00</td>
-                                                <td>130.00</td>
-                                                <td>40</td>
-                                            </tr>
-                                            <tr>
-                                                <td>HM0004</td>
-                                                <td>Flasher Electrical 24 V</td>
-                                                <td>110.00</td>
-                                                <td>160.00</td>
-                                                <td>150.00</td>
-                                                <td>25</td>
-                                            </tr>
+                                            @endforeach
                                         </tbody>
                                     </table>
                                 </div>
                             </div>
                         </div>
-
-                        <div class="mb-1">
-                            <label for="importFile" class="form-label fw-semibold">
-                                <i class="bi bi-upload me-2"></i>Select Excel File
-                            </label>
-                            <input type="file" class="form-control" id="importFile" wire:model="importFile"
-                                accept=".xlsx,.xls,.csv">
-
-                            @error('importFile')
-                            <span class="text-danger small mt-1 d-block">
-                                <i class="bi bi-exclamation-circle me-1"></i>{{ $message }}
-                            </span>
-                            @enderror
-
-                            <div class="form-text">
-                                <i class="bi bi-info-circle me-1"></i>
-                                Accepted formats: .xlsx, .xls, .csv (Max size: 10MB)
-                            </div>
-
-                            @if($importFile)
-                            <div class="alert alert-success mt-3 mb-0">
-                                <i class="bi bi-check-circle me-2"></i>
-                                File selected: <strong>{{ $importFile->getClientOriginalName() }}</strong>
-                            </div>
-                            @endif
-                        </div>
-
-                        <div class="alert alert-warning border-0 mb-0">
+                        @elseif(!empty($variant_id))
+                        <div class="alert alert-warning">
                             <i class="bi bi-exclamation-triangle me-2"></i>
-                            <strong>Important:</strong> Duplicate product codes will be skipped. You can edit imported
-                            products later to add missing details.
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                            <i class="bi bi-x-lg me-2"></i>Cancel
-                        </button>
-                        <button type="button" class="btn btn-success" wire:click="importProducts" @if(!$importFile)
-                            disabled @endif>
-                            <span wire:loading wire:target="importProducts">
-                                <i class="spinner-border spinner-border-sm me-2"></i>Importing...
-                            </span>
-                            <span wire:loading.remove wire:target="importProducts">
-                                <i class="bi bi-upload me-2"></i>Import Products
-                            </span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Edit Product Modal -->
-        <div wire:ignore.self wire:key="edit-modal-{{ $editId ?? 'new' }}" class="modal fade" id="editProductModal"
-            tabindex="-1" aria-labelledby="editProductModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-xl modal-dialog-scrollable">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title fw-bold">
-                            <i class="bi bi-pencil-square text-white me-2"></i> Edit Product
-                        </h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body p-4">
-                        <div class="card mb-4">
-                            <div class="card-header">
-                                <h5 class="card-title mb-0">
-                                    <i class="bi bi-info-circle text-primary me-2"></i> Basic Information
-                                </h5>
-                            </div>
-
-                            <div class="card-body p-4">
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        <div class="mb-1">
-                                            <label for="editCode" class="form-label fw-semibold">Code:</label>
-                                            <input type="text" class="form-control" id="editCode" wire:model="editCode">
-                                            @error('editCode')
-                                            <span class="text-danger small">* {{ $message }}</span>
-                                            @enderror
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-4">
-                                        <div class="mb-1">
-                                            <label for="editName" class="form-label fw-semibold">Name:</label>
-                                            <input type="text" class="form-control" id="editName" wire:model="editName">
-                                            @error('editName')
-                                            <span class="text-danger small">* {{ $message }}</span>
-                                            @enderror
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-4">
-                                        <div class="mb-1">
-                                            <label for="editModel" class="form-label fw-semibold">Model:</label>
-                                            <input type="text" class="form-control" id="editModel"
-                                                wire:model="editModel">
-                                            @error('editModel')
-                                            <span class="text-danger small">* {{ $message }}</span>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="card mb-4">
-                            <div class="card-header">
-                                <h5 class="card-title mb-0">
-                                    <i class="bi bi-diagram-3 text-primary me-2"></i> Classification
-                                </h5>
-                            </div>
-                            <div class="card-body p-4">
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        <div class="mb-1">
-                                            <label for="editCategory" class="form-label fw-semibold">Category:</label>
-                                            <select class="form-select" id="editCategory" wire:model="editCategory">
-                                                <option value="">Select Category</option>
-                                                @foreach ($categories as $category)
-                                                <option value="{{ $category->id }}" {{ $category->id == 1 ? 'selected' :
-                                                    '' }}>{{ $category->category_name }}</option>
-                                                @endforeach
-                                            </select>
-                                            @error('editCategory')
-                                            <span class="text-danger small">* {{ $message }}</span>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="mb-1">
-                                            <label for="editBrand" class="form-label fw-semibold">Brand:</label>
-                                            <select class="form-select" id="editBrand" wire:model="editBrand">
-                                                <option value="">Select Brand</option>
-                                                @foreach ($brands as $brand)
-                                                <option value="{{ $brand->id }}" {{ $brand->id == 1 ? 'selected' : ''
-                                                    }}>{{ $brand->brand_name }}</option>
-                                                @endforeach
-                                            </select>
-                                            @error('editBrand')
-                                            <span class="text-danger small">* {{ $message }}</span>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="card mb-4">
-                            <div class="card-header">
-                                <h5 class="card-title mb-0">
-                                    <i class="bi bi-card-text text-primary me-2"></i> Product Information
-                                </h5>
-                            </div>
-                            <div class="card-body p-4">
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        <div class="mb-1">
-                                            <label for="editImage" class="form-label fw-semibold">Image:</label>
-                                            <input type="text" class="form-control" id="editImage"
-                                                wire:model="editImage">
-                                            @error('editImage')
-                                            <span class="text-danger small">* {{ $message }}</span>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <div class="mb-1">
-                                            <label for="editDescription"
-                                                class="form-label fw-semibold">Description:</label>
-                                            <textarea class="form-control" id="editDescription" rows="3"
-                                                wire:model="editDescription"></textarea>
-                                            @error('editDescription')
-                                            <span class="text-danger small">* {{ $message }}</span>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="card mb-4">
-                            <div class="card-header">
-                                <h5 class="card-title mb-0">
-                                    <i class="bi bi-cash text-primary me-2"></i> Pricing and Inventory
-                                </h5>
-                            </div>
-                            <div class="card-body p-4">
-                                @if($pricing_mode === 'single')
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        <div class="mb-1">
-                                            <label for="editSupplierPrice" class="form-label fw-semibold">Supplier
-                                                Price:</label>
-                                            <div class="input-group">
-                                                <span class="input-group-text">Rs.</span>
-                                                <input type="number" step="0.01" class="form-control"
-                                                    id="editSupplierPrice" wire:model="editSupplierPrice">
-                                            </div>
-                                            @error('editSupplierPrice')
-                                            <span class="text-danger small">* {{ $message }}</span>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="mb-1">
-                                            <label for="editRetailPrice" class="form-label fw-semibold">Retail
-                                                Price:</label>
-                                            <div class="input-group">
-                                                <span class="input-group-text">Rs.</span>
-                                                <input type="number" step="0.01" class="form-control"
-                                                    id="editRetailPrice" wire:model="editRetailPrice">
-                                            </div>
-                                            @error('editRetailPrice')
-                                            <span class="text-danger small">* {{ $message }}</span>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="mb-1">
-                                            <label for="editWholesalePrice" class="form-label fw-semibold">Wholesale
-                                                Price:</label>
-                                            <div class="input-group">
-                                                <span class="input-group-text">Rs.</span>
-                                                <input type="number" step="0.01" class="form-control"
-                                                    id="editWholesalePrice" wire:model="editWholesalePrice">
-                                            </div>
-                                            @error('editWholesalePrice')
-                                            <span class="text-danger small">* {{ $message }}</span>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="mb-1">
-                                            <label for="editDiscountPrice" class="form-label fw-semibold">Discount
-                                                Price:</label>
-                                            <div class="input-group">
-                                                <span class="input-group-text">Rs.</span>
-                                                <input type="number" step="0.01" class="form-control"
-                                                    id="editDiscountPrice" wire:model="editDiscountPrice">
-                                            </div>
-                                            @error('editDiscountPrice')
-                                            <span class="text-danger small">* {{ $message }}</span>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        <div class="mb-1">
-                                            <label for="editStatus" class="form-label fw-semibold">Status:</label>
-                                            <select class="form-select" id="editStatus" wire:model="editStatus">
-                                                <option value="active">Active</option>
-                                                <option value="inactive">Inactive</option>
-                                            </select>
-                                            @error('editStatus')
-                                            <span class="text-danger small">* {{ $message }}</span>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                </div>
-                                @else
-
-                                <div class="alert alert-info border-info">
-                                    <i class="bi bi-info-circle me-2"></i>
-                                    <strong>Note:</strong> Select an existing variant type to edit prices and stock for each value.
-                                </div>
-
-                                {{-- Variant selector (show when there are available variants) --}}
-                                @if(!empty($availableVariants))
-                                <div class="row mb-4">
-                                    <div class="col-md-12">
-                                        <label class="form-label fw-semibold">
-                                            <i class="bi bi-folder2-open text-primary me-2"></i>Select Variant Type:
-                                        </label>
-                                        <select class="form-select form-select-lg"
-                                            wire:model.live="variant_id" wire:change="selectVariant($event.target.value)">
-                                            <option value="">-- Choose a variant --</option>
-                                            @foreach($availableVariants as $variant)
-                                            <option value="{{ $variant['id'] }}">
-                                                {{ $variant['variant_name'] }} ({{ count($variant['variant_values'] ?? []) }} values)
-                                            </option>
-                                            @endforeach
-                                        </select>
-                                        @error('variant_id')
-                                        <span class="text-danger small">* {{ $message }}</span>
-                                        @enderror
-                                    </div>
-                                </div>
-                                @endif
-
-                                {{-- If the product has exactly one variant value, show inline editable inputs immediately --}}
-                                @if(count($variant_prices) === 1)
-                                @php
-                                    $variantPriceKeys = array_keys($variant_prices ?? []);
-                                    $singleKey = $variantPriceKeys[0] ?? null;
-                                    $singlePrices = $singleKey ? ($variant_prices[$singleKey] ?? []) : [];
-                                    $variantName = '';
-                                    foreach($availableVariants as $v) {
-                                        if(($v['id'] ?? null) == $variant_id) { $variantName = $v['variant_name']; break; }
-                                    }
-                                @endphp
-
-                                <div class="row mb-3">
-                                    <div class="col-md-12">
-                                        <label class="form-label fw-semibold">
-                                            <i class="bi bi-folder2-open text-primary me-2"></i>Variant Type:
-                                            <strong class="ms-2">{{ $variantName ?: 'Variant' }}</strong>
-                                        </label>
-                                    </div>
-                                </div>
-
-                                <div class="row g-3 mb-3">
-                                    <div class="col-md-3">
-                                        <label class="form-label fw-semibold">Cost Price:</label>
-                                        <div class="input-group">
-                                            <span class="input-group-text">Rs.</span>
-                                            <input type="number" step="0.01" class="form-control"
-                                                wire:model.defer="variant_prices.{{ $singleKey }}.supplier_price"
-                                                placeholder="0.00">
-                                        </div>
-                                        @error("variant_prices.{$singleKey}.supplier_price")
-                                        <span class="text-danger small">* {{ $message }}</span>
-                                        @enderror
-                                    </div>
-
-                                    <div class="col-md-3">
-                                        <label class="form-label fw-semibold">Retail Price:</label>
-                                        <div class="input-group">
-                                            <span class="input-group-text">Rs.</span>
-                                            <input type="number" step="0.01" class="form-control"
-                                                wire:model.defer="variant_prices.{{ $singleKey }}.retail_price"
-                                                placeholder="0.00">
-                                        </div>
-                                        @error("variant_prices.{$singleKey}.retail_price")
-                                        <span class="text-danger small">* {{ $message }}</span>
-                                        @enderror
-                                    </div>
-
-                                    <div class="col-md-3">
-                                        <label class="form-label fw-semibold">Wholesale Price:</label>
-                                        <div class="input-group">
-                                            <span class="input-group-text">Rs.</span>
-                                            <input type="number" step="0.01" class="form-control"
-                                                wire:model.defer="variant_prices.{{ $singleKey }}.wholesale_price"
-                                                placeholder="0.00">
-                                        </div>
-                                        @error("variant_prices.{$singleKey}.wholesale_price")
-                                        <span class="text-danger small">* {{ $message }}</span>
-                                        @enderror
-                                    </div>
-
-                                    <div class="col-md-3">
-                                        <label class="form-label fw-semibold">Distributor Price:</label>
-                                        <div class="input-group">
-                                            <span class="input-group-text">Rs.</span>
-                                            <input type="number" step="0.01" class="form-control"
-                                                wire:model.defer="variant_prices.{{ $singleKey }}.distributor_price"
-                                                placeholder="0.00">
-                                        </div>
-                                        @error("variant_prices.{$singleKey}.distributor_price")
-                                        <span class="text-danger small">* {{ $message }}</span>
-                                        @enderror
-                                    </div>
-                                </div>
-
-                                <div class="row g-3">
-                                    <div class="col-md-6">
-                                        <label class="form-label fw-semibold">Available Stock:</label>
-                                        <input type="number" class="form-control" 
-                                            wire:model.defer="variant_prices.{{ $singleKey }}.stock" placeholder="0">
-                                        @error("variant_prices.{$singleKey}.stock")
-                                        <span class="text-danger small">* {{ $message }}</span>
-                                        @enderror
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label fw-semibold">Damage Stock:</label>
-                                        <input type="number" class="form-control" 
-                                            wire:model.defer="variant_prices.{{ $singleKey }}.damage_stock" placeholder="0">
-                                        @error("variant_prices.{$singleKey}.damage_stock")
-                                        <span class="text-danger small">* {{ $message }}</span>
-                                        @enderror
-                                    </div>
-                                </div>
-
-                                @elseif(!empty($variant_id) && count($variant_prices) > 0)
-                                <div class="card">
-                                    <div class="card-header bg-light">
-                                        <h6 class="mb-0">Edit Variant Pricing & Stock</h6>
-                                    </div>
-                                    <div class="card-body p-0">
-                                        <div class="table-responsive">
-                                            <table class="table table-bordered table-hover mb-0">
-                                                <thead class="table-light">
-                                                    <tr>
-                                                        <th class="text-center">Value</th>
-                                                        <th class="text-center">Cost Price</th>
-                                                        <th class="text-center">Wholesale</th>
-                                                        <th class="text-center">Distributor</th>
-                                                        <th class="text-center">Retail</th>
-                                                        <th class="text-center">Stock</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    @php
-                                                        // Preserve the order of variant price keys as provided (DB order)
-                                                        $variantPriceKeys = array_values(array_keys($variant_prices ?? []));
-                                                    @endphp
-
-                                                    @foreach($variantPriceKeys as $value)
-                                                    @php $prices = $variant_prices[$value] ?? []; @endphp
-                                                    <tr wire:key="edit-variant-price-{{ $value }}">
-                                                        <td class="text-center align-middle">
-                                                            <strong class="text-primary">{{ $variant_key_map[$value] ?? $value }}</strong>
-                                                        </td>
-                                                        <td>
-                                                            <div class="input-group input-group-sm">
-                                                                <span class="input-group-text">Rs.</span>
-                                                                <input type="number" step="0.01" class="form-control" 
-                                                                    wire:model.defer="variant_prices.{{ $value }}.supplier_price"
-                                                                    placeholder="0.00" id="edit_supplier_{{ $value }}">
-                                                            </div>
-                                                            @error("variant_prices.{$value}.supplier_price")
-                                                            <span class="text-danger small">* {{ $message }}</span>
-                                                            @enderror
-                                                        </td>
-                                                        <td>
-                                                            <div class="input-group input-group-sm">
-                                                                <span class="input-group-text">Rs.</span>
-                                                                <input type="number" step="0.01" class="form-control" 
-                                                                    wire:model.defer="variant_prices.{{ $value }}.wholesale_price"
-                                                                    placeholder="0.00" id="edit_wholesale_{{ $value }}">
-                                                            </div>
-                                                            @error("variant_prices.{$value}.wholesale_price")
-                                                            <span class="text-danger small">* {{ $message }}</span>
-                                                            @enderror
-                                                        </td>
-                                                        <td>
-                                                            <div class="input-group input-group-sm">
-                                                                <span class="input-group-text">Rs.</span>
-                                                                <input type="number" step="0.01" class="form-control" 
-                                                                    wire:model.defer="variant_prices.{{ $value }}.distributor_price"
-                                                                    placeholder="0.00" id="edit_distributor_{{ $loop->index }}">
-                                                            </div>
-                                                            @error("variant_prices.{$value}.distributor_price")
-                                                            <span class="text-danger small">* {{ $message }}</span>
-                                                            @enderror
-                                                        </td>
-                                                        <td>
-                                                            <div class="input-group input-group-sm">
-                                                                <span class="input-group-text">Rs.</span>
-                                                                <input type="number" step="0.01" class="form-control" 
-                                                                    wire:model.defer="variant_prices.{{ $value }}.retail_price"
-                                                                    placeholder="0.00" id="edit_retail_{{ $loop->index }}">
-                                                            </div>
-                                                            @error("variant_prices.{$value}.retail_price")
-                                                            <span class="text-danger small">* {{ $message }}</span>
-                                                            @enderror
-                                                        </td>
-                                                        <td>
-                                                            <input type="number" class="form-control form-control-sm" 
-                                                                wire:model.defer="variant_prices.{{ $value }}.stock"
-                                                                placeholder="0" id="edit_stock_{{ $loop->index }}">
-                                                            @error("variant_prices.{$value}.stock")
-                                                            <span class="text-danger small">* {{ $message }}</span>
-                                                            @enderror
-                                                        </td>
-                                                    </tr>
-                                                    @endforeach
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
-                                @elseif(!empty($variant_id))
-                                <div class="alert alert-warning">
-                                    <i class="bi bi-exclamation-triangle me-2"></i>
-                                    Loading variant data...
-                                </div>
-                                @endif
-
-                                @endif
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" wire:click="updateProduct">
-                            <span wire:loading wire:target="updateProduct">
-                                <i class="spinner-border spinner-border-sm"></i> Updating...
-                            </span>
-                            <span wire:loading.remove wire:target="updateProduct">
-                                Update Product
-                            </span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Stock Adjustment Modal -->
-        <div wire:ignore.self class="modal fade" id="stockAdjustmentModal" tabindex="-1"
-            aria-labelledby="stockAdjustmentModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header bg-warning text-white">
-                        <h5 class="modal-title fw-bold">
-                            <i class="bi bi-clipboard-plus text-white me-2"></i> Stock Adjustment
-                        </h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                            aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body p-4">
-                        @if($adjustmentProductId)
-                        <div class="card mb-4">
-                            <div class="card-header bg-light">
-                                <h6 class="card-title mb-0">
-                                    <i class="bi bi-box me-2"></i> Product Information
-                                </h6>
-                            </div>
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <strong>Product:</strong> {{ $adjustmentProductName }}
-                                    </div>
-                                    <div class="col-md-3">
-                                        <strong>Available Stock:</strong>
-                                        <span class="badge bg-success">{{ $adjustmentAvailableStock }}</span>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <strong>Damage Stock:</strong>
-                                        <span class="badge bg-danger">{{ $adjustmentDamageStock }}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="card">
-                            <div class="card-header bg-light">
-                                <h6 class="card-title mb-0">
-                                    <i class="bi bi-gear me-2"></i> Adjustment Details
-                                </h6>
-                            </div>
-                            <div class="card-body">
-                                <div class="alert alert-info border-0 mb-1">
-                                    <i class="bi bi-info-circle me-2"></i>
-                                    <strong>Note:</strong>
-                                    <ul class="mb-0 mt-2">
-                                        <li><strong>Add Damage:</strong> Increases damage stock and decreases available stock from batches (FIFO)</li>
-                                        <li><strong>Adjust Available:</strong> Increases available stock and adds to oldest batch</li>
-                                    </ul>
-                                </div>
-
-                                <div class="row">
-                                    {{-- Damage Stock Input --}}
-                                    <div class="col-md-6">
-                                        <div class="mb-1">
-                                            <label for="damageQuantity" class="form-label fw-semibold">
-                                                <i class="bi bi-exclamation-triangle text-danger me-1"></i> Damage Quantity:
-                                            </label>
-                                            <input type="number" class="form-control" id="damageQuantity"
-                                                wire:model="damageQuantity" min="1"
-                                                placeholder="Enter damage quantity">
-                                            @error('damageQuantity')
-                                            <span class="text-danger small">* {{ $message }}</span>
-                                            @enderror
-                                        </div>
-                                        <button type="button" class="btn btn-danger w-100" wire:click="addDamageStock">
-                                            <span wire:loading.remove wire:target="addDamageStock">
-                                                <i class="bi bi-exclamation-triangle me-2"></i>Add Damage Stock
-                                            </span>
-                                            <span wire:loading wire:target="addDamageStock">
-                                                <i class="spinner-border spinner-border-sm me-2"></i>Processing...
-                                            </span>
-                                        </button>
-                                        <small class="text-muted d-block mt-2">
-                                            Deducts from available stock using FIFO and updates prices
-                                        </small>
-                                    </div>
-
-                                    {{-- Available Stock Input --}}
-                                    <div class="col-md-6">
-                                        <div class="mb-1">
-                                            <label for="availableQuantity" class="form-label fw-semibold">
-                                                <i class="bi bi-box-seam text-success me-1"></i> Available Quantity:
-                                            </label>
-                                            <input type="number" class="form-control" id="availableQuantity"
-                                                wire:model="availableQuantity" min="1"
-                                                placeholder="Enter quantity to add">
-                                            @error('availableQuantity')
-                                            <span class="text-danger small">* {{ $message }}</span>
-                                            @enderror
-                                        </div>
-                                        <button type="button" class="btn btn-success w-100" wire:click="adjustAvailableStock">
-                                            <span wire:loading.remove wire:target="adjustAvailableStock">
-                                                <i class="bi bi-plus-circle me-2"></i>Adjust Available Stock
-                                            </span>
-                                            <span wire:loading wire:target="adjustAvailableStock">
-                                                <i class="spinner-border spinner-border-sm me-2"></i>Processing...
-                                            </span>
-                                        </button>
-                                        <small class="text-muted d-block mt-2">
-                                            Increases available stock and adds to batch
-                                        </small>
-                                    </div>
-                                </div>
-                            </div>
+                            Loading variant data...
                         </div>
                         @endif
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+
+                        @endif
                     </div>
                 </div>
             </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" wire:click="updateProduct">
+                    <span wire:loading wire:target="updateProduct">
+                        <i class="spinner-border spinner-border-sm"></i> Updating...
+                    </span>
+                    <span wire:loading.remove wire:target="updateProduct">
+                        Update Product
+                    </span>
+                </button>
+            </div>
         </div>
+    </div>
+</div>
 
-        <!-- ✅ Product History Modal (single copy only) -->
-        <div wire:ignore.self class="modal fade" id="productHistoryModal" tabindex="-1"
-            aria-labelledby="productHistoryModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-xl modal-dialog-scrollable">
-                <div class="modal-content border-0 shadow-lg">
-
-                    <!-- Header -->
-                    <div class="modal-header border-0 text-white"
-                        style="background: linear-gradient(135deg, #000000 0%, #000000 100%);">
-                        <h5 class="modal-title fw-bold">
-                            <i class="bi bi-clock-history me-2"></i>
-                            Product History - {{ $historyProductName ?? 'Loading...' }}
-                        </h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+<!-- Stock Adjustment Modal -->
+<div wire:ignore.self class="modal fade" id="stockAdjustmentModal" tabindex="-1"
+    aria-labelledby="stockAdjustmentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-warning text-white">
+                <h5 class="modal-title fw-bold">
+                    <i class="bi bi-clipboard-plus text-white me-2"></i> Stock Adjustment
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                @if($adjustmentProductId)
+                <div class="card mb-4">
+                    <div class="card-header bg-light">
+                        <h6 class="card-title mb-0">
+                            <i class="bi bi-box me-2"></i> Product Information
+                        </h6>
                     </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <strong>Product:</strong> {{ $adjustmentProductName }}
+                            </div>
+                            <div class="col-md-3">
+                                <strong>Available Stock:</strong>
+                                <span class="badge bg-success">{{ $adjustmentAvailableStock }}</span>
+                            </div>
+                            <div class="col-md-3">
+                                <strong>Damage Stock:</strong>
+                                <span class="badge bg-danger">{{ $adjustmentDamageStock }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-                    <!-- Body -->
-                    <div class="modal-body p-0">
-                        @if($historyProductId)
-
-                        <!-- Tabs -->
-                        <div class="border-bottom bg-light">
-                            <ul class="nav nav-tabs border-0 px-3" role="tablist">
-                                <li class="nav-item">
-                                    <button class="nav-link {{ $historyTab === 'sales' ? 'active' : '' }}"
-                                        wire:click="switchHistoryTab('sales')" type="button">
-                                        Sales <span class="badge bg-primary ms-1">{{ count($salesHistory ?? []) }}</span>
-                                    </button>
-                                </li>
-                                <li class="nav-item">
-                                    <button class="nav-link {{ $historyTab === 'purchases' ? 'active' : '' }}"
-                                        wire:click="switchHistoryTab('purchases')" type="button">
-                                        Purchases <span class="badge bg-success ms-1">{{ count($purchasesHistory ?? []) }}</span>
-                                    </button>
-                                </li>
-                                <li class="nav-item">
-                                    <button class="nav-link {{ $historyTab === 'returns' ? 'active' : '' }}"
-                                        wire:click="switchHistoryTab('returns')" type="button">
-                                        Returns <span class="badge bg-warning ms-1">{{ count($returnsHistory ?? []) }}</span>
-                                    </button>
-                                </li>
-                                <li class="nav-item">
-                                    <button class="nav-link {{ $historyTab === 'quotations' ? 'active' : '' }}"
-                                        wire:click="switchHistoryTab('quotations')" type="button">
-                                        Quotations <span class="badge bg-info ms-1">{{ count($quotationsHistory ?? []) }}</span>
-                                    </button>
-                                </li>
+                <div class="card">
+                    <div class="card-header bg-light">
+                        <h6 class="card-title mb-0">
+                            <i class="bi bi-gear me-2"></i> Adjustment Details
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-info border-0 mb-1">
+                            <i class="bi bi-info-circle me-2"></i>
+                            <strong>Note:</strong>
+                            <ul class="mb-0 mt-2">
+                                <li><strong>Add Damage:</strong> Increases damage stock and decreases available stock from batches (FIFO)</li>
+                                <li><strong>Adjust Available:</strong> Increases available stock and adds to oldest batch</li>
                             </ul>
                         </div>
 
-                        <!-- Tab Content -->
-                        <div class="tab-content p-4" wire:key="tab-{{ $historyTab }}" style="max-height: 500px; overflow-y: auto;">
-                            @if($historyTab === 'sales')
-                            @include('livewire.admin.partials.sales-history')
-                            @elseif($historyTab === 'purchases')
-                            @include('livewire.admin.partials.purchases-history')
-                            @elseif($historyTab === 'returns')
-                            @include('livewire.admin.partials.returns-history')
-                            @elseif($historyTab === 'quotations')
-                            @include('livewire.admin.partials.quotations-history')
-                            @endif
-                        </div>
+                        <div class="row">
+                            {{-- Damage Stock Input --}}
+                            <div class="col-md-6">
+                                <div class="mb-1">
+                                    <label for="damageQuantity" class="form-label fw-semibold">
+                                        <i class="bi bi-exclamation-triangle text-danger me-1"></i> Damage Quantity:
+                                    </label>
+                                    <input type="number" class="form-control" id="damageQuantity"
+                                        wire:model="damageQuantity" min="1"
+                                        placeholder="Enter damage quantity">
+                                    @error('damageQuantity')
+                                    <span class="text-danger small">* {{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <button type="button" class="btn btn-danger w-100" wire:click="addDamageStock">
+                                    <span wire:loading.remove wire:target="addDamageStock">
+                                        <i class="bi bi-exclamation-triangle me-2"></i>Add Damage Stock
+                                    </span>
+                                    <span wire:loading wire:target="addDamageStock">
+                                        <i class="spinner-border spinner-border-sm me-2"></i>Processing...
+                                    </span>
+                                </button>
+                                <small class="text-muted d-block mt-2">
+                                    Deducts from available stock using FIFO and updates prices
+                                </small>
+                            </div>
 
-                        @else
-                        <div class="text-center py-5">
-                            <i class="bi bi-exclamation-circle text-muted" style="font-size: 3rem;"></i>
-                            <p class="text-muted mt-3 fs-5">Product not found or not loaded.</p>
+                            {{-- Available Stock Input --}}
+                            <div class="col-md-6">
+                                <div class="mb-1">
+                                    <label for="availableQuantity" class="form-label fw-semibold">
+                                        <i class="bi bi-box-seam text-success me-1"></i> Available Quantity:
+                                    </label>
+                                    <input type="number" class="form-control" id="availableQuantity"
+                                        wire:model="availableQuantity" min="1"
+                                        placeholder="Enter quantity to add">
+                                    @error('availableQuantity')
+                                    <span class="text-danger small">* {{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <button type="button" class="btn btn-success w-100" wire:click="adjustAvailableStock">
+                                    <span wire:loading.remove wire:target="adjustAvailableStock">
+                                        <i class="bi bi-plus-circle me-2"></i>Adjust Available Stock
+                                    </span>
+                                    <span wire:loading wire:target="adjustAvailableStock">
+                                        <i class="spinner-border spinner-border-sm me-2"></i>Processing...
+                                    </span>
+                                </button>
+                                <small class="text-muted d-block mt-2">
+                                    Increases available stock and adds to batch
+                                </small>
+                            </div>
                         </div>
-                        @endif
-                    </div>
-
-                    <!-- Footer -->
-                    <div class="modal-footer border-0 bg-light">
-                        <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">
-                            <i class="bi bi-x-circle me-2"></i>Close
-                        </button>
                     </div>
                 </div>
+                @endif
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
-
-
-
     </div>
+</div>
 
-    @push('scripts')
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const tabs = document.querySelectorAll('.content-tab');
-            tabs.forEach(tab => {
-                tab.addEventListener('click', function() {
-                    tabs.forEach(t => t.classList.remove('active'));
-                    this.classList.add('active');
-                    document.querySelectorAll('.tab-content').forEach(content => {
-                        content.classList.remove('active');
-                    });
-                    const tabId = this.getAttribute('data-tab');
-                    const targetElement = document.getElementById(tabId);
-                    if (targetElement) {
-                        targetElement.classList.add('active');
-                    }
+<!-- ✅ Product History Modal (single copy only) -->
+<div wire:ignore.self class="modal fade" id="productHistoryModal" tabindex="-1"
+    aria-labelledby="productHistoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content border-0 shadow-lg">
+
+            <!-- Header -->
+            <div class="modal-header border-0 text-white"
+                style="background: linear-gradient(135deg, #000000 0%, #000000 100%);">
+                <h5 class="modal-title fw-bold">
+                    <i class="bi bi-clock-history me-2"></i>
+                    Product History - {{ $historyProductName ?? 'Loading...' }}
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+
+            <!-- Body -->
+            <div class="modal-body p-0">
+                @if($historyProductId)
+
+                <!-- Tabs -->
+                <div class="border-bottom bg-light">
+                    <ul class="nav nav-tabs border-0 px-3" role="tablist">
+                        <li class="nav-item">
+                            <button class="nav-link {{ $historyTab === 'sales' ? 'active' : '' }}"
+                                wire:click="switchHistoryTab('sales')" type="button">
+                                Sales <span class="badge bg-primary ms-1">{{ count($salesHistory ?? []) }}</span>
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link {{ $historyTab === 'purchases' ? 'active' : '' }}"
+                                wire:click="switchHistoryTab('purchases')" type="button">
+                                Purchases <span class="badge bg-success ms-1">{{ count($purchasesHistory ?? []) }}</span>
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link {{ $historyTab === 'returns' ? 'active' : '' }}"
+                                wire:click="switchHistoryTab('returns')" type="button">
+                                Returns <span class="badge bg-warning ms-1">{{ count($returnsHistory ?? []) }}</span>
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link {{ $historyTab === 'quotations' ? 'active' : '' }}"
+                                wire:click="switchHistoryTab('quotations')" type="button">
+                                Quotations <span class="badge bg-info ms-1">{{ count($quotationsHistory ?? []) }}</span>
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Tab Content -->
+                <div class="tab-content p-4" wire:key="tab-{{ $historyTab }}" style="max-height: 500px; overflow-y: auto;">
+                    @if($historyTab === 'sales')
+                    @include('livewire.admin.partials.sales-history')
+                    @elseif($historyTab === 'purchases')
+                    @include('livewire.admin.partials.purchases-history')
+                    @elseif($historyTab === 'returns')
+                    @include('livewire.admin.partials.returns-history')
+                    @elseif($historyTab === 'quotations')
+                    @include('livewire.admin.partials.quotations-history')
+                    @endif
+                </div>
+
+                @else
+                <div class="text-center py-5">
+                    <i class="bi bi-exclamation-circle text-muted" style="font-size: 3rem;"></i>
+                    <p class="text-muted mt-3 fs-5">Product not found or not loaded.</p>
+                </div>
+                @endif
+            </div>
+
+            <!-- Footer -->
+            <div class="modal-footer border-0 bg-light">
+                <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle me-2"></i>Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+</div>
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const tabs = document.querySelectorAll('.content-tab');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                tabs.forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
                 });
-            });
-
-            Livewire.on('refreshPage', () => {
-                setTimeout(() => {
-                    window.location.reload();
-                }, 1500); // Refresh after 1.5 seconds to show success message
-            });
-
-            // Close modals when Livewire operations complete
-            Livewire.on('closeModal', (modalId) => {
-                const modal = bootstrap.Modal.getInstance(document.getElementById(modalId));
-                if (modal) {
-                    modal.hide();
+                const tabId = this.getAttribute('data-tab');
+                const targetElement = document.getElementById(tabId);
+                if (targetElement) {
+                    targetElement.classList.add('active');
                 }
             });
+        });
 
-            // Real-time validation for stock adjustment
-            Livewire.on('adjustmentValidation', (data) => {
-                if (data.error) {
-                    Swal.fire('Error!', data.error, 'error');
+        // Auto-focus barcode input when Create Product modal opens
+        const createModal = document.getElementById('createProductModal');
+        if (createModal) {
+            createModal.addEventListener('shown.bs.modal', function() {
+                const barcodeInput = document.getElementById('barcode_input');
+                if (barcodeInput) {
+                    setTimeout(() => barcodeInput.focus(), 100);
                 }
             });
+        }
 
-            // Handle history tab switching - with console logging
-            Livewire.on('historyTabSwitched', (data) => {
-                console.log('✅ Tab switched to:', data);
+        Livewire.on('refreshPage', () => {
+            setTimeout(() => {
+                window.location.reload();
+            }, 1500); // Refresh after 1.5 seconds to show success message
+        });
 
-                // Log the current state
-                const modal = document.getElementById('productHistoryModal');
-                if (modal) {
-                    const activeTabs = modal.querySelectorAll('.tab-pane.show.active');
-                    console.log('📊 Active tab panes:', activeTabs.length);
-                    activeTabs.forEach(tab => {
-                        console.log('  - Tab ID:', tab.id);
-                    });
+        // Close modals when Livewire operations complete
+        Livewire.on('closeModal', (modalId) => {
+            const modal = bootstrap.Modal.getInstance(document.getElementById(modalId));
+            if (modal) {
+                modal.hide();
+            }
+        });
 
-                    const allTabs = modal.querySelectorAll('.tab-pane');
-                    console.log('📋 Total tab panes:', allTabs.length);
-                }
-            });
+        // Real-time validation for stock adjustment
+        Livewire.on('adjustmentValidation', (data) => {
+            if (data.error) {
+                Swal.fire('Error!', data.error, 'error');
+            }
+        });
 
-            // Show history modal when event is dispatched
-            Livewire.on('show-history-modal', () => {
-                console.log('📂 Opening product history modal...');
-                const historyModalEl = document.getElementById('productHistoryModal');
-                if (historyModalEl) {
-                    const historyModal = new bootstrap.Modal(historyModalEl, {
-                        backdrop: 'static',
-                        keyboard: false
-                    });
-                    historyModal.show();
-                    console.log('✅ Modal opened successfully');
-                } else {
-                    console.error('❌ Product History Modal element not found!');
-                }
-            });
+        // Handle history tab switching - with console logging
+        Livewire.on('historyTabSwitched', (data) => {
+            console.log('✅ Tab switched to:', data);
 
-            // Error handler for Livewire
-            Livewire.on('swal:modal', (data) => {
-                console.error('❌ Livewire Error:', data);
-                if (data && data.length > 0) {
-                    const params = data[0];
-                    Swal.fire({
-                        icon: params.type || 'error',
-                        title: params.title || 'Error',
-                        text: params.text || 'An error occurred',
-                    });
-                }
-            });
-
-            // Log when modal is actually shown
-            const historyModal = document.getElementById('productHistoryModal');
-            if (historyModal) {
-                historyModal.addEventListener('shown.bs.modal', function() {
-                    console.log('📊 Product History Modal is now visible');
+            // Log the current state
+            const modal = document.getElementById('productHistoryModal');
+            if (modal) {
+                const activeTabs = modal.querySelectorAll('.tab-pane.show.active');
+                console.log('📊 Active tab panes:', activeTabs.length);
+                activeTabs.forEach(tab => {
+                    console.log('  - Tab ID:', tab.id);
                 });
 
-                historyModal.addEventListener('hidden.bs.modal', function() {
-                    console.log('🔒 Product History Modal closed');
+                const allTabs = modal.querySelectorAll('.tab-pane');
+                console.log('📋 Total tab panes:', allTabs.length);
+            }
+        });
+
+        // Show history modal when event is dispatched
+        Livewire.on('show-history-modal', () => {
+            console.log('📂 Opening product history modal...');
+            const historyModalEl = document.getElementById('productHistoryModal');
+            if (historyModalEl) {
+                const historyModal = new bootstrap.Modal(historyModalEl, {
+                    backdrop: 'static',
+                    keyboard: false
+                });
+                historyModal.show();
+                console.log('✅ Modal opened successfully');
+            } else {
+                console.error('❌ Product History Modal element not found!');
+            }
+        });
+
+        // Error handler for Livewire
+        Livewire.on('swal:modal', (data) => {
+            console.error('❌ Livewire Error:', data);
+            if (data && data.length > 0) {
+                const params = data[0];
+                Swal.fire({
+                    icon: params.type || 'error',
+                    title: params.title || 'Error',
+                    text: params.text || 'An error occurred',
                 });
             }
+        });
 
-            // Global error handler
-            window.addEventListener('error', function(event) {
-                console.error('🚨 Global Error:', event.error);
+        // Log when modal is actually shown
+        const historyModal = document.getElementById('productHistoryModal');
+        if (historyModal) {
+            historyModal.addEventListener('shown.bs.modal', function() {
+                console.log('📊 Product History Modal is now visible');
             });
 
-            console.log('✅ Product History scripts loaded successfully');
+            historyModal.addEventListener('hidden.bs.modal', function() {
+                console.log('🔒 Product History Modal closed');
+            });
+        }
+
+        // Global error handler
+        window.addEventListener('error', function(event) {
+            console.error('🚨 Global Error:', event.error);
         });
-    </script>
-    @endpush
+
+        console.log('✅ Product History scripts loaded successfully');
+    });
+</script>
+@endpush
 </div>

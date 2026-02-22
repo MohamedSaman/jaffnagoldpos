@@ -1093,7 +1093,7 @@
                         </ul>
                     </div>
                 </li>
-                <li class="nav-item">
+                <!-- <li class="nav-item">
                     <a class="nav-link dropdown-toggle" href="#purchaseSubmenu" data-bs-toggle="collapse" role="button"
                         aria-expanded="false" aria-controls="purchaseSubmenu">
                         <i class="bi bi-truck"></i><span>Purchase</span>
@@ -1112,7 +1112,7 @@
                             </li>
                         </ul>
                     </div>
-                </li>
+                </li> -->
                 <li class="nav-item">
                     <a class="nav-link dropdown-toggle" href="#paymentSubmenu" data-bs-toggle="collapse" role="button"
                         aria-expanded="false" aria-controls="paymentSubmenu">
@@ -1211,7 +1211,7 @@
                 </li>
                 <!-- //add financing -->
                 
-                <li class="nav-item">
+                <!-- <li class="nav-item">
                     <a class="nav-link dropdown-toggle" href="#staffSubmenu" data-bs-toggle="collapse" role="button"
                         aria-expanded="false" aria-controls="staffSubmenu">
                         <i class="bi bi-file-earmark-text"></i> <span>Staff Management</span>
@@ -1257,7 +1257,7 @@
                             
                         </ul>
                     </div>
-                </li>
+                </li> -->
                 
                 
                 <li>
@@ -1265,7 +1265,7 @@
                         <i class="bi bi-file-earmark-bar-graph"></i> <span>Day Summary</span>
                     </a>
                 </li>
-                <li>
+                <!-- <li>
                     <a class="nav-link" href="{{ route('admin.reports') }}">
                         <i class="bi bi-file-earmark-bar-graph"></i> <span>Reports</span>
                     </a>
@@ -1284,7 +1284,7 @@
                     <a class="nav-link" href="{{ route('admin.settings') }}">
                         <i class="bi bi-gear"></i> <span>Settings</span>
                     </a>
-                </li>
+                </li> -->
             </ul>
         </div>
 

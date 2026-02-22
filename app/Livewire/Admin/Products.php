@@ -45,6 +45,13 @@ class Products extends Component
     public $code, $name, $model, $brand, $category, $image, $description, $barcode, $status, $supplier;
     public $supplier_price, $retail_price, $wholesale_price, $distributor_price, $discount_price, $available_stock, $damage_stock;
 
+    // Barcode lookup mode: 'create' or 'edit'
+    public $barcodeMode = 'create';
+    public $barcodeLookupProductId = null;
+
+    // Purchase date for auto-creating purchase records
+    public $purchaseDate;
+
     // Pricing mode: 'single' or 'variant'
     public $pricing_mode = 'single';
 
@@ -159,7 +166,6 @@ class Products extends Component
                     'supplier_price' => 0,
                     'retail_price' => 0,
                     'wholesale_price' => 0,
-                    'distributor_price' => 0,
                     'stock' => 0,
                 ];
             }
@@ -242,8 +248,11 @@ class Products extends Component
         $this->supplier_price = 0;
         $this->retail_price = 0;
         $this->wholesale_price = 0;
-        $this->distributor_price = 0;
+        $this->distributor_price = null;
         $this->discount_price = 0;
+
+        // Set default purchase date to today
+        $this->purchaseDate = date('Y-m-d');
     }
 
     /**
@@ -426,16 +435,25 @@ class Products extends Component
     // 🔹 Validation Rules for Create
     protected function rules()
     {
+        // If in barcode edit mode, adjust unique rules to exclude current product
+        $excludeId = $this->barcodeLookupProductId;
+        $codeUniqueRule = $excludeId
+            ? 'required|string|max:100|unique:product_details,code,' . $excludeId
+            : 'required|string|max:100|unique:product_details,code';
+        $barcodeUniqueRule = $excludeId
+            ? 'nullable|string|max:255|unique:product_details,barcode,' . $excludeId
+            : 'nullable|string|max:255|unique:product_details,barcode';
+
         $rules = [
             'name' => 'required|string|max:255',
-            'code' => 'required|string|max:100|unique:product_details,code',
+            'code' => $codeUniqueRule,
             'model' => 'nullable|string|max:255',
             'brand' => 'required|exists:brand_lists,id',
             'category' => 'required|exists:category_lists,id',
             'supplier' => 'nullable|exists:product_suppliers,id',
             'image' => 'nullable|string|max:10000',
             'description' => 'nullable|string|max:1000',
-            'barcode' => 'nullable|string|max:255|unique:product_details,barcode',
+            'barcode' => $barcodeUniqueRule,
             'pricing_mode' => 'required|in:single,variant',
         ];
 
@@ -445,7 +463,6 @@ class Products extends Component
                 'supplier_price' => 'required|numeric|min:0',
                 'retail_price' => 'required|numeric|min:0|gte:supplier_price',
                 'wholesale_price' => 'required|numeric|min:0|gte:supplier_price',
-                'distributor_price' => 'nullable|numeric|min:0|gte:supplier_price',
                 'discount_price' => 'nullable|numeric|min:0|lte:retail_price',
                 'available_stock' => 'required|integer|min:0',
                 'damage_stock' => 'nullable|integer|min:0',
@@ -467,7 +484,6 @@ class Products extends Component
                         $rules["variant_prices.{$k}.supplier_price"] = 'required|numeric|min:0';
                         $rules["variant_prices.{$k}.retail_price"] = "required|numeric|min:0|gte:variant_prices.{$k}.supplier_price";
                         $rules["variant_prices.{$k}.wholesale_price"] = "required|numeric|min:0|gte:variant_prices.{$k}.supplier_price";
-                        $rules["variant_prices.{$k}.distributor_price"] = 'nullable|numeric|min:0';
                         $rules["variant_prices.{$k}.stock"] = 'required|integer|min:0';
                     }
                 }
@@ -520,7 +536,6 @@ class Products extends Component
             'supplier_price' => 'supplier price',
             'retail_price' => 'retail price',
             'wholesale_price' => 'wholesale price',
-            'distributor_price' => 'distributor price',
             'stock' => 'stock',
         ];
 
@@ -529,7 +544,6 @@ class Products extends Component
             $attrs["variant_prices.{$k}.supplier_price"] = "Supplier price ({$label})";
             $attrs["variant_prices.{$k}.retail_price"] = "Retail price ({$label})";
             $attrs["variant_prices.{$k}.wholesale_price"] = "Wholesale price ({$label})";
-            $attrs["variant_prices.{$k}.distributor_price"] = "Distributor price ({$label})";
             $attrs["variant_prices.{$k}.stock"] = "Stock ({$label})";
         }
 
@@ -544,8 +558,361 @@ class Products extends Component
 
         // Set default values (like walking customer in sales system)
         $this->setDefaultValues();
+        $this->barcodeMode = 'create';
+        $this->barcodeLookupProductId = null;
 
-        $this->js("$('#createProductModal').modal('show')");
+        $this->js("$('#createProductModal').modal('show'); setTimeout(() => { document.getElementById('barcode_input') && document.getElementById('barcode_input').focus(); }, 500);");
+    }
+
+    /**
+     * Auto-lookup barcode when it changes (debounced from blade).
+     * Triggers lookupBarcode automatically without needing a button.
+     */
+    public function updatedBarcode($value)
+    {
+        $this->lookupBarcode();
+    }
+
+    /**
+     * Lookup product by barcode. If exists, load into form as edit mode.
+     * If not, stay in create mode.
+     */
+    public function lookupBarcode()
+    {
+        if (empty($this->barcode)) {
+            $this->barcodeMode = 'create';
+            $this->barcodeLookupProductId = null;
+            return;
+        }
+
+        $product = ProductDetail::with(['price', 'stock', 'variant', 'prices', 'stocks'])
+            ->where('barcode', $this->barcode)
+            ->first();
+
+        if ($product) {
+            // Product found - switch to edit mode
+            $this->barcodeMode = 'edit';
+            $this->barcodeLookupProductId = $product->id;
+
+            // Load product data into create form fields
+            $this->code = $product->code;
+            $this->name = $product->name;
+            $this->model = $product->model;
+            $this->brand = $product->brand_id;
+            $this->category = $product->category_id;
+            $this->image = $product->image;
+            $this->description = $product->description;
+            $this->supplier = $product->supplier_id;
+            $this->status = $product->status;
+
+            // Load pricing
+            if ($product->price) {
+                $this->supplier_price = $product->price->supplier_price ?? 0;
+                $this->retail_price = $product->price->retail_price ?? 0;
+                $this->wholesale_price = $product->price->wholesale_price ?? 0;
+                $this->discount_price = $product->price->discount_price ?? 0;
+            }
+
+            // Load stock - reset to 0 so user enters NEW quantity to add (will be incremented)
+            $this->available_stock = 0;
+            $this->damage_stock = 0;
+
+            // Handle variants
+            if ($product->variant_id) {
+                $this->pricing_mode = 'variant';
+                $this->variant_id = $product->variant_id;
+                $values = $product->variant ? ($product->variant->variant_values ?? []) : [];
+                $sorted = $this->sortVariantValues($values);
+                $this->variant_prices = [];
+                $this->variant_key_map = [];
+                foreach ($sorted as $val) {
+                    $k = $this->sanitizeVariantKey($val);
+                    $this->variant_key_map[$k] = (string) $val;
+                    $price = $product->prices->firstWhere('variant_value', $val);
+                    $stock = $product->stocks->firstWhere('variant_value', $val);
+                    $this->variant_prices[$k] = [
+                        'supplier_price' => $price->supplier_price ?? 0,
+                        'retail_price' => $price->retail_price ?? 0,
+                        'wholesale_price' => $price->wholesale_price ?? 0,
+                        'distributor_price' => $price->distributor_price ?? 0,
+                        'stock' => 0, // Reset to 0 so user enters NEW quantity to add
+                    ];
+                }
+            } else {
+                $this->pricing_mode = 'single';
+            }
+
+            $this->js("Swal.fire({icon: 'info', title: 'Product Found', text: 'Barcode matched an existing product. You are now in Update mode.', timer: 2000, showConfirmButton: false})");
+        } else {
+            // Not found - create mode
+            $this->barcodeMode = 'create';
+            $this->barcodeLookupProductId = null;
+        }
+    }
+
+    /**
+     * Save product - handles both create and update via barcode lookup
+     */
+    public function saveProduct()
+    {
+        if ($this->barcodeMode === 'edit' && $this->barcodeLookupProductId) {
+            $this->updateProductFromBarcode();
+        } else {
+            $this->createProduct();
+        }
+    }
+
+    /**
+     * Update product found via barcode lookup
+     */
+    private function updateProductFromBarcode()
+    {
+        try {
+            DB::beginTransaction();
+
+            $product = ProductDetail::findOrFail($this->barcodeLookupProductId);
+
+            // Update product details
+            $product->update([
+                'code' => $this->code,
+                'name' => $this->name,
+                'model' => $this->model,
+                'brand_id' => $this->brand,
+                'category_id' => $this->category,
+                'image' => $this->image ?: $product->image,
+                'description' => $this->description,
+                'barcode' => $this->barcode,
+                'status' => $this->status ?? 'active',
+                'supplier_id' => $this->supplier,
+            ]);
+
+            if ($this->pricing_mode === 'single') {
+                // Update single pricing
+                ProductPrice::updateOrCreate(
+                    [
+                        'product_id' => $product->id,
+                        'pricing_mode' => 'single',
+                        'variant_id' => null,
+                        'variant_value' => null,
+                    ],
+                    [
+                        'supplier_price' => $this->supplier_price ?? 0,
+                        'selling_price' => $this->retail_price ?? 0,
+                        'retail_price' => $this->retail_price ?? 0,
+                        'wholesale_price' => $this->wholesale_price ?? 0,
+                        'distributor_price' => null,
+                        'discount_price' => $this->discount_price ?? 0,
+                    ]
+                );
+
+                // Update stock - INCREMENT existing stock instead of replacing
+                $existingStock = ProductStock::where('product_id', $product->id)
+                    ->whereNull('variant_id')
+                    ->whereNull('variant_value')
+                    ->first();
+
+                if ($existingStock) {
+                    $newAvailable = ($existingStock->available_stock ?? 0) + ($this->available_stock ?? 0);
+                    $newDamage = ($existingStock->damage_stock ?? 0) + ($this->damage_stock ?? 0);
+                    $existingStock->update([
+                        'available_stock' => $newAvailable,
+                        'damage_stock' => $newDamage,
+                        'total_stock' => $newAvailable + $newDamage,
+                    ]);
+                } else {
+                    ProductStock::create([
+                        'product_id' => $product->id,
+                        'variant_id' => null,
+                        'variant_value' => null,
+                        'available_stock' => $this->available_stock ?? 0,
+                        'damage_stock' => $this->damage_stock ?? 0,
+                        'total_stock' => ($this->available_stock ?? 0) + ($this->damage_stock ?? 0),
+                        'sold_count' => 0,
+                        'restocked_quantity' => 0,
+                    ]);
+                }
+            } else {
+                // Variant mode - update prices and INCREMENT stock for each variant
+                $variant = ProductVariant::find($this->variant_id);
+                if ($variant) {
+                    $values = is_array($variant->variant_values) ? $variant->variant_values : [];
+                    foreach ($this->sortVariantValues($values) as $val) {
+                        $k = $this->sanitizeVariantKey($val);
+                        $priceData = $this->variant_prices[$k] ?? [];
+                        $variantValue = trim((string)$val);
+
+                        // Update price
+                        ProductPrice::updateOrCreate(
+                            [
+                                'product_id' => $product->id,
+                                'variant_id' => $variant->id,
+                                'variant_value' => $variantValue,
+                            ],
+                            [
+                                'pricing_mode' => 'variant',
+                                'supplier_price' => $priceData['supplier_price'] ?? 0,
+                                'selling_price' => $priceData['retail_price'] ?? 0,
+                                'retail_price' => $priceData['retail_price'] ?? 0,
+                                'wholesale_price' => $priceData['wholesale_price'] ?? 0,
+                                'distributor_price' => null,
+                                'discount_price' => 0,
+                            ]
+                        );
+
+                        // INCREMENT stock
+                        $addQty = $priceData['stock'] ?? 0;
+                        $existingStock = ProductStock::where('product_id', $product->id)
+                            ->where('variant_id', $variant->id)
+                            ->where('variant_value', $variantValue)
+                            ->first();
+
+                        if ($existingStock) {
+                            $newAvailable = ($existingStock->available_stock ?? 0) + $addQty;
+                            $existingStock->update([
+                                'available_stock' => $newAvailable,
+                                'total_stock' => $newAvailable + ($existingStock->damage_stock ?? 0),
+                            ]);
+                        } else {
+                            ProductStock::create([
+                                'product_id' => $product->id,
+                                'variant_id' => $variant->id,
+                                'variant_value' => $variantValue,
+                                'available_stock' => $addQty,
+                                'damage_stock' => 0,
+                                'total_stock' => $addQty,
+                                'sold_count' => 0,
+                                'restocked_quantity' => 0,
+                            ]);
+                        }
+                    }
+                }
+            }
+
+            // ── Auto-create Purchase Order + Items ──
+            $this->createPurchaseRecord($product);
+
+            DB::commit();
+
+            $this->resetForm();
+            $this->js("$('#createProductModal').modal('hide')");
+            $this->js("Swal.fire('Success!', 'Product updated successfully!', 'success')");
+
+            ProductApiController::clearCache();
+            $this->dispatch('refreshPage');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Product update via barcode failed: ' . $e->getMessage());
+            $this->js("Swal.fire('Error!', 'Failed to update product: " . addslashes($e->getMessage()) . "', 'error')");
+        }
+    }
+
+    /**
+     * Auto-create a PurchaseOrder and PurchaseOrderItems when saving a product.
+     * Status = 'received', due_amount = 0 (Cash Paid).
+     */
+    private function createPurchaseRecord($product)
+    {
+        $orderDate = $this->purchaseDate ?: date('Y-m-d');
+        $supplierId = $this->supplier ?? $this->defaultSupplierId;
+
+        // Generate order code: PO-YYYYMMDD-XXXXX
+        $orderCode = 'PO-' . date('Ymd', strtotime($orderDate)) . '-' . strtoupper(\Illuminate\Support\Str::random(5));
+
+        $totalAmount = 0;
+
+        // Calculate total amount based on pricing mode
+        if ($this->pricing_mode === 'single') {
+            $qty = $this->available_stock ?? 0;
+            $unitPrice = $this->supplier_price ?? 0;
+            $totalAmount = $qty * $unitPrice;
+        } else {
+            // Variant mode - sum all variant items
+            foreach ($this->variant_prices as $key => $priceData) {
+                $qty = $priceData['stock'] ?? 0;
+                $unitPrice = $priceData['supplier_price'] ?? 0;
+                $totalAmount += $qty * $unitPrice;
+            }
+        }
+
+        // Create the purchase order
+        $purchaseOrder = PurchaseOrder::create([
+            'order_code' => $orderCode,
+            'supplier_id' => $supplierId,
+            'order_date' => $orderDate,
+            'received_date' => $orderDate,
+            'status' => 'received',
+            'total_amount' => $totalAmount,
+            'due_amount' => 0, // Cash Paid
+            'discount_amount' => 0,
+        ]);
+
+        // Create purchase order items
+        if ($this->pricing_mode === 'single') {
+            $qty = $this->available_stock ?? 0;
+            if ($qty > 0) {
+                PurchaseOrderItem::create([
+                    'order_id' => $purchaseOrder->id,
+                    'product_id' => $product->id,
+                    'variant_id' => null,
+                    'variant_value' => null,
+                    'quantity' => $qty,
+                    'received_quantity' => $qty,
+                    'unit_price' => $this->supplier_price ?? 0,
+                    'discount' => 0,
+                    'discount_type' => 'fixed',
+                    'status' => 'received',
+                ]);
+            }
+        } else {
+            // Variant mode
+            $variant = ProductVariant::find($this->variant_id);
+            if ($variant) {
+                $values = is_array($variant->variant_values) ? $variant->variant_values : [];
+                foreach ($this->sortVariantValues($values) as $val) {
+                    $k = $this->sanitizeVariantKey($val);
+                    $priceData = $this->variant_prices[$k] ?? [];
+                    $qty = $priceData['stock'] ?? 0;
+                    if ($qty > 0) {
+                        PurchaseOrderItem::create([
+                            'order_id' => $purchaseOrder->id,
+                            'product_id' => $product->id,
+                            'variant_id' => $variant->id,
+                            'variant_value' => trim((string)$val),
+                            'quantity' => $qty,
+                            'received_quantity' => $qty,
+                            'unit_price' => $priceData['supplier_price'] ?? 0,
+                            'discount' => 0,
+                            'discount_type' => 'fixed',
+                            'status' => 'received',
+                        ]);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Auto-calculate retail and wholesale prices from supplier price.
+     * Retail = (Supplier × 2) - 10% = Supplier × 1.8
+     * Wholesale = (Supplier × 2) - 25% = Supplier × 1.5
+     */
+    public function updatedSupplierPrice($value)
+    {
+        if (is_numeric($value) && $value > 0) {
+            $this->retail_price = round($value * 1.8, 2);
+            $this->wholesale_price = round($value * 1.5, 2);
+        }
+    }
+
+    /**
+     * Auto-calculate edit retail and wholesale prices from edit supplier price.
+     */
+    public function updatedEditSupplierPrice($value)
+    {
+        if (is_numeric($value) && $value > 0) {
+            $this->editRetailPrice = round($value * 1.8, 2);
+            $this->editWholesalePrice = round($value * 1.5, 2);
+        }
     }
 
     // 🔹 Create Product
@@ -601,7 +968,7 @@ class Products extends Component
                     'selling_price' => $this->retail_price ?? $this->supplier_price ?? 0,
                     'retail_price' => $this->retail_price ?? 0,
                     'wholesale_price' => $this->wholesale_price ?? 0,
-                    'distributor_price' => $this->distributor_price ?? 0,
+                    'distributor_price' => null,
                     'discount_price' => $this->discount_price ?? 0,
                 ]);
 
@@ -656,7 +1023,7 @@ class Products extends Component
                             'selling_price' => $priceData['retail_price'] ?? 0,
                             'retail_price' => $priceData['retail_price'] ?? 0,
                             'wholesale_price' => $priceData['wholesale_price'] ?? 0,
-                            'distributor_price' => $priceData['distributor_price'] ?? 0,
+                            'distributor_price' => null,
                             'discount_price' => 0,
                         ]);
 
@@ -676,6 +1043,9 @@ class Products extends Component
                     }
                 }
             }
+
+            // ── Auto-create Purchase Order + Items ──
+            $this->createPurchaseRecord($product);
 
             DB::commit();
 
@@ -808,6 +1178,9 @@ class Products extends Component
         $this->variant_id = null;
         $this->variant_prices = [];
         $this->variant_key_map = [];
+        $this->barcodeMode = 'create';
+        $this->barcodeLookupProductId = null;
+        $this->purchaseDate = date('Y-m-d');
         $this->resetValidation();
     }
 
@@ -872,7 +1245,6 @@ class Products extends Component
                     'supplier_price' => $price->supplier_price ?? 0,
                     'retail_price' => $price->retail_price ?? 0,
                     'wholesale_price' => $price->wholesale_price ?? 0,
-                    'distributor_price' => $price->distributor_price ?? 0,
                     'stock' => $stock->available_stock ?? 0,
                 ];
             }
@@ -943,7 +1315,6 @@ class Products extends Component
                 $rules["variant_prices.{$k}.supplier_price"] = 'required|numeric|min:0';
                 $rules["variant_prices.{$k}.retail_price"] = "required|numeric|min:0";
                 $rules["variant_prices.{$k}.wholesale_price"] = "required|numeric|min:0";
-                $rules["variant_prices.{$k}.distributor_price"] = 'nullable|numeric|min:0';
                 $rules["variant_prices.{$k}.stock"] = 'required|integer|min:0';
             }
         }
@@ -1007,7 +1378,7 @@ class Products extends Component
                         'selling_price' => $this->editRetailPrice ?? 0,
                         'retail_price' => $this->editRetailPrice ?? 0,
                         'wholesale_price' => $this->editWholesalePrice ?? 0,
-                        'distributor_price' => 0,
+                        'distributor_price' => null,
                         'discount_price' => $this->editDiscountPrice ?? 0,
                     ]
                 );
@@ -1071,7 +1442,7 @@ class Products extends Component
                             'retail_price' => $vals['retail_price'] ?? 0,
                             'selling_price' => $vals['retail_price'] ?? 0,
                             'wholesale_price' => $vals['wholesale_price'] ?? 0,
-                            'distributor_price' => $vals['distributor_price'] ?? 0,
+                            'distributor_price' => null,
                             'discount_price' => 0,
                         ]
                     );

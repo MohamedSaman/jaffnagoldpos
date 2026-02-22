@@ -128,6 +128,11 @@ class StoreBilling extends Component
     public $pendingDueAmount = 0;
     public $autoPrintAfterSale = false;
 
+    // Walking Customer Details Modal
+    public $showWalkingCustomerModal = false;
+    public $walkingCustomerName = '';
+    public $walkingCustomerPhone = '';
+
     // Payment Modal Properties
     public $amountReceived = 0;
     public $paymentNotes = '';
@@ -1234,6 +1239,74 @@ class StoreBilling extends Component
     {
         if (strlen($this->search) >= 2) {
             $searchTerm = trim($this->search);
+
+            // ── Barcode Auto-Add: exact barcode match → add to cart automatically ──
+            $barcodeMatch = ProductDetail::where('barcode', $searchTerm)
+                ->where(function ($q) {
+                    $q->whereHas('stock', function ($sq) {
+                        $sq->where('available_stock', '>', 0);
+                    })->orWhereHas('stocks', function ($sq) {
+                        $sq->where('available_stock', '>', 0);
+                    });
+                })
+                ->with(['stock', 'price', 'stocks', 'prices', 'variant'])
+                ->first();
+
+            if ($barcodeMatch) {
+                // Build product array for addToCart
+                if (($barcodeMatch->variant_id ?? null) !== null && $barcodeMatch->stocks && $barcodeMatch->stocks->isNotEmpty()) {
+                    // For variant products, add the first variant with stock
+                    $stock = $barcodeMatch->stocks->first(fn($s) => ($s->available_stock ?? 0) > 0);
+                    if ($stock) {
+                        $priceRecord = $barcodeMatch->prices->firstWhere('variant_value', $stock->variant_value) ?? $barcodeMatch->price;
+                        $priceValue = $this->getPriceValue($priceRecord);
+                        $pendingQty = SaleItem::whereHas('sale', fn($q) => $q->where('status', 'pending'))
+                            ->where('product_id', $barcodeMatch->id)
+                            ->where('variant_value', $stock->variant_value)
+                            ->sum('quantity');
+                        $availableStock = max(0, ($stock->available_stock ?? 0) - $pendingQty);
+
+                        $productData = [
+                            'id' => $barcodeMatch->id . '::' . $stock->variant_value,
+                            'product_id' => $barcodeMatch->id,
+                            'variant_id' => $stock->variant_id,
+                            'variant_value' => $stock->variant_value,
+                            'name' => $barcodeMatch->name . ' ' . $stock->variant_value,
+                            'code' => $barcodeMatch->code,
+                            'image' => $barcodeMatch->image ?? '',
+                            'price' => $priceValue,
+                            'stock' => $availableStock,
+                            'pending' => $pendingQty,
+                        ];
+                        $this->addToCart($productData);
+                        return;
+                    }
+                } else {
+                    // Non-variant product
+                    $priceValue = $this->getPriceValue($barcodeMatch->price);
+                    $pendingQty = SaleItem::whereHas('sale', fn($q) => $q->where('status', 'pending'))
+                        ->where('product_id', $barcodeMatch->id)
+                        ->sum('quantity');
+                    $availableStock = max(0, ($barcodeMatch->stock->available_stock ?? 0) - $pendingQty);
+
+                    $productData = [
+                        'id' => $barcodeMatch->id,
+                        'product_id' => $barcodeMatch->id,
+                        'variant_id' => $barcodeMatch->variant_id ?? null,
+                        'variant_value' => null,
+                        'name' => $barcodeMatch->name,
+                        'code' => $barcodeMatch->code,
+                        'image' => $barcodeMatch->image ?? '',
+                        'price' => $priceValue,
+                        'stock' => $availableStock,
+                        'pending' => $pendingQty,
+                    ];
+                    $this->addToCart($productData);
+                    return;
+                }
+            }
+            // ── End Barcode Auto-Add ──
+
             $searchWords = explode(' ', $searchTerm);
 
             $matches = ProductDetail::where(function ($query) use ($searchTerm, $searchWords) {
@@ -1241,7 +1314,8 @@ class StoreBilling extends Component
                 $query->where(function ($q) use ($searchTerm) {
                     $q->where('name', 'like', "%{$searchTerm}%")
                         ->orWhere('code', 'like', "%{$searchTerm}%")
-                        ->orWhere('model', 'like', "%{$searchTerm}%");
+                        ->orWhere('model', 'like', "%{$searchTerm}%")
+                        ->orWhere('barcode', 'like', "%{$searchTerm}%");
                 })
                     // OR search by full term in variant values
                     ->orWhereHas('stocks', function ($q) use ($searchTerm) {
@@ -1871,6 +1945,61 @@ class StoreBilling extends Component
         if (!$this->selectedCustomer && !$this->customerId) {
             $this->setDefaultCustomer();
         }
+
+        // If walking customer, show details collection modal first
+        if ($this->selectedCustomer && $this->selectedCustomer->name === 'Walking Customer') {
+            $this->walkingCustomerName = '';
+            $this->walkingCustomerPhone = '';
+            $this->showWalkingCustomerModal = true;
+            return;
+        }
+
+        // Set default amount received for cash
+        if ($this->paymentMethod === 'cash') {
+            $this->amountReceived = $this->grandTotal;
+        }
+
+        // Open payment modal
+        $this->showPaymentModal = true;
+    }
+
+    /**
+     * Skip walking customer details and proceed to payment
+     */
+    public function skipWalkingCustomerDetails()
+    {
+        $this->showWalkingCustomerModal = false;
+        $this->walkingCustomerName = '';
+        $this->walkingCustomerPhone = '';
+
+        // Set default amount received for cash
+        if ($this->paymentMethod === 'cash') {
+            $this->amountReceived = $this->grandTotal;
+        }
+
+        // Open payment modal
+        $this->showPaymentModal = true;
+    }
+
+    /**
+     * Save walking customer details and proceed to payment
+     */
+    public function saveWalkingCustomerDetails()
+    {
+        // Store the details in the notes (will be included in the sale)
+        $customerInfo = '';
+        if (!empty($this->walkingCustomerName)) {
+            $customerInfo .= 'Customer: ' . $this->walkingCustomerName;
+        }
+        if (!empty($this->walkingCustomerPhone)) {
+            $customerInfo .= ($customerInfo ? ' | ' : '') . 'Phone: ' . $this->walkingCustomerPhone;
+        }
+
+        if (!empty($customerInfo)) {
+            $this->notes = $customerInfo . ($this->notes ? "\n" . $this->notes : '');
+        }
+
+        $this->showWalkingCustomerModal = false;
 
         // Set default amount received for cash
         if ($this->paymentMethod === 'cash') {
