@@ -7,8 +7,12 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use App\Models\Customer;
 use App\Models\ProductDetail;
+use App\Models\ProductPrice;
+use App\Models\ProductStock;
 use App\Models\Sale;
 use App\Models\SaleItem;
+use App\Models\DeliverySale;
+use App\Models\Payment;
 use App\Models\POSSession;
 use App\Services\FIFOStockService;
 use Illuminate\Support\Facades\Auth;
@@ -36,6 +40,9 @@ class SalesSystem extends Component
     public $customers = [];
     public $selectedCustomer = null;
 
+    // Customer Info Textarea (replaces dropdown)
+    public $customerInfo = '';
+
     // Customer Form (for new customer - only used in modal)
     public $customerName = '';
     public $customerPhone = '';
@@ -46,6 +53,10 @@ class SalesSystem extends Component
 
     // Sale Properties
     public $notes = '';
+
+    // Delivery Properties
+    public $deliveryMethod = 'Post';
+    public $paymentMethod = 'Cash on Delivery';
 
     // Discount Properties
     public $additionalDiscount = 0;
@@ -206,14 +217,17 @@ class SalesSystem extends Component
     public function updatedSearch()
     {
         if (strlen($this->search) >= 2) {
+            $items = [];
+
             if ($this->isStaff()) {
                 // For staff: only show their allocated products
-                $this->searchResults = \App\Models\StaffProduct::where('staff_id', auth()->id())
+                $staffProducts = \App\Models\StaffProduct::where('staff_id', auth()->id())
                     ->join('product_details', 'staff_products.product_id', '=', 'product_details.id')
                     ->where(function ($query) {
                         $query->where('product_details.name', 'like', '%' . $this->search . '%')
                             ->orWhere('product_details.code', 'like', '%' . $this->search . '%')
-                            ->orWhere('product_details.model', 'like', '%' . $this->search . '%');
+                            ->orWhere('product_details.model', 'like', '%' . $this->search . '%')
+                            ->orWhere('product_details.barcode', 'like', '%' . $this->search . '%');
                     })
                     ->select(
                         'product_details.id',
@@ -226,41 +240,99 @@ class SalesSystem extends Component
                         'staff_products.sold_quantity'
                     )
                     ->take(10)
-                    ->get()
-                    ->map(function ($product) {
-                        return [
-                            'id' => $product->id,
-                            'name' => $product->name,
-                            'code' => $product->code,
-                            'model' => $product->model,
-                            'price' => $product->price,
-                            'stock' => ($product->quantity - $product->sold_quantity),
-                            'sold' => $product->sold_quantity,
-                            'image' => $product->image
-                        ];
-                    });
+                    ->get();
+
+                foreach ($staffProducts as $product) {
+                    $items[] = [
+                        'id' => $product->id,
+                        'name' => $product->name,
+                        'code' => $product->code,
+                        'model' => $product->model,
+                        'price' => $product->price,
+                        'stock' => ($product->quantity - $product->sold_quantity),
+                        'sold' => $product->sold_quantity,
+                        'image' => $product->image,
+                        'variant_id' => null,
+                        'variant_value' => null,
+                    ];
+                }
             } else {
-                // For admin: show all products
-                $this->searchResults = ProductDetail::with(['stock', 'price'])
+                // For admin: show all products, including variants
+                $products = ProductDetail::with(['stock', 'price', 'variant', 'stocks', 'prices'])
                     ->where(function ($query) {
                         $query->where('name', 'like', '%' . $this->search . '%')
                             ->orWhere('code', 'like', '%' . $this->search . '%')
-                            ->orWhere('model', 'like', '%' . $this->search . '%');
+                            ->orWhere('model', 'like', '%' . $this->search . '%')
+                            ->orWhere('barcode', 'like', '%' . $this->search . '%');
                     })
-                    ->take(10)
-                    ->get()
-                    ->map(function ($product) {
-                        return [
+                    ->take(20)
+                    ->get();
+
+                foreach ($products as $product) {
+                    // Check if product has variants
+                    if ($product->variant_id !== null && $product->stocks && $product->stocks->isNotEmpty()) {
+                        // Expand each variant as a separate search result
+                        foreach ($product->stocks as $stock) {
+                            if (($stock->available_stock ?? 0) <= 0) continue;
+
+                            // Find matching price record for this variant value
+                            $priceRecord = $product->prices->firstWhere('variant_value', $stock->variant_value) ?? $product->price;
+                            $sellingPrice = $priceRecord->selling_price ?? 0;
+                            $discountPrice = $priceRecord->discount_price ?? 0;
+
+                            $items[] = [
+                                'id' => $product->id,
+                                'name' => $product->name . ' (' . $stock->variant_value . ')',
+                                'code' => $product->code,
+                                'model' => $product->model,
+                                'price' => $sellingPrice,
+                                'discount_price' => $discountPrice,
+                                'stock' => $stock->available_stock ?? 0,
+                                'sold' => $stock->sold_count ?? 0,
+                                'image' => $product->image,
+                                'variant_id' => $stock->variant_id,
+                                'variant_value' => $stock->variant_value,
+                            ];
+                        }
+                    } else {
+                        // Single product (no variants)
+                        $items[] = [
                             'id' => $product->id,
                             'name' => $product->name,
                             'code' => $product->code,
                             'model' => $product->model,
                             'price' => $product->price->selling_price ?? 0,
+                            'discount_price' => $product->price->discount_price ?? 0,
                             'stock' => $product->stock->available_stock ?? 0,
                             'sold' => $product->stock->sold_count ?? 0,
-                            'image' => $product->image
+                            'image' => $product->image,
+                            'variant_id' => null,
+                            'variant_value' => null,
                         ];
-                    });
+                    }
+                }
+            }
+
+            // Limit results
+            $this->searchResults = array_slice($items, 0, 15);
+
+            // Check for exact barcode match - auto-add to cart
+            if (count($this->searchResults) === 1) {
+                $productData = $this->searchResults[0];
+
+                // Check if the search term exactly matches the product code or barcode
+                $searchTerm = strtolower(trim($this->search));
+                $matchesCode = $searchTerm === strtolower(trim($productData['code']));
+
+                // Also check the barcode field from DB
+                $dbProduct = ProductDetail::where('code', $productData['code'])->first();
+                $matchesBarcode = $dbProduct && $dbProduct->barcode && $searchTerm === strtolower(trim($dbProduct->barcode));
+
+                if ($matchesCode || $matchesBarcode) {
+                    $this->addToCart($productData);
+                    $this->dispatch('focus-search');
+                    return;
+                }
             }
         } else {
             $this->searchResults = [];
@@ -276,31 +348,36 @@ class SalesSystem extends Component
             return;
         }
 
-        $existing = collect($this->cart)->firstWhere('id', $product['id']);
+        // Create a unique cart identifier: product_id + variant_value (if variant)
+        $cartIdentifier = $product['id'] . '::' . ($product['variant_value'] ?? '');
 
-        if ($existing) {
+        $existingIndex = null;
+        foreach ($this->cart as $index => $item) {
+            $itemIdentifier = $item['id'] . '::' . ($item['variant_value'] ?? '');
+            if ($itemIdentifier === $cartIdentifier) {
+                $existingIndex = $index;
+                break;
+            }
+        }
+
+        if ($existingIndex !== null) {
             // Check if adding more exceeds stock
-            if (($existing['quantity'] + 1) > $product['stock']) {
+            if (($this->cart[$existingIndex]['quantity'] + 1) > $product['stock']) {
                 $this->js("Swal.fire('error', 'Not enough stock available!', 'error')");
                 return;
             }
 
-            $this->cart = collect($this->cart)->map(function ($item) use ($product) {
-                if ($item['id'] == $product['id']) {
-                    $item['quantity'] += 1;
-                    $item['total'] = ($item['price'] - $item['discount']) * $item['quantity'];
-                    // Ensure key exists
-                    if (!isset($item['key'])) {
-                        $item['key'] = uniqid('cart_');
-                    }
-                }
-                return $item;
-            })->toArray();
+            $this->cart[$existingIndex]['quantity'] += 1;
+            $this->cart[$existingIndex]['total'] = ($this->cart[$existingIndex]['price'] - $this->cart[$existingIndex]['discount']) * $this->cart[$existingIndex]['quantity'];
         } else {
-            $discountPrice = ProductDetail::find($product['id'])->price->discount_price ?? 0;
+            // Get discount price: for variant use passed discount_price, for single check DB
+            $discountPrice = $product['discount_price'] ?? 0;
+            if (!$discountPrice) {
+                $discountPrice = ProductDetail::find($product['id'])->price->discount_price ?? 0;
+            }
 
             $newItem = [
-                'key' => uniqid('cart_'),  // Add unique key to maintain state
+                'key' => uniqid('cart_'),
                 'id' => $product['id'],
                 'name' => $product['name'],
                 'code' => $product['code'],
@@ -309,7 +386,9 @@ class SalesSystem extends Component
                 'quantity' => 1,
                 'discount' => $discountPrice,
                 'total' => $product['price'] - $discountPrice,
-                'stock' => $product['stock']
+                'stock' => $product['stock'],
+                'variant_id' => $product['variant_id'] ?? null,
+                'variant_value' => $product['variant_value'] ?? null,
             ];
 
             // Prepend new item to the beginning of the cart so it appears at the top
@@ -318,6 +397,7 @@ class SalesSystem extends Component
 
         $this->search = '';
         $this->searchResults = [];
+        $this->dispatch('focus-search');
     }
 
     // Update Quantity
@@ -442,6 +522,12 @@ class SalesSystem extends Component
             return;
         }
 
+        // Validate customer info textarea is filled
+        if (empty(trim($this->customerInfo))) {
+            $this->js("Swal.fire('error', 'Please enter the customer name and address.', 'error')");
+            return;
+        }
+
         // If no customer selected, use walking customer
         if (!$this->selectedCustomer && !$this->customerId) {
 
@@ -474,25 +560,53 @@ class SalesSystem extends Component
                 'discount_amount' => $this->additionalDiscountAmount,
                 'total_amount' => $this->grandTotal,
                 'payment_type' => 'full',
-                'payment_status' => 'pending',
-                'due_amount' => $this->grandTotal,
-                'notes' => $this->notes,
+                'payment_status' => 'paid',
+                'due_amount' => 0,
+                'notes' => null,
                 'user_id' => Auth::id(),
                 'status' => 'confirm',
                 'sale_type' => $this->getSaleType()
             ]);
 
+            // Create delivery sale record (delivery_barcode auto-generated by model)
+            DeliverySale::create([
+                'sale_id' => $sale->id,
+                'delivery_method' => $this->deliveryMethod,
+                'payment_method' => $this->paymentMethod,
+                'status' => 'Processing',
+                'customer_details' => $this->customerInfo,
+            ]);
+
+            // Create cash payment record for the full amount
+            Payment::create([
+                'sale_id' => $sale->id,
+                'amount' => $this->grandTotal,
+                'payment_method' => 'cash',
+                'is_completed' => true,
+                'payment_date' => now(),
+                'status' => 'paid',
+                'customer_id' => $customer->id,
+                'created_by' => Auth::id(),
+            ]);
+
             // Create sale items and update stock using FIFO
             foreach ($this->cart as $item) {
-                // Update product stock using FIFO method
+                // Update product stock using FIFO method (with variant support)
                 try {
-                    $fifoResult = FIFOStockService::deductStock($item['id'], $item['quantity']);
+                    $variantId = $item['variant_id'] ?? null;
+                    $variantValue = $item['variant_value'] ?? null;
+
+                    $fifoResult = FIFOStockService::deductStock(
+                        $item['id'],
+                        $item['quantity'],
+                        $variantId,
+                        $variantValue
+                    );
 
                     // Use the manually updated price from cart, or fall back to FIFO selling price
                     $cartUnitPrice = $item['price'] ?? $fifoResult['deductions'][0]['selling_price'] ?? 0;
 
                     // Create sale items based on batch deductions
-                    // Use the manually updated cart price instead of FIFO batch price
                     foreach ($fifoResult['deductions'] as $deduction) {
                         SaleItem::create([
                             'sale_id' => $sale->id,
@@ -501,16 +615,20 @@ class SalesSystem extends Component
                             'product_name' => $item['name'],
                             'product_model' => $item['model'],
                             'quantity' => $deduction['quantity'],
-                            'unit_price' => $cartUnitPrice, // Use manually updated cart price
+                            'unit_price' => $cartUnitPrice,
                             'discount_per_unit' => $item['discount'],
                             'total_discount' => $item['discount'] * $deduction['quantity'],
-                            'total' => ($cartUnitPrice - $item['discount']) * $deduction['quantity']
+                            'total' => ($cartUnitPrice - $item['discount']) * $deduction['quantity'],
+                            'variant_id' => $variantId,
+                            'variant_value' => $variantValue,
                         ]);
                     }
 
                     // Log FIFO deduction details
                     Log::info("FIFO Stock Deduction for Product {$item['id']}", [
                         'quantity' => $item['quantity'],
+                        'variant_id' => $variantId,
+                        'variant_value' => $variantValue,
                         'batches_used' => count($fifoResult['deductions']),
                         'average_cost' => $fifoResult['average_cost'],
                         'deductions' => $fifoResult['deductions']
@@ -540,10 +658,10 @@ class SalesSystem extends Component
             }
 
             $this->lastSaleId = $sale->id;
-            $this->createdSale = Sale::with(['customer', 'items'])->find($sale->id);
+            $this->createdSale = Sale::with(['customer', 'items', 'deliverySale'])->find($sale->id);
             $this->showSaleModal = true;
 
-            $this->js("Swal.fire('success', 'Sale created successfully! Payment status: Pending', 'success')");
+            $this->js("Swal.fire('success', 'Sale created successfully! Status: Processing', 'success')");
         } catch (\Exception $e) {
             DB::rollBack();
             $this->js("Swal.fire('error', 'Failed to create sale: " . addslashes($e->getMessage()) . "', 'error')");

@@ -84,37 +84,43 @@ class Sale extends Model
         return $prefix . $date . '-' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
     }
 
-    // Generate unique invoice numbers starting from 0678
+    // Generate unique invoice numbers starting from 001
     public static function generateInvoiceNumber()
     {
-        // Get the last invoice number from the database
+        // Get the last sale ordered by id
         $lastSale = self::orderBy('id', 'desc')
             ->lockForUpdate()
             ->first();
 
-        $nextNumber = 678; // Starting number
+        $nextNumber = 1; // Starting number
 
         if ($lastSale && $lastSale->invoice_number) {
-            // Extract number from invoice (remove any prefix)
             $invoiceNumber = $lastSale->invoice_number;
 
-            // If it starts with prefix, remove it, otherwise use as is
+            // Remove any prefix like 'INV-'
             if (strpos($invoiceNumber, 'INV-') === 0) {
                 $lastNumber = intval(substr($invoiceNumber, 4));
             } else {
                 $lastNumber = intval($invoiceNumber);
             }
 
-            // If the last number is less than 678, start from 678, otherwise increment
-            $nextNumber = max(678, $lastNumber + 1);
+            $nextNumber = $lastNumber + 1;
         }
 
-        return str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+        return str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
     }
 
     public function returns()
     {
         return $this->hasMany(ReturnsProduct::class, 'sale_id');
+    }
+
+    /**
+     * Relationship: Delivery sale details
+     */
+    public function deliverySale()
+    {
+        return $this->hasOne(DeliverySale::class);
     }
 
     /**

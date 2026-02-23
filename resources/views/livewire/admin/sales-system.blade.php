@@ -1,156 +1,156 @@
-<div class="container-fluid py-3">
+<div class="container-fluid py-3" x-data="salesPage()" x-init="init()">
+
     {{-- Flash Messages --}}
     @if (session()->has('success'))
-    <div class="alert alert-success alert-dismissible fade show mb-4">
-        <i class="bi bi-check-circle me-2"></i> {{ session('success') }}
+    <div class="alert alert-success alert-dismissible fade show mb-3 premium-alert">
+        <i class="bi bi-check-circle-fill me-2"></i> {{ session('success') }}
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
     @endif
 
     @if (session()->has('error'))
-    <div class="alert alert-danger alert-dismissible fade show mb-4">
-        <i class="bi bi-exclamation-circle me-2"></i> {{ session('error') }}
+    <div class="alert alert-danger alert-dismissible fade show mb-3 premium-alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i> {{ session('error') }}
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
     @endif
 
-    @if (session()->has('message'))
-    <div class="alert alert-info alert-dismissible fade show mb-4">
-        <i class="bi bi-info-circle me-2"></i> {{ session('message') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-    @endif
-
-    <div class="row">
-
-        <div class="row">
-            {{-- Customer Information --}}
-            <div class="col-md-6 mb-4">
-                <div class="card h-100 shadow-sm border-1">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="card-title mb-0 fw-semibold">
-                            <i class="bi bi-person me-2 text-primary"></i> Customer Information
-                        </h5>
-                        <button class="btn btn-sm btn-primary" wire:click="openCustomerModal">
-                            <i class="bi bi-plus-circle me-1"></i> Add New Customer
-                        </button>
+    {{-- Main Billing Section --}}
+    <div class="premium-card">
+        <div class="premium-card-header bg-black py-2">
+            <div class="d-flex align-items-center justify-content-between px-2">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="header-icon">
+                        <i class="bi bi-gem"></i>
                     </div>
-                    <div class="card-body">
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">Select Customer *</label>
-                            <select class="form-select shadow-sm" wire:model.live="customerId">
-                                @foreach($customers as $customer)
-                                <option value="{{ $customer->id }}" {{ $customer->name === 'Walking Customer' ? 'selected' : '' }}>
-                                    {{ $customer->name }}
-                                    @if($customer->phone)
-                                    - {{ $customer->phone }}
-                                    @endif
-                                    @if($customer->name === 'Walking Customer')
-                                    (Default)
-                                    @endif
-                                </option>
-                                @endforeach
-                            </select>
-
-                            <div class="form-text mt-2">
-                                @if($selectedCustomer && $selectedCustomer->name === 'Walking Customer')
-                                <span class="text-info">
-                                    <i class="bi bi-info-circle me-1"></i> Using default walking customer
-                                </span>
-                                @else
-                                Select an existing customer or add a new one.
-                                @endif
-                            </div>
-                        </div>
-                    </div>
+                    <h6 class="mb-0 fw-bold text-gold" style="letter-spacing: 0.05em; text-transform: uppercase;">Billing System</h6>
+                </div>
+                <div class="d-block d-md-flex align-items-center gap-3">
+                    <span class="badge text-gold border border-gold px-3 py-2 rounded-pill">
+                        <i class="bi bi-calendar3 me-1"></i> {{ date('D, M d Y') }}
+                    </span>
                 </div>
             </div>
+        </div>
 
-            {{-- Add Products Card --}}
-            <div class="col-md-6 mb-4">
-                <div class="card h-100 shadow-sm border-1">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="card-title mb-0 fw-semibold">
-                            <i class="bi bi-search me-2 text-success"></i> Add Products
-                        </h5>
+        <div class="premium-card-body p-3">
+            {{-- Top Section: Customer & Search --}}
+            <div class="row g-3 mb-3">
+                {{-- Customer Textarea (Left) --}}
+                <div class="col-md-6">
+                    <div class="input-header mb-1">
+                        <i class="bi bi-person-lines-fill me-2 text-gold small"></i>
+                        <span class="fw-bold small">Customer Details</span>
+                        <span class="text-danger small">*</span>
                     </div>
-                    <div class="card-body position-relative">
-                        <div class="mb-3">
-                            <input type="text" class="form-control shadow-sm"
-                                wire:model.live="search"
-                                placeholder="Search by product name, code, or model...">
-                        </div>
+                    <div class="customer-textarea-wrapper">
+                        <textarea
+                            class="form-control premium-textarea"
+                            wire:model="customerInfo"
+                            rows="3"
+                            placeholder="Enter customer name and full delivery address... (e.g., Mohamed Saman, No. 42/A, Main Street, Jaffna)"
+                            required></textarea>
+                        @error('customerInfo')
+                        <span class="text-danger small mt-1 d-block">{{ $message }}</span>
+                        @enderror
+                    </div>
+                </div>
 
-                        {{-- Search Results --}}
+                {{-- Product Search (Right) --}}
+                <div class="col-md-6">
+                    <div class="input-header mb-1">
+                        <i class="bi bi-search me-2 text-gold small"></i>
+                        <span class="fw-bold small">Product Search / Scan Barcode</span>
+                    </div>
+                    <div class="search-input-wrapper">
+                        <i class="bi bi-upc-scan search-icon"></i>
+                        <input type="text"
+                            class="form-control premium-search-input"
+                            wire:model.live="search"
+                            id="productSearchInput"
+                            placeholder="Scan barcode or type product name..."
+                            autocomplete="off">
+                        @if($search)
+                        <button class="search-clear-btn" wire:click="$set('search', '')">
+                            <i class="bi bi-x-lg"></i>
+                        </button>
+                        @endif
+
+                        {{-- Search Results Dropdown --}}
                         @if($search && count($searchResults) > 0)
-                        <div class="search-results mt-1 position-absolute w-100 shadow-lg" style="max-height: 300px; max-width: 96%; z-index: 1055;">
+                        <div class="search-results-dropdown">
                             @foreach($searchResults as $product)
-                            <div class="p-3 border-bottom d-flex justify-content-between align-items-center bg-white rounded-1"
-                                wire:key="product-{{ $product['id'] }}">
-                                <div>
-                                    <h6 class="mb-1 fw-semibold">{{ $product['name'] }}</h6>
-                                    <p class="text-muted small mb-0">
-                                        Code: {{ $product['code'] }} | Model: {{ $product['model'] }}
-                                    </p>
-                                    <p class="text-success small mb-0">
-                                        Rs.{{ number_format($product['price'], 2) }} | Stock: {{ $product['stock'] }}
-                                    </p>
+                            <div class="search-result-item"
+                                wire:key="product-{{ $product['id'] }}"
+                                wire:click="addToCart({{ json_encode($product) }})"
+                                style="{{ $product['stock'] <= 0 ? 'opacity: 0.5; pointer-events: none;' : '' }}">
+                                <div class="product-info">
+                                    <div class="product-name">{{ $product['name'] }}</div>
+                                    <div class="product-meta">
+                                        <span class="meta-tag"><i class="bi bi-upc me-1"></i>{{ $product['code'] }}</span>
+                                        <span class="meta-tag"><i class="bi bi-box me-1"></i>{{ $product['model'] }}</span>
+                                    </div>
                                 </div>
-                                <button class="btn btn-sm btn-outline-primary"
-                                    wire:click="addToCart({{ json_encode($product) }})"
-                                    {{ $product['stock'] <= 0 ? 'disabled' : '' }}>
-                                    <i class="bi bi-plus-lg"></i> Add
-                                </button>
+                                <div class="product-price-stock text-end">
+                                    <div class="product-price">Rs.{{ number_format($product['price'], 2) }}</div>
+                                    <div class="product-stock {{ $product['stock'] <= 0 ? 'out-of-stock' : '' }}">
+                                        <i class="bi bi-boxes me-1"></i>Stock: {{ $product['stock'] }}
+                                    </div>
+                                </div>
                             </div>
                             @endforeach
                         </div>
-                        @elseif($search)
-                        <div class="text-center text-muted p-3">
-                            <i class="bi bi-exclamation-circle me-1"></i> No products found
+                        @elseif($search && count($searchResults) === 0)
+                        <div class="search-results-dropdown">
+                            <div class="no-results">
+                                <i class="bi bi-search display-6 d-block mb-2 text-muted"></i>
+                                <span>No products found for "<strong>{{ $search }}</strong>"</span>
+                            </div>
                         </div>
                         @endif
                     </div>
                 </div>
             </div>
-        </div>
 
-
-        {{-- Sale Items Table --}}
-        <div class="col-md-12 mb-4">
-            <div class="card overflow-auto">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="card-title mb-0">
-                        <i class="bi bi-cart me-2"></i>Sale Items
-                    </h5>
-                    <span class="badge bg-primary">{{ count($cart) }} items</span>
-                </div>
-                <div class="card-body p-0">
-                    @if(count($cart) > 0)
-                    <div class="table-responsive">
-                        <table class="table table-hover mb-0">
-                            <thead class="table-light">
-                                <tr>
-                                    <th width="30">#</th>
-                                    <th>Product</th>
-                                    <th width="120">Unit Price</th>
-                                    <th width="150">Quantity</th>
-                                    <th width="120">Discount/Unit</th>
-                                    <th width="120">Total</th>
-                                    <th width="100" class="text-center">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($cart as $index => $item)
-                                <tr wire:key="{{ $item['key'] ?? 'cart_' . $index }}">
-                                    <td>{{ $index + 1 }}</td>
-                                    <td>
-                                        <div>
-                                            <strong>{{ $item['name'] }}</strong>
-                                            <div class="text-muted small">
-                                                {{ $item['code'] }} | {{ $item['model'] }}
+            {{-- Middle Section: Cart (Full Width) --}}
+            <div class="row g-0 mb-3">
+                <div class="col-12">
+                    <div class="cart-section-wrapper border rounded-3 overflow-hidden">
+                        <div class="bg-light p-2 border-bottom d-flex justify-content-between align-items-center">
+                            <div class="fw-bold small"><i class="bi bi-cart3 me-2 text-gold"></i>Cart Items</div>
+                            @if(count($cart) > 0)
+                            <span class="badge bg-black text-gold">{{ count($cart) }} Items</span>
+                            @endif
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table premium-table mb-0">
+                                <thead>
+                                    <tr>
+                                        <th width="35">#</th>
+                                        <th>Product Details</th>
+                                        <th width="140">Unit Price</th>
+                                        <th width="140">Quantity</th>
+                                        <th width="120">Discount</th>
+                                        <th width="130" class="text-end">Item Total</th>
+                                        <th width="50" class="text-center"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($cart as $index => $item)
+                                    <tr wire:key="{{ $item['key'] ?? 'cart_' . $index }}" class="cart-item-row">
+                                        <td><span class="row-num">{{ $index + 1 }}</span></td>
+                                        <td>
+                                            <div class="cart-product-info">
+                                                <strong class="d-block text-dark">{{ $item['name'] }}</strong>
+                                                <small class="text-muted">{{ $item['code'] }} | {{ $item['model'] }}</small>
                                             </div>
-                                            <div class="text-info small">
-                                                Stock: {{ $item['stock'] }}
+                                        </td>
+                                        <td>
+                                            <div class="input-group input-group-sm">
+                                                <span class="input-group-text bg-white border-end-0 text-muted">Rs</span>
+                                                <input type="number" class="form-control form-control-sm border-start-0 ps-0 fw-bold text-gold"
+                                                    wire:change="updatePrice({{ $index }}, $event.target.value)"
+                                                    value="{{ $item['price'] }}" min="0" step="0.01">
                                             </div>
                                         </div>
                                     </td>
@@ -290,7 +290,7 @@
                 <div class="card-body text-center">
                     <div class="mb-3">
                         <div class="fw-bold fs-5">Grand Total</div>
-                        <div class="fw-bold fs-5 text-jg-blue">Rs.{{ number_format($grandTotal, 2) }}</div>
+                        <div class="fw-bold fs-5 text-gold">Rs.{{ number_format($grandTotal, 2) }}</div>
                     </div>
                     <button class="btn btn-success btn-lg px-5" wire:click="createSale"
                         {{ count($cart) == 0 ? 'disabled' : '' }}>
@@ -301,66 +301,76 @@
         </div>
     </div>
 
-    {{-- Add Customer Modal --}}
-    @if($showCustomerModal)
-    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title">
-                        <i class="bi bi-person-plus me-2"></i>Add New Customer
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" wire:click="closeCustomerModal"></button>
-                </div>
-                <div class="modal-body">
+            {{-- Bottom Section: Delivery, Payment & Create Sale --}}
+            <div class="row g-3 pt-3 border-top">
+                <div class="col-md-9">
                     <div class="row g-3">
-                        <div class="col-md-6">
-                            <label class="form-label">Name *</label>
-                            <input type="text" class="form-control" wire:model="customerName" placeholder="Enter customer name">
-                            @error('customerName') <span class="text-danger small">{{ $message }}</span> @enderror
+                        {{-- Delivery Method --}}
+                        <div class="col-md-5">
+                            <label class="form-label fw-bold text-muted text-uppercase mb-2" style="font-size: 0.7rem;">
+                                <i class="bi bi-truck me-2 text-gold"></i>Delivery Method
+                            </label>
+                            <div class="d-flex gap-2">
+                                <label class="delivery-radio-card flex-fill">
+                                    <input type="radio" wire:model.live="deliveryMethod" value="Post" class="d-none">
+                                    <div class="radio-content">
+                                        <i class="bi bi-mailbox2"></i>
+                                        <span>Post</span>
+                                    </div>
+                                </label>
+                                <label class="delivery-radio-card flex-fill">
+                                    <input type="radio" wire:model.live="deliveryMethod" value="Domestic" class="d-none">
+                                    <div class="radio-content">
+                                        <i class="bi bi-house-heart"></i>
+                                        <span>Domestic</span>
+                                    </div>
+                                </label>
+                            </div>
                         </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Phone *</label>
-                            <input type="text" class="form-control" wire:model="customerPhone" placeholder="Enter phone number">
-                            @error('customerPhone') <span class="text-danger small">{{ $message }}</span> @enderror
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Email</label>
-                            <input type="email" class="form-control" wire:model="customerEmail" placeholder="Enter email address">
-                            @error('customerEmail') <span class="text-danger small">{{ $message }}</span> @enderror
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Customer Type *</label>
-                            <select class="form-select" wire:model="customerType">
-                                <option value="retail">Retail</option>
-                                <option value="wholesale">Wholesale</option>
 
-                            </select>
-                            @error('customerType') <span class="text-danger small">{{ $message }}</span> @enderror
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Business Name</label>
-                            <input type="text" class="form-control" wire:model="businessName" placeholder="Enter business name">
-                        </div>
-                        <div class="col-12">
-                            <label class="form-label">Address *</label>
-                            <textarea class="form-control" wire:model="customerAddress" rows="3" placeholder="Enter address"></textarea>
-                            @error('customerAddress') <span class="text-danger small">{{ $message }}</span> @enderror
+                        {{-- Payment Method --}}
+                        <div class="col-md-7">
+                            <label class="form-label fw-bold text-muted text-uppercase mb-2" style="font-size: 0.7rem;">
+                                <i class="bi bi-credit-card me-2 text-gold"></i>Payment Method
+                            </label>
+                            <div class="d-flex gap-2">
+                                <label class="delivery-radio-card flex-fill">
+                                    <input type="radio" wire:model.live="paymentMethod" value="Cash on Delivery" class="d-none">
+                                    <div class="radio-content">
+                                        <i class="bi bi-cash-coin"></i>
+                                        <span>Cash on Delivery</span>
+                                    </div>
+                                </label>
+                                <label class="delivery-radio-card flex-fill">
+                                    <input type="radio" wire:model.live="paymentMethod" value="Online Payment" class="d-none">
+                                    <div class="radio-content">
+                                        <i class="bi bi-phone"></i>
+                                        <span>Online Payment</span>
+                                    </div>
+                                </label>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" wire:click="closeCustomerModal">
-                        <i class="bi bi-x-circle me-2"></i>Cancel
-                    </button>
-                    <button type="button" class="btn btn-primary" wire:click="createCustomer">
-                        <i class="bi bi-check-circle me-2"></i>Create Customer
-                    </button>
+
+                {{-- Grand Total & Create Button --}}
+                <div class="col-md-3">
+                    <div class="bg-black p-3 rounded-4 h-100 d-flex flex-column justify-content-between border border-gold border-opacity-25">
+                        <div class="text-center mb-2">
+                            <div class="text-gold opacity-50 fw-bold mb-0" style="font-size: 0.65rem; text-transform: uppercase;">Total Payable</div>
+                            <div class="h4 fw-bold text-gold mb-0">Rs.{{ number_format($grandTotal, 2) }}</div>
+                        </div>
+                        <button class="btn btn-gold-premium w-100 py-2 rounded-3 small fw-bold"
+                            style="font-size: 0.8rem;"
+                            wire:click="createSale"
+                            {{ count($cart) == 0 ? 'disabled' : '' }}>
+                            <i class="bi bi-bag-check-fill me-1"></i>CREATE SALE
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-    @endif
 
     {{-- Sale Preview Modal --}}
     @if($showSaleModal && $createdSale)
@@ -372,7 +382,7 @@
                     <div class="d-flex align-items-center justify-content-between mb-3">
                         {{-- Left: Logo --}}
                         <div style="flex: 0 0 150px;">
-                            <img src="{{ asset('images/jg.png') }}" alt="Logo" class="img-fluid" style="max-height:80px;">
+                            <img src="{{ asset('images/JaffnaGold.webp') }}" alt="Logo" class="img-fluid" style="max-height:80px;">
                         </div>
 
                         {{-- Center: Company Name --}}
@@ -381,139 +391,65 @@
                             <p class="mb-0 text-muted small">Gold Shop</p>
                         </div>
 
-                        {{-- Right: Invoice Label --}}
-                        <div class="text-end" style="flex: 0 0 150px;">
-                            <h5 class="mb-0 fw-bold"></h5>
-                            <h6 class="mb-0 text-muted">INVOICE</h6>
-                        </div>
-                    </div>
-                    <hr class="my-2" style="border-top: 2px solid #000;">
-                </div>
-
-                <div class="modal-body p-4">
-                    <div class="sale-preview" id="saleReceiptPrintContent">
-                        {{-- ==================== CUSTOMER + INVOICE INFO ==================== --}}
-                        <div class="row mb-3">
+                        <div class="row mb-4">
                             <div class="col-6">
-                                <p class="mb-1"><strong>Customer :</strong></p>
-                                <p class="mb-0">{{ $createdSale->customer->name }}</p>
-                                <p class="mb-0">{{ $createdSale->customer->address }}</p>
-                                <p class="mb-0"><strong>Tel:</strong> {{ $createdSale->customer->phone }}</p>
+                                <div class="text-muted small uppercase fw-bold mb-1">Customer Info</div>
+                                <div class="fw-bold text-dark" style="white-space: pre-wrap;">{{ $createdSale->deliverySale->customer_details ?? '' }}</div>
+                                <div class="mt-2 small">
+                                    <span class="badge bg-dark text-gold me-1">{{ $createdSale->deliverySale->delivery_method }}</span>
+                                    <span class="badge bg-gold text-dark">{{ $createdSale->deliverySale->payment_method }}</span>
+                                </div>
                             </div>
                             <div class="col-6 text-end">
-                                <table class="table-borderless ms-auto" style="width: auto; display: inline-table;">
-                                    <tr>
-                                        <td class="pe-3"><strong>Invoice #</strong></td>
-                                        <td>{{ $createdSale->invoice_number }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="pe-3"><strong>Sale ID</strong></td>
-                                        <td>{{ $createdSale->sale_id }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="pe-3"><strong>Date</strong></td>
-                                        <td>{{ $createdSale->created_at->format('M d, Y') }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="pe-3"><strong>Time</strong></td>
-                                        <td>{{ $createdSale->created_at->format('H:i A') }}</td>
-                                    </tr>
-                                </table>
+                                <div class="text-muted small uppercase fw-bold mb-1">Invoice Info</div>
+                                <div><strong>Invoice:</strong> {{ $createdSale->invoice_number }}</div>
+                                <div><strong>Date:</strong> {{ $createdSale->created_at->format('M d, Y') }}</div>
+                                <div><strong>Status:</strong> Processing</div>
                             </div>
                         </div>
 
-                        {{-- ==================== ITEMS TABLE ==================== --}}
-                        <div class="table-responsive mb-3">
-                            <table class="table table-bordered invoice-table">
-                                <thead>
-                                    <tr>
-                                        <th>#</th>
-                                        <th>Product</th>
-                                        <th class="text-center">Code</th>
-                                        <th class="text-center">Qty</th>
-                                        <th class="text-end">Unit Price</th>
-                                        <th class="text-end">Discount</th>
-                                        <th class="text-end">Total</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach($createdSale->items as $index => $item)
-                                    <tr>
-                                        <td>{{ $index + 1 }}</td>
-                                        <td>{{ $item->product_name }}</td>
-                                        <td class="text-center">{{ $item->product_code }}</td>
-                                        <td class="text-center">{{ $item->quantity }}</td>
-                                        <td class="text-end">Rs.{{ number_format($item->unit_price, 2) }}</td>
-                                        <td class="text-end">Rs.{{ number_format($item->discount_per_unit * $item->quantity, 2) }}</td>
-                                        <td class="text-end">Rs.{{ number_format($item->total, 2) }}</td>
-                                    </tr>
-                                    @endforeach
-                                </tbody>
-                                <tfoot>
-                                    @php
-                                    $itemDiscountTotal = $createdSale->items->sum(function($item) {
-                                    return ($item->discount_per_unit ?? 0) * $item->quantity;
-                                    });
-                                    @endphp
-                                    <tr class="totals-row">
-                                        <td colspan="5" class="text-end"><strong>Subtotal</strong></td>
-                                        <td colspan="2" class="text-end"><strong>Rs.{{ number_format($createdSale->subtotal, 2) }}</strong></td>
-                                    </tr>
-                                    @php
-                                    $totalDiscount = ($createdSale->discount_amount + $itemDiscountTotal);
-                                    @endphp
-                                    @if($totalDiscount > 0)
-                                    <tr class="totals-row">
-                                        <td colspan="5" class="text-end"><strong>Total Discount</strong></td>
-                                        <td colspan="2" class="text-end"><strong class="text-danger">- Rs.{{ number_format($totalDiscount, 2) }}</strong></td>
-                                    </tr>
-                                    @endif
-                                    <tr class="totals-row grand-total">
-                                        <td colspan="5" class="text-end"><strong>Grand Total</strong></td>
-                                        <td colspan="2" class="text-end"><strong>Rs.{{ number_format($createdSale->total_amount, 2) }}</strong></td>
-                                    </tr>
-                                </tfoot>
-                            </table>
-                        </div>
-
-                        {{-- ==================== FOOTER ==================== --}}
-                        <div class="invoice-footer mt-4 border-top pt-4">
-                            <div class="row text-center mb-3">
-                                <div class="col-4">
-                                    <p class=""><strong>.............................</strong></p>
-                                    <p class="mb-2"><strong>Checked By</strong></p>
-                                    
-                                </div>
-                                <div class="col-4">
-                                    <p class=""><strong>.............................</strong></p>
-                                    <p class="mb-2"><strong>Authorized Officer</strong></p>
-                                    
-                                </div>
-                                <div class="col-4">
-                                    <p class=""><strong>.............................</strong></p>
-                                    <p class="mb-2"><strong>Customer Stamp</strong></p>
-                                    
-                                </div>
-                            </div>
-                            <div class="border-top pt-3">
-                                <p class="text-center"><strong>ADDRESS :</strong> 421/2, Doolmala, thihariya, Kalagedihena.</p>
-                                <p class="text-center"><strong>TEL :</strong> (077) 9752950, <strong>EMAIL :</strong> JaffnaGoldlanka@gmail.com</p>
-                                <p class="text-center mt-2" style="font-size: 11px;"><strong></strong></p>
-                            </div>
-                        </div>
+                        <table class="table table-sm table-bordered">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th>Product</th>
+                                    <th class="text-center">Qty</th>
+                                    <th class="text-end">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($createdSale->items as $item)
+                                <tr>
+                                    <td>{{ $item->product_name }}</td>
+                                    <td class="text-center">{{ $item->quantity }}</td>
+                                    <td class="text-end">Rs.{{ number_format($item->total, 2) }}</td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="2" class="text-end">Subtotal</td>
+                                    <td class="text-end">Rs.{{ number_format($createdSale->subtotal, 2) }}</td>
+                                </tr>
+                                @if($createdSale->discount_amount > 0)
+                                <tr>
+                                    <td colspan="2" class="text-end">Discount</td>
+                                    <td class="text-end">-Rs.{{ number_format($createdSale->discount_amount, 2) }}</td>
+                                </tr>
+                                @endif
+                                <tr class="fw-bold h5">
+                                    <td colspan="2" class="text-end">Grand Total</td>
+                                    <td class="text-end">Rs.{{ number_format($createdSale->total_amount, 2) }}</td>
+                                </tr>
+                            </tfoot>
+                        </table>
                     </div>
                 </div>
-
-                {{-- Footer Buttons --}}
-                <div class="modal-footer justify-content-center bg-light">
-                    <button type="button" class="btn btn-outline-secondary me-2" wire:click="createNewSale">
-                        <i class="bi bi-x-circle me-2"></i>Close
+                <div class="modal-footer bg-black border-top-0 gap-2">
+                    <button type="button" class="btn btn-outline-gold" onclick="openPrintWindow({{ $createdSale->id }})">
+                        <i class="bi bi-printer me-2"></i>PRINT RECEIPT
                     </button>
-                    <button type="button" class="btn btn-outline-primary me-2" onclick="openPrintWindow({{ $createdSale->id }})">
-                        <i class="bi bi-printer me-2"></i>Print
-                    </button>
-                    <button type="button" class="btn btn-success" wire:click="downloadInvoice">
-                        <i class="bi bi-download me-2"></i>Download Invoice
+                    <button type="button" class="btn btn-gold-premium" wire:click="createNewSale">
+                        NEW SALE
                     </button>
                 </div>
             </div>
@@ -524,317 +460,250 @@
 
 @push('styles')
 <style>
-    .container-fluid,
-    .card,
-    .modal-content {
-        font-size: 13px !important;
+    :root {
+        --primary-gold: #D4AF37;
+        --secondary-gold: #B8860B;
+        --dark-bg: #000000;
+        --light-gold: #fffcf0;
     }
 
-    .table th,
-    .table td {
-        font-size: 12px !important;
-        padding: 0.35rem 0.5rem !important;
+    .text-gold { color: var(--primary-gold) !important; }
+    .bg-light-gold { background-color: var(--light-gold) !important; }
+    .border-gold { border-color: var(--primary-gold) !important; }
+
+    .premium-card {
+        background: #fff;
+        border-radius: 12px;
+        border: 1px solid rgba(212, 175, 55, 0.2);
+        box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+        overflow: hidden;
     }
 
-    .modal-header {
-        padding-top: 0.5rem !important;
-        padding-bottom: 0.5rem !important;
-        margin-bottom: 0.25rem !important;
+    .premium-textarea {
+        border: 2px solid #eee;
+        border-radius: 8px;
+        padding: 10px !important;
+        font-size: 0.85rem !important;
+        transition: all 0.3s;
+        background: #fbfbfb;
     }
 
-    .modal-footer,
-    .card-header,
-    .card-body,
-    .row,
-    .col-md-6,
-    .col-md-4,
-    .col-md-2,
-    .col-md-12 {
-        padding-top: 0.5rem !important;
-        padding-bottom: 0.5rem !important;
-        margin-top: 0.25rem !important;
-        margin-bottom: 0.25rem !important;
+    .premium-textarea:focus {
+        border-color: var(--primary-gold);
+        box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.1);
+        background: #fff;
     }
 
-    .form-control,
-    .form-select {
-        font-size: 12px !important;
-        padding: 0.35rem 0.5rem !important;
+    .search-input-wrapper {
+        position: relative;
     }
 
-    .btn,
-    .btn-sm,
-    .btn-primary,
-    .btn-secondary,
-    .btn-outline-danger,
-    .btn-outline-secondary {
-        font-size: 12px !important;
-        padding: 0.25rem 0.5rem !important;
+    .search-icon {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--primary-gold);
+        font-size: 1rem;
     }
 
-    .badge {
-        font-size: 11px !important;
-        padding: 0.25em 0.5em !important;
+    .premium-search-input {
+        padding: 12px 40px 12px 45px !important;
+        border: 2px solid #eee;
+        border-radius: 10px;
+        font-size: 0.9rem !important;
+        transition: all 0.3s;
+        background: #fbfbfb;
     }
 
-    .list-group-item,
-    .dropdown-item {
-        font-size: 12px !important;
-        padding: 0.35rem 0.5rem !important;
+    .premium-search-input:focus {
+        border-color: var(--primary-gold);
+        box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.1);
+        background: #fff;
     }
 
-    .summary-card,
-    .card {
-        border-radius: 8px !important;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06) !important;
-    }
-
-    .icon-container {
-        width: 36px !important;
-        height: 36px !important;
-        font-size: 1.1rem !important;
-    }
-
-    .search-results {
+    .search-results-dropdown {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        z-index: 1000;
+        margin-top: 5px;
         max-height: 300px;
         overflow-y: auto;
-        border: 1px solid #dee2e6;
-        border-radius: 0.375rem;
+        border: 1px solid #eee;
     }
 
-    .search-results .p-3 {
-        transition: background-color 0.2s ease;
+    .search-result-item {
+        padding: 10px 15px;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #f5f5f5;
+        font-size: 0.85rem;
     }
 
-    .search-results .p-3:hover {
-        background-color: #f8f9fa;
+    .search-result-item:hover {
+        background: var(--light-gold);
     }
 
-    .table th {
-        font-size: 0.875rem;
-        font-weight: 600;
-        background-color: #f8f9fa;
+    .qty-controls {
+        display: flex;
+        align-items: center;
+        background: #f0f0f0;
+        border-radius: 8px;
+        padding: 2px;
+        width: fit-content;
     }
 
-    .form-control-sm {
-        padding: 0.25rem 0.5rem;
-        font-size: 0.875rem;
-    }
-
-    .card {
-        border: 1px solid #dee2e6;
-        border-radius: 0.5rem;
-        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-    }
-
-    .card-header {
-        background-color: #f8f9fa;
-        border-bottom: 1px solid #dee2e6;
-        padding: 1rem 1.25rem;
-    }
-
-    .input-group-sm>.btn {
-        padding: 0.25rem 0.5rem;
-    }
-
-    /* Modal Styles */
-    .modal.show {
-        backdrop-filter: blur(2px);
-    }
-
-    /* Sale Preview Styles */
-    .sale-preview {
-        background: white;
-        font-family: 'Segoe UI', Arial, sans-serif;
-    }
-
-    .sale-preview .header {
-        border-bottom: 2px solid #057642ff;
-        padding-bottom: 1rem;
-    }
-
-    .sale-preview table th {
-        
+    .qty-btn {
+        width: 24px;
+        height: 24px;
         border: none;
+        background: none;
+        font-weight: bold;
+        color: #555;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
-    .sale-preview table td {
-        border: 1px solid #dee2e6;
+    .qty-input {
+        width: 35px;
+        text-align: center;
+        border: none;
+        background: none;
+        font-weight: 700;
+        font-size: 0.8rem;
     }
 
-    /* Discount input styling */
-    .text-danger.form-control:focus {
-        border-color: #dc3545;
-        box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+    .delivery-radio-card {
+        cursor: pointer;
+    }
+
+    .delivery-radio-card .radio-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 8px;
+        background: #fbfbfb;
+        border: 2px solid #eee;
+        border-radius: 10px;
+        transition: all 0.3s;
+        color: #888;
+    }
+
+    .delivery-radio-card input:checked + .radio-content {
+        border-color: var(--primary-gold);
+        background: var(--light-gold);
+        color: var(--secondary-gold);
+        box-shadow: 0 5px 15px rgba(212, 175, 55, 0.1);
+    }
+
+    .delivery-radio-card .radio-content i {
+        font-size: 1.1rem;
+        margin-bottom: 2px;
+    }
+
+    .delivery-radio-card .radio-content span {
+        font-weight: 600;
+        font-size: 0.75rem;
+    }
+
+    .btn-gold-premium {
+        background: linear-gradient(135deg, var(--primary-gold) 0%, var(--secondary-gold) 100%);
+        color: #000;
+        font-weight: 800;
+        border: none;
+        letter-spacing: 0.1em;
+        transition: all 0.3s;
+    }
+
+    .btn-gold-premium:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 20px rgba(212, 175, 55, 0.5);
+    }
+
+    .btn-outline-gold {
+        border: 2px solid var(--primary-gold);
+        color: var(--primary-gold);
+        background: transparent;
+        font-weight: 700;
+    }
+
+    .btn-outline-gold:hover {
+        background: var(--primary-gold);
+        color: #000;
+    }
+
+    .modal-content {
+        border-radius: 20px;
+        border: 2px solid var(--primary-gold);
+    }
+
+    .premium-alert {
+        border-radius: 15px;
+        border: none;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    }
+
+    /* Table Styles */
+    .premium-table thead th {
+        background: #fbfbfb;
+        color: #888;
+        font-weight: 600;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        padding: 10px 15px;
+        border-bottom: 2px solid #eee;
+    }
+
+    .cart-item-row td {
+        padding: 8px 15px !important;
+        vertical-align: middle;
+        font-size: 0.85rem;
+    }
+
+    .row-num {
+        color: var(--primary-gold);
+        font-weight: 800;
+        font-size: 0.8rem;
+    }
+
+    .header-icon {
+        width: 32px;
+        height: 32px;
+        background: var(--primary-gold);
+        color: #000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        font-size: 1rem;
+    }
+
+    .search-clear-btn {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: #ccc;
     }
 
     /* Responsive adjustments */
     @media (max-width: 768px) {
-        .table-responsive {
-            font-size: 0.875rem;
+        .premium-search-input {
+            padding: 15px 40px 15px 45px !important;
         }
-
-        .input-group-sm {
-            flex-wrap: nowrap;
-        }
-
-        .card-header {
-            padding: 0.75rem 1rem;
-        }
-
-        .modal-dialog {
-            margin: 0.5rem;
-        }
-    }
-
-    /* Stock warning */
-    .text-info small {
-        font-size: 0.75rem;
-    }
-
-    /* Hide print-only elements on screen */
-    @media screen {
-        .print-only-header {
-            display: none !important;
-        }
-    }
-
-    /* ============================================
-       PROFESSIONAL PRINT STYLES FOR SALE RECEIPT
-       ============================================ */
-    @media print {
-
-        /* Hide everything except receipt */
-        body * {
-            visibility: hidden !important;
-        }
-
-        #saleReceiptPrintContent,
-        #saleReceiptPrintContent * {
-            visibility: visible !important;
-        }
-
-        #saleReceiptPrintContent {
-            position: absolute !important;
-            left: 0 !important;
-            top: 0 !important;
-            width: 210mm !important;
-            padding: 10mm 15mm !important;
-            background: white !important;
-            color: #000 !important;
-        }
-
-        /* Hide screen elements */
-        .screen-only-header,
-        .modal-header,
-        .modal-footer,
-        .btn,
-        .btn-close,
-        .badge,
-        .card {
-            display: none !important;
-            visibility: hidden !important;
-        }
-
-        /* Show print header */
-        .print-only-header {
-            display: block !important;
-            visibility: visible !important;
-        }
-
-        /* Invoice info layout */
-        .invoice-info-row {
-            display: flex !important;
-            margin-bottom: 15px !important;
-            font-size: 11px !important;
-        }
-
-        .invoice-info-row .col-6 {
-            flex: 0 0 50% !important;
-            max-width: 50% !important;
-        }
-
-        .invoice-info-row p {
-            margin: 2px 0 !important;
-            line-height: 1.4 !important;
-        }
-
-        .invoice-info-row table {
-            font-size: 11px !important;
-        }
-
-        .invoice-info-row td {
-            padding: 2px 0 !important;
-        }
-
-        /* Table styles */
-        .invoice-table {
-            width: 100% !important;
-            border-collapse: collapse !important;
-            margin: 10px 0 !important;
-            font-size: 10px !important;
-        }
-
-        .invoice-table th {
-            background-color: #f0f0f0 !important;
-            border: 1px solid #000 !important;
-            padding: 6px 8px !important;
-            font-weight: bold !important;
-            text-transform: uppercase !important;
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
-        }
-
-        .invoice-table td {
-            border: 1px solid #000 !important;
-            padding: 5px 8px !important;
-        }
-
-        .invoice-table tbody tr {
-            page-break-inside: avoid !important;
-        }
-
-        .invoice-table tfoot .totals-row td {
-            border-top: 1px solid #000 !important;
-            padding: 5px 8px !important;
-        }
-
-        .invoice-table tfoot .grand-total td {
-            border-top: 2px solid #000 !important;
-            font-size: 11px !important;
-            padding: 7px 8px !important;
-        }
-
-        /* Footer */
-        .invoice-footer {
-            margin-top: 20px !important;
-            border-top: 1px solid #000 !important;
-            padding-top: 10px !important;
-            font-size: 10px !important;
-        }
-
-        .invoice-footer p {
-            margin: 2px 0 !important;
-        }
-
-        /* Text alignment */
-        .text-end {
-            text-align: right !important;
-        }
-
-        .text-center {
-            text-align: center !important;
-        }
-
-        /* Page setup */
-        @page {
-            size: A4 portrait !important;
-            margin: 0 !important;
-        }
-
-        body {
-            margin: 0 !important;
-            padding: 0 !important;
+        .search-icon {
+            left: 15px;
         }
     }
 </style>
@@ -842,37 +711,37 @@
 
 @push('scripts')
 <script>
-    // Print function for sale system
-    function openPrintWindow(saleId) {
-        const printUrl = '/admin/print/sale/' + saleId;
-        const printWindow = window.open(printUrl, '_blank', 'width=800,height=600');
-        if (printWindow) {
-            printWindow.focus();
-        }
+    function salesPage() {
+        return {
+            init() {
+                Livewire.on('focus-search', () => {
+                    this.$nextTick(() => {
+                        const searchInput = document.getElementById('productSearchInput');
+                        if (searchInput) searchInput.focus();
+                    });
+                });
+
+                this.$nextTick(() => {
+                    const searchInput = document.getElementById('productSearchInput');
+                    if (searchInput) searchInput.focus();
+                });
+            }
+        };
     }
 
-    // Auto-close alerts after 5 seconds
-    document.addEventListener('livewire:initialized', () => {
-        const alerts = document.querySelectorAll('.alert');
-        alerts.forEach(alert => {
-            setTimeout(() => {
-                const bsAlert = new bootstrap.Alert(alert);
-                bsAlert.close();
-            }, 5000);
-        });
+    function openPrintWindow(saleId) {
+        const printUrl = '/admin/print/sale/' + saleId;
+        window.open(printUrl, '_blank', 'width=800,height=600');
+    }
+
+    document.addEventListener('keydown', function(e) {
+        if (e.target.id === 'productSearchInput' && e.key === 'Enter') {
+            e.preventDefault();
+        }
     });
 
-    // Prevent form submission on enter key in search
-    document.addEventListener('keydown', function(e) {
-        if (e.target.type === 'text' && e.target.getAttribute('wire:model') === 'search') {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-            }
-        }
-
-        window.addEventListener('refreshPage', () => {
-            window.location.reload();
-        });
+    window.addEventListener('refreshPage', () => {
+        window.location.reload();
     });
 </script>
 @endpush
