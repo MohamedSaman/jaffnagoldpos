@@ -11,6 +11,7 @@ use App\Models\Customer;
 use App\Models\SaleItem;
 use App\Models\ProductStock;
 use App\Models\ReturnsProduct;
+use App\Models\DeliverySale;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -26,6 +27,7 @@ class SalesList extends Component
     public $search = '';
     public $selectedSale = null;
     public $paymentStatusFilter = 'all';
+    public $deliveryStatusFilter = 'all';
     public $dateFilter = '';
     public $showViewModal = false;
     public $showEditModal = false;
@@ -40,6 +42,12 @@ class SalesList extends Component
     public $editDueAmount;
     public $editPaidAmount;
     public $editPayBalanceAmount = 0;
+
+    // Delivery edit properties
+    public $editDeliveryStatus;
+    public $editDeliveryMethod;
+    public $editPaymentMethod;
+    public $editCustomerDetails;
 
     // Return properties
     public $returnItems = [];
@@ -61,6 +69,11 @@ class SalesList extends Component
         $this->resetPage();
     }
 
+    public function updatedDeliveryStatusFilter()
+    {
+        $this->resetPage();
+    }
+
     public function updatedDateFilter()
     {
         $this->resetPage();
@@ -72,6 +85,7 @@ class SalesList extends Component
             'customer',
             'items',
             'user',
+            'deliverySale',
             'returns' => function ($q) {
                 $q->with('product');
             }
@@ -89,7 +103,7 @@ class SalesList extends Component
 
     public function editSale($saleId)
     {
-        $query = Sale::with(['customer'])->where('sale_type', $this->getSaleType());
+        $query = Sale::with(['customer', 'deliverySale'])->where('sale_type', $this->getSaleType());
         if ($this->isStaff()) {
             $query->where('user_id', Auth::id());
         }
@@ -103,6 +117,14 @@ class SalesList extends Component
             $this->editDueAmount = $sale->due_amount;
             $this->editPaidAmount = $sale->total_amount - $sale->due_amount;
             $this->editPayBalanceAmount = 0;
+
+            // Load delivery sale info
+            if ($sale->deliverySale) {
+                $this->editDeliveryStatus = $sale->deliverySale->status;
+                $this->editDeliveryMethod = $sale->deliverySale->delivery_method;
+                $this->editPaymentMethod = $sale->deliverySale->payment_method;
+                $this->editCustomerDetails = $sale->deliverySale->customer_details;
+            }
 
             $this->showEditModal = true;
             $this->dispatch('showModal', 'editModal');
@@ -309,7 +331,7 @@ class SalesList extends Component
         ]);
 
         try {
-            $sale = Sale::find($this->editSaleId);
+            $sale = Sale::with('deliverySale')->find($this->editSaleId);
 
             if ($sale) {
                 $totalAmount = $sale->total_amount;
@@ -327,6 +349,16 @@ class SalesList extends Component
                     'due_amount' => $dueAmount,
                     'payment_type' => $this->editPaymentStatus === 'paid' ? 'full' : 'partial',
                 ]);
+
+                // Update delivery sale details
+                if ($sale->deliverySale) {
+                    $sale->deliverySale->update([
+                        'status' => $this->editDeliveryStatus,
+                        'delivery_method' => $this->editDeliveryMethod,
+                        'payment_method' => $this->editPaymentMethod,
+                        'customer_details' => $this->editCustomerDetails,
+                    ]);
+                }
 
                 $this->showEditModal = false;
                 $this->resetEditForm();
@@ -409,9 +441,12 @@ class SalesList extends Component
         }
         // Store sale ID in session for print route
         session(['print_sale_id' => $sale->id]);
-        // Open print page in new window
-        $printUrl = route('admin.print.sale', $sale->id);
-        $this->js("window.open('$printUrl', '_blank', 'width=800,height=600');");
+        // Open invoice print page in new window
+
+
+        // Also open delivery label print page in new window
+        $deliveryLabelUrl = route('admin.print.delivery-label', $sale->id);
+        $this->js("setTimeout(() => { window.open('$deliveryLabelUrl', '_blank', 'width=500,height=700'); }, 500);");
     }
 
     public function downloadInvoice($saleId)
@@ -478,19 +513,34 @@ class SalesList extends Component
         $this->editDueAmount = 0;
         $this->editPaidAmount = 0;
         $this->editPayBalanceAmount = 0;
+        $this->editDeliveryStatus = '';
+        $this->editDeliveryMethod = '';
+        $this->editPaymentMethod = '';
+        $this->editCustomerDetails = '';
+    }
+
+    public function updateDeliveryStatus($saleId, $status)
+    {
+        try {
+            $sale = Sale::with('deliverySale')->where('sale_type', $this->getSaleType())->find($saleId);
+            if ($sale && $sale->deliverySale) {
+                $sale->deliverySale->update(['status' => $status]);
+                $this->dispatch('showToast', ['type' => 'success', 'message' => 'Delivery status updated to ' . $status . '!']);
+            }
+        } catch (\Exception $e) {
+            $this->dispatch('showToast', ['type' => 'error', 'message' => 'Error: ' . $e->getMessage()]);
+        }
     }
 
     public function getSalesProperty()
     {
-        $query = Sale::with(['customer', 'user', 'items', 'returns']);
+        $query = Sale::with(['customer', 'user', 'items', 'returns', 'deliverySale']);
 
         // Filter by sale_type and user_id based on role
         if ($this->isStaff()) {
-            // Staff sees only their own sales
             $query->where('user_id', Auth::id())
                 ->where('sale_type', 'staff');
         } else {
-            // Admin sees admin sales
             $query->where('sale_type', 'admin');
         }
 
@@ -501,11 +551,19 @@ class SalesList extends Component
                     ->orWhereHas('customer', function ($customerQuery) {
                         $customerQuery->where('name', 'like', '%' . $this->search . '%')
                             ->orWhere('phone', 'like', '%' . $this->search . '%');
+                    })
+                    ->orWhereHas('deliverySale', function ($deliveryQuery) {
+                        $deliveryQuery->where('delivery_barcode', 'like', '%' . $this->search . '%');
                     });
             });
         })
             ->when($this->paymentStatusFilter !== 'all', function ($query) {
                 $query->where('payment_status', $this->paymentStatusFilter);
+            })
+            ->when($this->deliveryStatusFilter !== 'all', function ($query) {
+                $query->whereHas('deliverySale', function ($q) {
+                    $q->where('status', $this->deliveryStatusFilter);
+                });
             })
             ->when($this->dateFilter, function ($query) {
                 $query->whereDate('created_at', $this->dateFilter);

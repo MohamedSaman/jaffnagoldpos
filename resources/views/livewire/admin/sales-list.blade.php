@@ -3,13 +3,13 @@
     <div class="d-flex justify-content-between align-items-center mb-5">
         <div>
             <h3 class="fw-bold text-dark mb-2">
-                <i class="bi bi-cash-stack text-success me-2"></i> Admin Sales Management
+                <i class="bi bi-truck text-success me-2"></i> Delivery Sales Management
             </h3>
-            <p class="text-muted mb-0">View and manage admin sales</p>
+            <p class="text-muted mb-0">View and manage delivery sales</p>
         </div>
         <div>
             <a href="{{ route('admin.sales-system') }}" class="btn btn-primary">
-                <i class="bi bi-plus-circle me-2"></i> New Admin Sale
+                <i class="bi bi-plus-circle me-2"></i> New Delivery Sale
             </a>
         </div>
     </div>
@@ -77,23 +77,34 @@
     <div class="card mb-4">
         <div class="card-body">
             <div class="row g-3">
-                <div class="col-md-4">
-                    <label class="form-label fw-semibold">Search</label>
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">Search (Barcode / Invoice / Customer)</label>
                     <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-search"></i></span>
+                        <span class="input-group-text"><i class="bi bi-upc-scan"></i></span>
                         <input type="text" class="form-control"
-                            placeholder="Search by invoice, customer name or phone..."
+                            placeholder="Scan barcode or search..."
                             wire:model.live="search">
                     </div>
                 </div>
 
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <label class="form-label fw-semibold">Payment Status</label>
                     <select class="form-select" wire:model.live="paymentStatusFilter">
-                        <option value="all">All Status</option>
+                        <option value="all">All</option>
                         <option value="paid">Paid</option>
                         <option value="partial">Partial</option>
                         <option value="pending">Pending</option>
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label fw-semibold">Delivery Status</label>
+                    <select class="form-select" wire:model.live="deliveryStatusFilter">
+                        <option value="all">All</option>
+                        <option value="Processing">Processing</option>
+                        <option value="Shipped">Shipped</option>
+                        <option value="Delivered">Delivered</option>
+                        <option value="Cancelled">Cancelled</option>
                     </select>
                 </div>
 
@@ -105,8 +116,8 @@
                 <div class="col-md-2">
                     <label class="form-label fw-semibold invisible">Actions</label>
                     <button class="btn btn-outline-secondary w-100"
-                        wire:click="$set('dateFilter', '')">
-                        <i class="bi bi-arrow-clockwise me-1"></i> Reset
+                        wire:click="$set('dateFilter', ''); $set('deliveryStatusFilter', 'all'); $set('paymentStatusFilter', 'all'); $set('search', '')">
+                        <i class="bi bi-arrow-clockwise me-1"></i> Reset All
                     </button>
                 </div>
             </div>
@@ -118,7 +129,7 @@
         <div class="card-header d-flex justify-content-between align-items-center">
             <div>
                 <h5 class="fw-bold mb-0">
-                    <i class="bi bi-list-ul text-primary me-2"></i> Admin Sales List
+                    <i class="bi bi-list-ul text-primary me-2"></i> Delivery Sales List
                 </h5>
                 <span class="badge bg-primary">{{ $sales->total() }} records</span>
             </div>
@@ -142,118 +153,108 @@
                     <thead class="table-light">
                         <tr>
                             <th class="ps-4">Invoice</th>
-                            <th>Customer</th>
-                            <th>User</th>
+                            <th>Delivery Barcode</th>
+                            <th>Customer Details</th>
                             <th class="text-center">Date</th>
                             <th class="text-center">Amount</th>
-                            <th class="text-center">Payment Status</th>
-                            <th class="text-center">Sale Type</th>
+                            <th class="text-center">Delivery</th>
+                            <th class="text-center">Payment</th>
+                            <th class="text-center">Delivery Status</th>
                             <th class="text-end pe-4">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($sales as $sale)
-                        <tr wire:key="sale-{{ $sale->id }}" style="cursor:pointer">
-                            <td class="ps-4" wire:click="viewSale({{ $sale->id }})">
+                        <tr wire:key="sale-{{ $sale->id }}">
+                            <td class="ps-4" wire:click="viewSale({{ $sale->id }})" style="cursor:pointer">
                                 <div class="fw-bold text-primary">{{ $sale->invoice_number }}</div>
                                 <small class="text-muted">#{{ $sale->sale_id }}</small>
                             </td>
-                            <td wire:click="viewSale({{ $sale->id }})">
-                                @if($sale->customer)
+                            <td wire:click="viewSale({{ $sale->id }})" style="cursor:pointer">
+                                @if($sale->deliverySale)
+                                <span class="badge bg-dark font-monospace">{{ $sale->deliverySale->delivery_barcode }}</span>
+                                @else
+                                <span class="text-muted">-</span>
+                                @endif
+                            </td>
+                            <td wire:click="viewSale({{ $sale->id }})" style="cursor:pointer">
+                                @if($sale->deliverySale && $sale->deliverySale->customer_details)
+                                <div class="text-truncate" style="max-width: 180px;" title="{{ $sale->deliverySale->customer_details }}">
+                                    {{ $sale->deliverySale->customer_details }}
+                                </div>
+                                @elseif($sale->customer)
                                 <div class="fw-medium">{{ $sale->customer->name }}</div>
                                 <small class="text-muted">{{ $sale->customer->phone }}</small>
                                 @else
-                                <span class="text-muted">Walk-in Customer</span>
+                                <span class="text-muted">-</span>
                                 @endif
                             </td>
-                            <td wire:click="viewSale({{ $sale->id }})">
-                                @if($sale->user)
-                                <div class="fw-medium">{{ $sale->user->name }}</div>
-                                <small class="badge {{ $sale->user->role === 'admin' ? 'bg-danger' : 'bg-warning' }}">
-                                    {{ ucfirst($sale->user->role) }}
-                                </small>
-                                @else
-                                <span class="text-muted">Unknown</span>
+                            <td class="text-center" wire:click="viewSale({{ $sale->id }})" style="cursor:pointer">
+                                {{ $sale->created_at->format('M d, Y') }}
+                            </td>
+                            <td class="text-center fw-bold" wire:click="viewSale({{ $sale->id }})" style="cursor:pointer">
+                                Rs.{{ number_format($sale->total_amount, 2) }}
+                            </td>
+                            <td class="text-center" wire:click="viewSale({{ $sale->id }})" style="cursor:pointer">
+                                @if($sale->deliverySale)
+                                <span class="badge bg-secondary">{{ $sale->deliverySale->delivery_method }}</span>
                                 @endif
                             </td>
-                            <td class="text-center" wire:click="viewSale({{ $sale->id }})">{{ $sale->created_at->format('M d, Y') }}</td>
-                            <td class="text-center fw-bold" wire:click="viewSale({{ $sale->id }})">Rs.{{ number_format($sale->total_amount, 2) }}</td>
-                            <td class="text-center" wire:click="viewSale({{ $sale->id }})">
-                                <span class="badge bg-{{ $sale->payment_status == 'paid' ? 'success' : ($sale->payment_status == 'partial' ? 'warning' : 'danger') }}">
-                                    {{ ucfirst($sale->payment_status) }}
-                                </span>
+                            <td class="text-center" wire:click="viewSale({{ $sale->id }})" style="cursor:pointer">
+                                @if($sale->deliverySale)
+                                <span class="badge bg-info text-dark">{{ $sale->deliverySale->payment_method }}</span>
+                                @endif
                             </td>
-                            <td class="text-center" wire:click="viewSale({{ $sale->id }})"><span class="badge bg-warning">{{ strtoupper($sale->sale_type) }}</span></td>
+                            <td class="text-center">
+                                @if($sale->deliverySale)
+                                @php
+                                    $statusColors = [
+                                        'Processing' => 'warning',
+                                        'Shipped' => 'primary',
+                                        'Delivered' => 'success',
+                                        'Cancelled' => 'danger',
+                                    ];
+                                    $color = $statusColors[$sale->deliverySale->status] ?? 'secondary';
+                                @endphp
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-{{ $color }} dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                        {{ $sale->deliverySale->status }}
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end">
+                                        <li><button class="dropdown-item" wire:click="updateDeliveryStatus({{ $sale->id }}, 'Processing')"><i class="bi bi-clock text-warning me-2"></i>Processing</button></li>
+                                        <li><button class="dropdown-item" wire:click="updateDeliveryStatus({{ $sale->id }}, 'Shipped')"><i class="bi bi-truck text-primary me-2"></i>Shipped</button></li>
+                                        <li><button class="dropdown-item" wire:click="updateDeliveryStatus({{ $sale->id }}, 'Delivered')"><i class="bi bi-check-circle text-success me-2"></i>Delivered</button></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><button class="dropdown-item" wire:click="updateDeliveryStatus({{ $sale->id }}, 'Cancelled')"><i class="bi bi-x-circle text-danger me-2"></i>Cancelled</button></li>
+                                    </ul>
+                                </div>
+                                @endif
+                            </td>
                             <td class="text-end pe-4">
                                 <div class="dropdown">
                                     <button class="btn btn-sm btn-outline-secondary dropdown-toggle"
                                         type="button"
                                         data-bs-toggle="dropdown"
                                         aria-expanded="false">
-                                        <i class="bi bi-gear-fill"></i> Actions
+                                        <i class="bi bi-gear-fill"></i>
                                     </button>
-
                                     <ul class="dropdown-menu dropdown-menu-end">
-                                        <!-- Download Invoice -->
-                                        <li>
-                                            <button class="dropdown-item"
-                                                wire:click="downloadInvoice({{ $sale->id }})"
-                                                wire:loading.attr="disabled"
-                                                wire:target="downloadInvoice({{ $sale->id }})">
-
-                                                <span wire:loading wire:target="downloadInvoice({{ $sale->id }})">
-                                                    <i class="spinner-border spinner-border-sm me-2"></i>
-                                                    Loading...
-                                                </span>
-                                                <span wire:loading.remove wire:target="downloadInvoice({{ $sale->id }})">
-                                                    <i class="bi bi-download text-success me-2"></i>
-                                                    Download Invoice
-                                                </span>
-                                            </button>
-                                        </li>
-                                        <li>
-                                            <button class="dropdown-item"
-                                                wire:click="printInvoice({{ $sale->id }})"
-                                                wire:loading.attr="disabled"
-                                                wire:target="printInvoice({{ $sale->id }})">
-
-                                                <span wire:loading wire:target="printInvoice({{ $sale->id }})">
-                                                    <i class="spinner-border spinner-border-sm me-2"></i>
-                                                    Loading...
-                                                </span>
-                                                <span wire:loading.remove wire:target="printInvoice({{ $sale->id }})">
-                                                    <i class="bi bi-download text-success me-2"></i>
-                                                    Print
-                                                </span>
-                                            </button>
-                                        </li>
-
-                                        <!-- Delete Sale -->
-                                        <li>
-                                            <button class="dropdown-item"
-                                                wire:click="deleteSale({{ $sale->id }})"
-                                                wire:loading.attr="disabled"
-                                                wire:target="deleteSale({{ $sale->id }})">
-
-                                                <span wire:loading wire:target="deleteSale({{ $sale->id }})">
-                                                    <i class="spinner-border spinner-border-sm me-2"></i>
-                                                    Loading...
-                                                </span>
-                                                <span wire:loading.remove wire:target="deleteSale({{ $sale->id }})">
-                                                    <i class="bi bi-trash text-danger me-2"></i>
-                                                    Delete
-                                                </span>
-                                            </button>
-                                        </li>
+                                        <li><button class="dropdown-item" wire:click="viewSale({{ $sale->id }})"><i class="bi bi-eye text-primary me-2"></i>View</button></li>
+                                        <li><button class="dropdown-item" wire:click="editSale({{ $sale->id }})"><i class="bi bi-pencil-square text-info me-2"></i>Edit</button></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><button class="dropdown-item" wire:click="printInvoice({{ $sale->id }})"><i class="bi bi-printer text-success me-2"></i>Print</button></li>
+                                        <li><button class="dropdown-item" wire:click="downloadInvoice({{ $sale->id }})"><i class="bi bi-download text-success me-2"></i>Download PDF</button></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><button class="dropdown-item" wire:click="deleteSale({{ $sale->id }})"><i class="bi bi-trash text-danger me-2"></i>Delete</button></li>
                                     </ul>
                                 </div>
                             </td>
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="7" class="text-center text-muted py-4">
+                            <td colspan="9" class="text-center text-muted py-4">
                                 <i class="bi bi-cart-x display-4 d-block mb-2"></i>
-                                No admin sales found.
+                                No delivery sales found.
                             </td>
                         </tr>
                         @endforelse
@@ -286,7 +287,7 @@
 
                         {{-- Center: Company Name --}}
                         <div class="text-center" style="flex: 1;">
-                            <h2 class="mb-0 fw-bold" style="font-size: 2.5rem; letter-spacing: 2px;">JaffnaGold (PVT) LTD</h2>
+                            <h2 class="mb-0 fw-bold" style="font-size: 2rem; letter-spacing: 2px;">JaffnaGold (PVT) LTD</h2>
                             <p class="mb-0 text-muted small">Gold Shop</p>
                         </div>
 
@@ -304,10 +305,17 @@
                     {{-- ==================== CUSTOMER + INVOICE INFO ==================== --}}
                     <div class="row mb-3">
                         <div class="col-6">
-                            <strong>Customer :</strong><br>
-                            {{ $selectedSale->customer->name ?? 'Walk-in Customer' }}<br>
-                            {{ $selectedSale->customer->address ?? '' }}<br>
-                            Tel: {{ $selectedSale->customer->phone ?? '' }}
+                        
+                            @if($selectedSale->deliverySale && $selectedSale->deliverySale->customer_details)
+                            
+                            <strong>Delivery Customer Info:</strong><br>
+                            <span style="white-space: pre-wrap;">{{ $selectedSale->deliverySale->customer_details }}</span>
+                            @endif
+                            
+                            <br>
+                        
+                            <strong>Created By :</strong>
+                            <span style="white-space: pre-wrap;">{{ $selectedSale->user->name ?? 'System' }}</span>
                         </div>
                         <div class="col-6 text-end">
                             <table class="table table-sm table-borderless">
@@ -315,22 +323,40 @@
                                     <td><strong>Invoice #</strong></td>
                                     <td>{{ $selectedSale->invoice_number }}</td>
                                 </tr>
-                                <tr>
-                                    <td><strong>Sale ID</strong></td>
-                                    <td>{{ $selectedSale->sale_id }}</td>
-                                </tr>
+                                
                                 <tr>
                                     <td><strong>Date</strong></td>
                                     <td>{{ $selectedSale->created_at->format('M d, Y h:i A') }}</td>
                                 </tr>
+                                @if($selectedSale->deliverySale)
+                                <tr>
+                                    <td><strong>Barcode</strong></td>
+                                    <td><span class="badge bg-dark font-monospace">{{ $selectedSale->deliverySale->delivery_barcode }}</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Delivery</strong></td>
+                                    <td><span class="badge bg-secondary">{{ $selectedSale->deliverySale->delivery_method }}</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Payment</strong></td>
+                                    <td><span class="badge bg-info text-dark">{{ $selectedSale->deliverySale->payment_method }}</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Status</strong></td>
+                                    <td>
+                                        @php
+                                            $sc = ['Processing'=>'warning','Shipped'=>'primary','Delivered'=>'success','Cancelled'=>'danger'];
+                                        @endphp
+                                        <span class="badge bg-{{ $sc[$selectedSale->deliverySale->status] ?? 'secondary' }}">{{ $selectedSale->deliverySale->status }}</span>
+                                    </td>
+                                </tr>
+                                @else
                                 <tr>
                                     <td><strong>Sale Type</strong></td>
                                     <td><span class="badge bg-warning">{{ strtoupper($selectedSale->sale_type) }}</span></td>
                                 </tr>
-                                <tr>
-                                    <td><strong>Created By</strong></td>
-                                    <td>{{ $selectedSale->user->name ?? 'System' }}</td>
-                                </tr>
+                                @endif
+                                
                             </table>
                         </div>
                     </div>
@@ -342,7 +368,7 @@
                                 <tr>
                                     <th style="width: 5%;">#</th>
                                     <th style="width: 25%;">Product</th>
-                                    <th class="text-center" style="width: 10%;">Code</th>
+                                    
                                     <th class="text-center" style="width: 12%;">Quantity</th>
                                     <th class="text-end" style="width: 15%;">Unit Price</th>
                                     <th class="text-end" style="width: 15%;">Discount</th>
@@ -354,7 +380,7 @@
                                 <tr>
                                     <td>{{ $i + 1 }}</td>
                                     <td>{{ $item->product_name }}</td>
-                                    <td class="text-center">{{ $item->product_code }}</td>
+                                    
                                     <td class="text-center">{{ $item->quantity }}</td>
                                     <td class="text-end">Rs.{{ number_format($item->unit_price, 2) }}</td>
                                     <td class="text-end">Rs.{{ number_format($item->discount_per_unit * $item->quantity, 2) }}</td>
@@ -443,6 +469,7 @@
                     @endif
 
                     {{-- ==================== GRAND TOTAL & DUE AMOUNT ==================== --}}
+                    @if(isset($selectedSale->returns) && count($selectedSale->returns) > 0)
                     <div class="row">
                         <div class="col-7"></div>
                         <div class="col-5">
@@ -451,7 +478,7 @@
                                     <td><strong>Grand Total</strong></td>
                                     <td class="text-end">Rs.{{ number_format($selectedSale->total_amount, 2) }}</td>
                                 </tr>
-                                @if(isset($selectedSale->returns) && count($selectedSale->returns) > 0)
+                                
                                 <tr>
                                     <td><strong>Net Amount</strong></td>
                                     <td class="text-end fw-bold">
@@ -464,7 +491,7 @@
                                         @endphp
                                     </td>
                                 </tr>
-                                @endif
+                               
                                 <tr>
                                     <td><strong>Due Amount</strong></td>
                                     <td class="text-end">Rs.{{ number_format($selectedSale->due_amount, 2) }}</td>
@@ -472,6 +499,7 @@
                             </table>
                         </div>
                     </div>
+                     @endif
 
                     @if($selectedSale->notes)
                     <h6 class="text-muted mb-2">NOTES</h6>
@@ -528,6 +556,112 @@
                             </button>
                         </div>
                         @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- ==================== EDIT SALE MODAL ==================== --}}
+        <div wire:ignore.self class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true" data-bs-backdrop="static">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header bg-dark text-white">
+                        <h5 class="modal-title fw-bold">
+                            <i class="bi bi-pencil-square me-2"></i> Edit Delivery Sale
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" wire:click="closeModals"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row g-3">
+                            {{-- Delivery Status --}}
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Delivery Status</label>
+                                <select class="form-select" wire:model.live="editDeliveryStatus">
+                                    <option value="Processing">Processing</option>
+                                    <option value="Shipped">Shipped</option>
+                                    <option value="Delivered">Delivered</option>
+                                    <option value="Cancelled">Cancelled</option>
+                                </select>
+                            </div>
+
+                            {{-- Payment Status --}}
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Payment Status</label>
+                                <select class="form-select" wire:model.live="editPaymentStatus">
+                                    <option value="paid">Paid</option>
+                                    <option value="partial">Partial</option>
+                                    <option value="pending">Pending</option>
+                                </select>
+                            </div>
+
+                            {{-- Delivery Method --}}
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Delivery Method</label>
+                                <select class="form-select" wire:model="editDeliveryMethod">
+                                    <option value="Standard">Standard</option>
+                                    <option value="Express">Express</option>
+                                    <option value="Same Day">Same Day</option>
+                                    <option value="Pickup">Pickup</option>
+                                </select>
+                            </div>
+
+                            {{-- Payment Method --}}
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Payment Method</label>
+                                <select class="form-select" wire:model="editPaymentMethod">
+                                    <option value="Cash">Cash</option>
+                                    <option value="Card">Card</option>
+                                    <option value="Bank Transfer">Bank Transfer</option>
+                                    <option value="Cheque">Cheque</option>
+                                </select>
+                            </div>
+
+                            {{-- Customer Details --}}
+                            <div class="col-12">
+                                <label class="form-label fw-semibold">Customer Details</label>
+                                <textarea class="form-control" wire:model="editCustomerDetails" rows="3" placeholder="Customer name, address, phone..."></textarea>
+                            </div>
+
+                            {{-- Notes --}}
+                            <div class="col-12">
+                                <label class="form-label fw-semibold">Notes</label>
+                                <textarea class="form-control" wire:model="editNotes" rows="2" placeholder="Optional notes..."></textarea>
+                            </div>
+
+                            {{-- Payment Balance Section --}}
+                            @if($editDueAmount > 0)
+                            <div class="col-12">
+                                <div class="card bg-light">
+                                    <div class="card-body">
+                                        <h6 class="fw-bold mb-3"><i class="bi bi-cash-coin me-2"></i>Payment Balance</h6>
+                                        <div class="row g-2 align-items-center">
+                                            <div class="col-md-4">
+                                                <label class="form-label small fw-semibold">Due Amount</label>
+                                                <input type="text" class="form-control" value="Rs.{{ number_format($editDueAmount, 2) }}" readonly>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label small fw-semibold">Pay Balance</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text">Rs</span>
+                                                    <input type="number" class="form-control" wire:model.live="editPayBalanceAmount" min="0" step="0.01">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4 d-flex gap-2 mt-4">
+                                                <button class="btn btn-success btn-sm" wire:click="payFullBalance">Pay Full</button>
+                                                <button class="btn btn-outline-secondary btn-sm" wire:click="resetPayBalance">Reset</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            @endif
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" wire:click="closeModals">Cancel</button>
+                        <button type="button" class="btn btn-primary" wire:click="updateSale">
+                            <i class="bi bi-check-circle me-1"></i> Update Sale
+                        </button>
                     </div>
                 </div>
             </div>

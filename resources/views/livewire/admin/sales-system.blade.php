@@ -371,8 +371,11 @@
                     </div>
                 </div>
                 <div class="modal-footer bg-black border-top-0 gap-2">
-                    <button type="button" class="btn btn-outline-gold" onclick="openPrintWindow({{ $createdSale->id }})">
+                    <!-- <button type="button" class="btn btn-outline-gold" onclick="openPrintWindow({{ $createdSale->id }})">
                         <i class="bi bi-printer me-2"></i>PRINT RECEIPT
+                    </button> -->
+                    <button type="button" class="btn btn-outline-gold" onclick="openDeliveryPrintWindow({{ $createdSale->id }})">
+                        <i class="bi bi-upc-scan me-2"></i>PRINT LABEL
                     </button>
                     <button type="button" class="btn btn-gold-premium" wire:click="createNewSale">
                         NEW SALE
@@ -658,6 +661,11 @@
     function openPrintWindow(saleId) {
         const printUrl = '/admin/print/sale/' + saleId;
         window.open(printUrl, '_blank', 'width=800,height=600');
+    }
+
+    function openDeliveryPrintWindow(saleId) {
+        const printUrl = '/admin/print/delivery-label/' + saleId;
+        window.open(printUrl, '_blank', 'width=500,height=700');
     }
 
     document.addEventListener('keydown', function(e) {
