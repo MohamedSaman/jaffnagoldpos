@@ -10,6 +10,13 @@
          <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
         <!-- Scripts -->
         <style>
+            :root {
+                --primary: #D4AF37;
+                --primary-dark: #B8860B;
+                --black: #000000;
+                --white: #ffffff;
+            }
+
             /* Login page styling */
             .login-container {
                 height: 100vh;
@@ -19,6 +26,7 @@
                 align-items: center;
                 justify-content: center;
                 overflow: hidden;
+                background-color: #fcfcfc;
             }
 
             .background-image {
@@ -27,146 +35,89 @@
                 left: 0;
                 width: 100%;
                 height: 100%;
-                background-image: url('{{ asset('/images/bgproduct.jpg') }}');
+                background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('{{ asset('/images/bgproduct.jpg') }}');
                 background-size: cover;
                 background-position: center;
                 z-index: 0;
             }
 
             .login-form-overlay {
-                background: rgba(255, 255, 255, 0.308);
+                background: rgba(255, 255, 255, 0.95);
                 backdrop-filter: blur(10px);
-                border-radius: 10px;
-                padding: 30px;
+                border-radius: 20px;
+                padding: 40px;
                 width: 100%;
-                max-width: 400px;
+                max-width: 450px;
                 z-index: 1;
-                box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+                border: 1px solid var(--primary);
             }
 
             .user-icon-container {
                 display: flex;
                 justify-content: center;
-                margin-bottom: 20px;
+                margin-bottom: 30px;
             }
 
             .user-icon-container i {
-                font-size: 3rem;
-                color: #304b8a;
-                background: #f0f0f0;
+                font-size: 2.5rem;
+                color: var(--primary);
+                background: var(--black);
                 border-radius: 50%;
-                width: 70px;
-                height: 70px;
+                width: 80px;
+                height: 80px;
                 display: flex;
                 align-items: center;
                 justify-content: center;
+                border: 2px solid var(--primary);
+                box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
             }
 
             .form-group {
-                margin-bottom: 20px;
+                margin-bottom: 25px;
             }
 
             .form-control {
-                border-radius: 25px;
+                border-radius: 10px;
                 padding: 12px 20px;
                 border: 1px solid #ddd;
+                transition: all 0.3s;
             }
 
-            /* Invalid state: red border */
-            .form-control.is-invalid {
-                border-color: #dc3545 !important;
-                box-shadow: 0 0 0 0.15rem rgba(220,53,69,0.1);
-            }
-
-            /* Shake animation for attention */
-            @keyframes shake {
-                0% { transform: translateX(0); }
-                25% { transform: translateX(-6px); }
-                50% { transform: translateX(6px); }
-                75% { transform: translateX(-4px); }
-                100% { transform: translateX(0); }
-            }
-
-            .shake {
-                animation: shake 0.45s cubic-bezier(.36,.07,.19,.97);
-            }
-
-            .form-options {
-                margin-bottom: 20px;
-                font-size: 0.9rem;
-            }
-
-            .forgot-link {
-                color: #304b8a;
-                text-decoration: none;
+            .form-control:focus {
+                border-color: var(--primary);
+                box-shadow: 0 0 0 0.25rem rgba(212, 175, 55, 0.1);
             }
 
             .login-btn {
                 width: 100%;
-                border-radius: 25px;
-                padding: 10px;
-                background-color: #304b8a;
-                border: none;
-                font-weight: 600;
-                margin-bottom: 20px;
+                border-radius: 10px;
+                padding: 12px;
+                background-color: var(--black);
+                color: var(--primary);
+                border: 1px solid var(--primary);
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                transition: all 0.3s;
             }
 
-            .divider {
-                text-align: center;
-                margin: 20px 0;
-                position: relative;
+            .login-btn:hover {
+                background-color: var(--primary);
+                color: var(--black);
+                transform: translateY(-2px);
+                box-shadow: 0 10px 20px rgba(0,0,0,0.2);
             }
 
-            .divider::before,
-            .divider::after {
-                content: "";
-                position: absolute;
-                top: 50%;
-                width: 40%;
-                height: 1px;
-                background-color: #ddd;
-            }
-
-            .divider::before {
-                left: 0;
-            }
-
-            .divider::after {
-                right: 0;
-            }
-
-            .divider span {
-                display: inline-block;
-                padding: 0 10px;
-                background-color: #fff;
-                position: relative;
-                z-index: 1;
-                color: #777;
-                font-size: 0.9rem;
-            }
-
-            .social-login {
-                display: flex;
-                justify-content: center;
-                gap: 15px;
-            }
-
-            .social-icon {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                width: 35px;
-                height: 35px;
-                border-radius: 50%;
-                background-color: #f5f5f5;
-                color: #304b8a;
+            .forgot-link {
+                color: var(--black);
                 text-decoration: none;
-                transition: all 0.3s ease;
+                font-weight: 500;
+                transition: color 0.3s;
             }
 
-            .social-icon:hover {
-                transform: translateY(-3px);
-                box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+            .forgot-link:hover {
+                color: var(--primary-dark);
             }
         </style>
         <!-- Styles -->

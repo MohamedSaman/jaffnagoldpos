@@ -3,7 +3,7 @@
     <div class="d-flex justify-content-between align-items-center mb-5">
         <div>
             <h3 class="fw-bold text-dark mb-2">
-                <i class="bi bi-graph-up-arrow text-success me-2"></i> Day Summary Report
+                <i class="bi bi-graph-up-arrow text-gold me-2"></i> Day Summary Report
             </h3>
             <p class="text-muted mb-0">Track and manage your company revenue efficiently</p>
         </div>
@@ -24,24 +24,24 @@
     <div class="row mb-0">
         <!-- Cash in Hand Card - Blue -->
         <div class="col-xl-3 col-md-6 mb-2">
-            <div class="card gradient-card" style="background: linear-gradient(135deg, #2a83df 0%, #1a5fb8 100%);">
+            <div class="card gradient-card" style="background: linear-gradient(135deg, #1a1a1a 0%, #000000 100%);">
                 <div class="card-body text-white">
                     <div class="d-flex justify-content-between align-items-start mb-2">
-                        <h6 class="text-white-50 mb-0" style="font-size: 0.85rem; font-weight: 500; letter-spacing: 1px;">💰 OPENING CASH</h6>
+                        <h6 class="text-white-50 mb-0" style="font-size: 0.85rem; font-weight: 500; letter-spacing: 1px; color: #D4AF37 !important;">💰 OPENING CASH</h6>
                     </div>
-                    <h2 class="fw-bold mb-0" ">Rs. {{ number_format($openingCash, 2) }}</h2>
+                    <h2 class="fw-bold mb-0" style="color: #D4AF37;">Rs. {{ number_format($openingCash, 2) }}</h2>
                 </div>
             </div>
         </div>
 
         <!-- Cash Sales Card - Orange/Red -->
         <div class=" col-xl-3 col-md-6 mb-2">
-                        <div class="card gradient-card" style="background: linear-gradient(135deg, #f4511e 0%, #ff7043 100%);">
+                        <div class="card gradient-card" style="background: linear-gradient(135deg, #D4AF37 0%, #B8860B 100%);">
                             <div class="card-body text-white">
                                 <div class="d-flex justify-content-between align-items-start mb-2">
                                     <h6 class="text-white-50 mb-0" style="font-size: 0.85rem; font-weight: 500; letter-spacing: 1px;">💵 CASH SALES</h6>
                                 </div>
-                                <h2 class="fw-bold mb-0" ">Rs. {{ number_format($cashIncome, 2) }}</h2>
+                                <h2 class="fw-bold mb-0" style="color: #000000;">Rs. {{ number_format($cashIncome, 2) }}</h2>
                 </div>
             </div>
         </div>
@@ -125,16 +125,16 @@
 
                                                     <!-- Cash Sales List Table -->
                                                     <div class="card">
-                                                        <div class="card-header" style="background: linear-gradient(135deg, #198754 0%, #20c997 100%);">
-                                                            <h5 class="fw-bold text-white mb-0">
+                                                        <div class="card-header" style="background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%); border-bottom: 2px solid #D4AF37;">
+                                                            <h5 class="fw-bold text-gold mb-0">
                                                                 <i class="bi bi-cash-coin me-2"></i>💰 CASH SALES - TODAY
                                                             </h5>
                                                         </div>
                                                         <div class="card-body p-0 overflow-auto">
                                                             <div class="table-responsive">
                                                                 <table class="table table-hover mb-0">
-                                                                    <thead style="background: linear-gradient(135deg, #2a83df 0%, #1a5fb8 100%);">
-                                                                        <tr>
+                                                                    <thead style="background: #f8f9fa; border-bottom: 2px solid #D4AF37;">
+                                                                        <tr class="text-dark">
                                                                             <th class="ps-4">INV.NO</th>
                                                                             <th>PAY.REF</th>
                                                                             <th>CUSTOMER NAME</th>
@@ -479,7 +479,7 @@
                                 .table th {
                                     border-top: none;
                                     font-weight: 600;
-                                    color: #fff;
+                                    color: #000;
                                     font-size: 0.75rem;
                                     text-transform: uppercase;
                                     letter-spacing: 0.5px;
@@ -521,8 +521,8 @@
 
                                 .form-control:focus,
                                 .form-select:focus {
-                                    box-shadow: 0 0 0 3px rgba(25, 135, 84, 0.15);
-                                    border-color: #198754;
+                                    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
+                                    border-color: var(--primary);
                                 }
 
                                 .btn {

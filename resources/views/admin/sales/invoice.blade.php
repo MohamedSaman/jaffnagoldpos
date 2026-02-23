@@ -312,10 +312,10 @@
             <table>
                 <tr>
                     <td class="logo-section">
-                        <img src="{{ public_path('images/HARDMEN.png') }}" alt="Logo">
+                        <img src="{{ public_path('images/JaffnaGold.webp') }}" alt="Logo">
                     </td>
                     <td class="company-section">
-                        <h2>HARDMEN (PVT) LTD</h2>
+                        <h2>JaffnaGold (PVT) LTD</h2>
                         <p>TOOLS WITH POWER</p>
                     </td>
                     <td class="invoice-section">
@@ -500,7 +500,7 @@
             </table>
             <div class="info-section">
                 <p><strong>ADDRESS:</strong> 421/2, Doolmala, thihariya, Kalagedihena.</p>
-                <p><strong>TEL:</strong> (077) 9752950 | <strong>EMAIL:</strong> Hardmenlanka@gmail.com</p>
+                <p><strong>TEL:</strong> (077) 9752950 | <strong>EMAIL:</strong> JaffnaGoldlanka@gmail.com</p>
                 <p style="margin-top: 6px;"><strong>Goods return will be accepted within 10 days only. Electrical and body parts non-returnable.</strong></p>
             </div>
         </div>

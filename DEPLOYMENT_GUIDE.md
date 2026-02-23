@@ -5,7 +5,7 @@
 ### Step 1: Run Migrations
 
 ```bash
-cd "c:\Users\ABC\Desktop\WebXkey Project\Hardmen"
+cd "c:\Users\ABC\Desktop\WebXkey Project\JaffnaGold"
 php artisan migrate
 ```
 

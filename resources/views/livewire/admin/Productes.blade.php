@@ -18,12 +18,12 @@
         }
 
         .content-tab.active {
-            color: #f58320;
-            border-bottom-color: #f58320;
+            color: var(--primary);
+            border-bottom-color: var(--primary);
         }
 
         .content-tab:hover:not(.active) {
-            color: #f58320;
+            color: var(--primary);
             border-bottom-color: #dee2e6;
         }
 
@@ -153,8 +153,8 @@
 
         .form-control:focus,
         .form-select:focus {
-            box-shadow: 0 0 0 3px rgba(245, 131, 32, 0.15);
-            border-color: #f58320;
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
+            border-color: var(--primary);
         }
 
         /* Modern button styling */
@@ -166,13 +166,13 @@
         }
 
         .btn-primary {
-            background-color: #f58320;
-            border-color: #f58320;
+            background-color: var(--primary);
+            border-color: var(--primary);
         }
 
         .btn-primary:hover {
-            background-color: #d16d0e;
-            border-color: #d16d0e;
+            background-color: var(--primary-600);
+            border-color: var(--primary-600);
             transform: translateY(-2px);
         }
 
@@ -211,13 +211,13 @@
         }
 
         .nav-tabs-custom .nav-link.active {
-            color: #f58320;
-            border-bottom-color: #f58320;
+            color: var(--primary);
+            border-bottom-color: var(--primary);
             background-color: transparent;
         }
 
         .nav-tabs-custom .nav-link:hover {
-            color: #f58320;
+            color: var(--primary);
             border-bottom-color: #dee2e6;
         }
 

@@ -71,8 +71,8 @@
             font-weight: 600;
         }
 
-        .in-stock { background: #ecfdf5; color: #065f46; }
-        .low-stock { background: #fffbeb; color: #92400e; }
+        .in-stock { background: #000000; color: var(--primary); }
+        .low-stock { background: #FAF9F6; color: var(--primary-600); border: 1px solid var(--primary); }
         .out-of-stock { background: #fef2f2; color: #991b1b; }
 
         .progress {
@@ -89,7 +89,7 @@
         <div class="d-flex justify-content-between align-items-center mb-2">
             <div>
                 <h3 class="fw-bold text-dark mb-2">
-                    <i class="bi bi-speedometer2 text-success me-2"></i> Overview
+                    <i class="bi bi-speedometer2 text-gold me-2"></i> Overview
                 </h3>
                 <p class="text-muted mb-0">Get a complete view of your product performance and stock activity.</p>
             </div>
@@ -104,12 +104,12 @@
                     <div class="stat-value mb-3">Rs.{{ number_format($totalSales, 0) }}</div>
                     
                     <div class="progress mb-2">
-                        <div class="progress-bar bg-success" style="width: {{ $revenuePercentage }}%;"></div>
+                        <div class="progress-bar bg-gold" style="width: {{ $revenuePercentage }}%;"></div>
                     </div>
                     
                     <div class="d-flex justify-content-between align-items-center">
                         <small class="text-muted">Revenue: {{ $revenuePercentage }}%</small>
-                        <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2 py-1">
+                        <span class="badge bg-black text-gold border border-gold border-opacity-25 px-2 py-1">
                             Rs.{{ number_format($totalRevenue, 0) }}
                         </span>
                     </div>
@@ -288,11 +288,11 @@
                     labels: dailyLabels,
                     datasets: [{
                         label: 'Daily Sales (Rs.)',
-                        backgroundColor: 'rgba(245, 131, 32, 0.1)',
-                        borderColor: '#f58320',
+                        backgroundColor: 'rgba(212, 175, 55, 0.1)',
+                        borderColor: '#D4AF37',
                         borderWidth: 3,
-                        pointBackgroundColor: '#f58320',
-                        pointBorderColor: '#fff',
+                        pointBackgroundColor: '#D4AF37',
+                        pointBorderColor: '#000',
                         pointBorderWidth: 2,
                         pointRadius: 5,
                         pointHoverRadius: 7,

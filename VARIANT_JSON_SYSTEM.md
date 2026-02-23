@@ -304,7 +304,7 @@ echo $stock->available_stock; // 20
 ## Running Migrations
 
 ```bash
-cd "c:\Users\ABC\Desktop\WebXkey Project\Hardmen"
+cd "c:\Users\ABC\Desktop\WebXkey Project\JaffnaGold"
 php artisan migrate
 ```
 

@@ -357,10 +357,10 @@ use App\Models\Sale;
                         <div class="receipt-header">
                             <div class="receipt-row">
                                 <div class="receipt-center">
-                                    <h2 class="mb-0">HARDMEN (PVT) LTD</h2>
+                                    <h2 class="mb-0">JaffnaGold (PVT) LTD</h2>
                                     <p class="mb-0 text-muted" style="color:#666; font-size:12px;">TOOLS WITH POWER</p>
                                     <p style="margin:0; text-align:center;"><strong>421/2, Doolmala, thihariya, Kalagedihena.</strong></p>
-                                    <p style="margin:0; text-align:center;"><strong>TEL:</strong> (077) 9752950, <strong>EMAIL:</strong> Hardmenlanka@gmail.com</p>
+                                    <p style="margin:0; text-align:center;"><strong>TEL:</strong> (077) 9752950, <strong>EMAIL:</strong> JaffnaGoldlanka@gmail.com</p>
                                 </div>
                             </div>
                         </div>
@@ -516,7 +516,7 @@ use App\Models\Sale;
                             
                             <div>
                                 <p style="margin:0; font-size:12px;">Thank you for your business!</p>
-                                <p style="margin:0; font-size:12px;">www.hardmen.lk | info@hardmen.lk</p>
+                                <p style="margin:0; font-size:12px;">www.JaffnaGold.lk | info@JaffnaGold.lk</p>
                             </div>
                         </div>
                     </div>
@@ -1193,7 +1193,7 @@ use App\Models\Sale;
             <html>
             <head>
                 <meta charset="utf-8">
-                <title>Invoice - HARDMEN (PVT) LTD</title>
+                <title>Invoice - JaffnaGold (PVT) LTD</title>
                 <style>
                     @page { 
                         size: letter portrait; 
