@@ -271,7 +271,7 @@
                 <!-- Center: Company Name -->
                 <div style="flex: 1; text-align: center;">
                     <h2 style="font-size: 2.5rem; letter-spacing: 2px; font-weight: bold; margin-bottom: 0;">JaffnaGold (PVT) LTD</h2>
-                    <p style="color: #666; font-size: 0.875rem; margin-bottom: 0;">TOOLS WITH POWER</p>
+                    <p style="color: #666; font-size: 0.875rem; margin-bottom: 0;">Gold Shop</p>
                 </div>
                 <!-- Right:  & Invoice -->
                 <div style="flex: 0 0 150px; text-align: right;">

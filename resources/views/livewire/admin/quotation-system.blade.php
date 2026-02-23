@@ -497,7 +497,7 @@
                     </div>
                     <div style="flex: 1; text-align: center;">
                         <h3 class="mb-0 fw-bold" style="color: #333; font-size: 1.4rem; letter-spacing: 0.5px;">JaffnaGold (PVT) LTD</h3>
-                        <p class="text-muted small mb-0" style="font-size: 0.85rem; margin-top: 2px;">TOOLS WITH POWER</p>
+                        <p class="text-muted small mb-0" style="font-size: 0.85rem; margin-top: 2px;">Gold Shop</p>
                     </div>
                     <div style="flex: 0 0 auto; text-align: right;">
                         <h3 class="mb-0 fw-normal" style="color: #666; font-size: 1.2rem; letter-spacing: 1px;">QUOTATION</h3>

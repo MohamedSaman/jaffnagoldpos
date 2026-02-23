@@ -1008,11 +1008,11 @@
                                     <i class="bi bi-card-list"></i> <span>List Product</span>
                                 </a>
                             </li>
-                            <li class="nav-item">
+                            {{-- <li class="nav-item">
                                 <a class="nav-link py-2" href="{{ route('admin.Product-brand') }}">
                                     <i class="bi bi-tags"></i> <span>Product Brand</span>
                                 </a>
-                            </li>
+                            </li> --}}
                             <li class="nav-item">
                                 <a class="nav-link py-2" href="{{ route('admin.Product-category') }}">
                                     <i class="bi bi-tags-fill"></i> <span>Product Category</span>

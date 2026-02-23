@@ -316,7 +316,7 @@
                     </td>
                     <td class="company-section">
                         <h2>JaffnaGold (PVT) LTD</h2>
-                        <p>TOOLS WITH POWER</p>
+                        <p>Gold Shop</p>
                     </td>
                     <td class="invoice-section">
                         <span style="font-size:10pt; font-weight:bold;"></span>
