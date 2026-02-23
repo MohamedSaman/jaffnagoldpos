@@ -921,7 +921,14 @@ class Products extends Component
         if (empty(trim($this->image ?? ''))) {
             $this->image = null;
         }
-
+        
+        // Ensure we have a product code before validation. The UI may let users omit
+        // the code and rely on auto-generation; generate it here so validation for
+        // 'code' (required) passes and we keep a stable product code.
+        if (empty(trim($this->code ?? ''))) {
+            $this->code = 'PROD-' . strtoupper(Str::random(8));
+            Log::info('Auto-generated product code for createProduct', ['code' => $this->code]);
+        }
         // Debug: Check what variant_prices contains
         if ($this->pricing_mode === 'variant' && $this->variant_id) {
             $variant = ProductVariant::find($this->variant_id);
@@ -956,6 +963,8 @@ class Products extends Component
                 'variant_id' => $this->variant_id, // Set variant if product uses variants
             ]);
 
+            Log::info('ProductDetail created', ['id' => $product->id ?? null, 'code' => $product->code ?? null]);
+
             if ($this->pricing_mode === 'single') {
                 // Single price mode
                 // Step 2: Create ProductPrice with product_id reference
@@ -980,6 +989,8 @@ class Products extends Component
                     'sold_count' => 0,
                     'restocked_quantity' => 0,
                 ]);
+
+                Log::info('Created single price and stock for product', ['product_id' => $product->id]);
             } else {
                 // Variant-based pricing mode
                 // Use selected variant
@@ -1040,6 +1051,7 @@ class Products extends Component
 
                         $totalStock += $priceData['stock'] ?? 0;
                     }
+                    Log::info('Created variant prices and stocks', ['product_id' => $product->id, 'total_stock' => $totalStock]);
                 }
             }
 
