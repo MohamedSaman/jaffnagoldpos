@@ -71,8 +71,8 @@
             font-weight: 600;
         }
 
-        .in-stock { background: #ecfdf5; color: #065f46; }
-        .low-stock { background: #fffbeb; color: #92400e; }
+        .in-stock { background: #000000; color: var(--primary); }
+        .low-stock { background: #FAF9F6; color: var(--primary-600); border: 1px solid var(--primary); }
         .out-of-stock { background: #fef2f2; color: #991b1b; }
 
         .progress {
@@ -89,58 +89,62 @@
         <div class="d-flex justify-content-between align-items-center mb-2">
             <div>
                 <h3 class="fw-bold text-dark mb-2">
-                    <i class="bi bi-speedometer2 text-success me-2"></i> Overview
+                    <i class="bi bi-speedometer2 text-gold me-2"></i> Overview
                 </h3>
                 <p class="text-muted mb-0">Get a complete view of your product performance and stock activity.</p>
             </div>
         </div>
         <!-- Stats Cards Row - Updated to 4 cards -->
         <div class="row mb-4">
-            <!-- Card 1: Total Sales and Revenue -->
+            <!-- Card 1: Total Sale -->
             <div class="col-sm-6 col-lg-3 mb-3">
                 <div class="stat-card">
-                    <i class="bi bi-cash-stack icon-bg"></i>
-                    <div class="stat-label mb-2">Total Sales & Revenue</div>
+                    <i class="bi bi-graph-up-arrow icon-bg"></i>
+                    <div class="stat-label mb-2">Total Sale</div>
                     <div class="stat-value mb-3">Rs.{{ number_format($totalSales, 0) }}</div>
                     
                     <div class="progress mb-2">
-                        <div class="progress-bar bg-success" style="width: {{ $revenuePercentage }}%;"></div>
+                        <div class="progress-bar bg-gold" style="width: {{ $revenuePercentage }}%;"></div>
                     </div>
                     
                     <div class="d-flex justify-content-between align-items-center">
-                        <small class="text-muted">Revenue: {{ $revenuePercentage }}%</small>
-                        <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2 py-1">
+                        <small class="text-muted">Total Revenue</small>
+                        <span class="badge bg-black text-gold border border-gold border-opacity-25 px-2 py-1">
                             Rs.{{ number_format($totalRevenue, 0) }}
                         </span>
                     </div>
                 </div>
             </div>
             
-            <!-- Card 2: Total Payment and Due Payment -->
+            <!-- Card 2: Total Delivery Sales -->
             <div class="col-sm-6 col-lg-3 mb-3">
                 <div class="stat-card">
-                    <i class="bi bi-wallet2 icon-bg"></i>
-                    <div class="stat-label mb-2">Payment & Due</div>
-                    <div class="stat-value mb-3">Rs.{{ number_format($totalPaidAmount, 0) }}</div>
+                    <i class="bi bi-truck icon-bg"></i>
+                    <div class="stat-label mb-2">Total Delivery Sales</div>
+                    <div class="stat-value mb-3">Rs.{{ number_format($totalDeliverySales, 0) }}</div>
+                    
+                    @php
+                        $deliveryRevenuePercentage = $totalDeliverySales > 0 ? round(($deliverySalesRevenue / $totalDeliverySales) * 100, 1) : 0;
+                    @endphp
                     
                     <div class="progress mb-2">
-                        <div class="progress-bar bg-primary" style="width: {{ $revenuePercentage }}%;"></div>
+                        <div class="progress-bar bg-primary" style="width: {{ $deliveryRevenuePercentage }}%;"></div>
                     </div>
                     
                     <div class="d-flex justify-content-between align-items-center">
-                        <small class="text-muted">Due: {{ $duePercentage }}%</small>
-                        <span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 px-2 py-1">
-                            Rs.{{ number_format($totalDueAmount, 0) }}
+                        <small class="text-muted">Delivery Revenue</small>
+                        <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2 py-1">
+                            Rs.{{ number_format($deliverySalesRevenue, 0) }}
                         </span>
                     </div>
                 </div>
             </div>
             
-            <!-- Card 3: Total Stocks and Available Stocks -->
+            <!-- Card 3: Total Stock -->
             <div class="col-sm-6 col-lg-3 mb-3">
                 <div class="stat-card">
-                    <i class="bi bi-box-seam icon-bg"></i>
-                    <div class="stat-label mb-2">Stocks & Available</div>
+                    <i class="bi bi-boxes icon-bg"></i>
+                    <div class="stat-label mb-2">Total Stock</div>
                     <div class="stat-value mb-3">{{ number_format($totalStock) }} <span class="fs-6 text-muted fw-normal">units</span></div>
                     
                     <div class="progress mb-2">
@@ -148,7 +152,7 @@
                     </div>
                     
                     <div class="d-flex justify-content-between align-items-center">
-                        <small class="text-muted">Available: {{ $availablePercentage }}%</small>
+                        <small class="text-muted">Available Stock</small>
                         <span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25 px-2 py-1">
                             {{ number_format($availableStock) }} units
                         </span>
@@ -156,26 +160,25 @@
                 </div>
             </div>
             
-            <!-- Card 4: Staff Sale and Due Amount -->
+            <!-- Card 4: Total Expense -->
             <div class="col-sm-6 col-lg-3 mb-3">
                 <div class="stat-card">
-                    <i class="bi bi-people icon-bg"></i>
-                    <div class="stat-label mb-2">Staff Sales & Due</div>
-                    <div class="stat-value mb-3">Rs.{{ number_format($totalStaffSalesValue, 0) }}</div>
+                    <i class="bi bi-receipt icon-bg"></i>
+                    <div class="stat-label mb-2">Total Expense</div>
+                    <div class="stat-value mb-3">Rs.{{ number_format($totalExpenses, 0) }}</div>
                     
                     @php
-                        $staffDuePercentage = $totalStaffSalesValue > 0 ? round(($totalStaffDueAmount / $totalStaffSalesValue) * 100, 1) : 0;
-                        $staffPaidPercentage = 100 - $staffDuePercentage;
+                        $todayExpensePercentage = $totalExpenses > 0 ? round(($todayTotal / $totalExpenses) * 100, 1) : 0;
                     @endphp
                     
                     <div class="progress mb-2">
-                        <div class="progress-bar bg-danger" style="width: {{ $staffDuePercentage }}%;"></div>
+                        <div class="progress-bar bg-danger" style="width: {{ min($todayExpensePercentage, 100) }}%;"></div>
                     </div>
                     
                     <div class="d-flex justify-content-between align-items-center">
-                        <small class="text-muted">Due: {{ $staffDuePercentage }}%</small>
+                        <small class="text-muted">Today Expense</small>
                         <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-2 py-1">
-                            Rs.{{ number_format($totalStaffDueAmount, 0) }}
+                            Rs.{{ number_format($todayTotal, 0) }}
                         </span>
                     </div>
                 </div>
@@ -288,11 +291,11 @@
                     labels: dailyLabels,
                     datasets: [{
                         label: 'Daily Sales (Rs.)',
-                        backgroundColor: 'rgba(245, 131, 32, 0.1)',
-                        borderColor: '#f58320',
+                        backgroundColor: 'rgba(212, 175, 55, 0.1)',
+                        borderColor: '#D4AF37',
                         borderWidth: 3,
-                        pointBackgroundColor: '#f58320',
-                        pointBorderColor: '#fff',
+                        pointBackgroundColor: '#D4AF37',
+                        pointBorderColor: '#000',
                         pointBorderWidth: 2,
                         pointRadius: 5,
                         pointHoverRadius: 7,

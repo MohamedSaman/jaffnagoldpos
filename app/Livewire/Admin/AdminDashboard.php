@@ -44,6 +44,10 @@ class AdminDashboard extends Component
     public $totalStaffSalesValue = 0;
     public $totalStaffDueAmount = 0;
     public $totalPaidAmount = 0;
+    
+    // Delivery Sales
+    public $totalDeliverySales = 0;
+    public $deliverySalesRevenue = 0;
 
     public $recentSales = [];
     public $ProductInventory = [];
@@ -68,6 +72,17 @@ class AdminDashboard extends Component
             DB::raw('COUNT(*) as sales_count')
         )->first();
 
+        // Calculate delivery sales
+        $deliveryStats = Sale::where('sale_type', 'delivery')
+            ->orWhere('delivery_status', '!=', null)
+            ->select(
+                DB::raw('SUM(total_amount) as total_delivery_sales'),
+                DB::raw('SUM(total_amount - due_amount) as delivery_revenue')
+            )->first();
+        
+        $this->totalDeliverySales = $deliveryStats->total_delivery_sales ?? 0;
+        $this->deliverySalesRevenue = $deliveryStats->delivery_revenue ?? 0;
+        
         // Add total expenses
         $this->totalExpenses = DB::table('expenses')->sum('amount');
         // Totals

@@ -281,12 +281,12 @@
                     <div class="d-flex align-items-center justify-content-between mb-3">
                         {{-- Left: Logo --}}
                         <div style="flex: 0 0 150px;">
-                            <img src="{{ asset('images/HARDMEN.png') }}" alt="Logo" class="img-fluid" style="max-height:80px;">
+                            <img src="{{ asset('images/JaffnaGold.webp') }}" alt="Logo" class="img-fluid" style="max-height:80px;">
                         </div>
 
                         {{-- Center: Company Name --}}
                         <div class="text-center" style="flex: 1;">
-                            <h2 class="mb-0 fw-bold" style="font-size: 2.5rem; letter-spacing: 2px;">HARDMEN (PVT) LTD</h2>
+                            <h2 class="mb-0 fw-bold" style="font-size: 2.5rem; letter-spacing: 2px;">JaffnaGold (PVT) LTD</h2>
                             <p class="mb-0 text-muted small">TOOLS WITH POWER</p>
                         </div>
 
@@ -503,7 +503,7 @@
                         </div>
                         <div class="border-top pt-3">
                             <p class="text-center mb-0"><strong>ADDRESS :</strong> 421/2, Doolmala, thihariya, Kalagedihena.</p>
-                            <p class="text-center mb-0"><strong>TEL :</strong> (077) 9752950, <strong>EMAIL :</strong> Hardmenlanka@gmail.com</p>
+                            <p class="text-center mb-0"><strong>TEL :</strong> (077) 9752950, <strong>EMAIL :</strong> JaffnaGoldlanka@gmail.com</p>
                             <p class="text-center" style="font-size: 11px;"><strong></strong></p>
                         </div>
                     </div>

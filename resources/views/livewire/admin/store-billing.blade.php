@@ -8,13 +8,13 @@
         @layer base {
             :root {
                 /* Accent palette - tweak these for different color themes */
-                --accent-50: #fff7ef;
-                --accent-100: #ffefe0;
-                --accent-300: #ffb58a;
-                --accent-500: #ff7a2d; /* primary accent */
-                --accent-700: #e65c00;
-                --bg-pos: #f6f8fb;
-                --muted: #94a3b8;
+                --accent-50: #fffcf0;
+                --accent-100: #fef9c3;
+                --accent-300: #eab308;
+                --accent-500: #D4AF37; /* primary metallic gold accent */
+                --accent-700: #B8860B;
+                --bg-pos: #fcfcfc;
+                --muted: #64748b;
             }
 
             html, body { background: var(--bg-pos); font-family: 'Inter', sans-serif; color: #0f172a; }
@@ -28,8 +28,8 @@
             .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 24; }
 
             /* Header */
-            .pos-billing-terminal header { background: linear-gradient(90deg, var(--accent-50), #ffffff); border-bottom: 1px solid rgba(15,23,42,0.04); }
-            .pos-billing-terminal header .bg-[#e67e22] { background: linear-gradient(135deg,var(--accent-500),var(--accent-700)); box-shadow: 0 6px 18px rgba(230,92,0,0.12); }
+            .pos-billing-terminal header { background: linear-gradient(90deg, var(--accent-50), #ffffff); border-bottom: 1px solid rgba(0,0,0,0.04); }
+            .pos-billing-terminal header .bg-gold-gradient { background: linear-gradient(135deg,var(--accent-500),var(--accent-700)); box-shadow: 0 6px 18px rgba(184,134,11,0.12); }
 
             /* Accent buttons */
             .btn-accent { background: linear-gradient(90deg,var(--accent-500),var(--accent-700)); color: white; }
@@ -77,11 +77,11 @@
         <header class="bg-white border-b border-slate-200 px-4 py-2 flex items-center justify-between shadow-sm shrink-0">
             <div class="flex items-center gap-3">
                 <div class=" p-1.5 rounded flex items-center">
-                    <img src="{{ asset('images/HARDMEN.png') }}" class="h-10 w-auto t" alt="Logo">
+                    <img src="{{ asset('images/JaffnaGold.webp') }}" class="h-10 w-auto t" alt="Logo">
                 </div>
                 {{--<div>
                     <h1 class="font-bold text-sm leading-tight tracking-tight text-slate-900 uppercase">
-                        Hardmen <span class="text-[#e67e22]">(Pvt) Ltd</span>
+                        JaffnaGold <span class="text-[#e67e22]">(Pvt) Ltd</span>
                     </h1>
                     <p class="text-[10px] text-slate-500 font-medium tracking-wide">ADVANCED POS TERMINAL</p>
                 </div>--}}
@@ -89,7 +89,7 @@
 
             <div class="flex items-center gap-4">
                 <div class="bg-slate-100 px-3 py-1 rounded border border-slate-200">
-                    <span class="font-mono text-sm font-bold text-[#e67e22] tracking-widest" id="posClock">00:00:00</span>
+                    <span class="font-mono text-sm font-bold text-[#D4AF37] tracking-widest" id="posClock">00:00:00</span>
                 </div>
                 <button class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 transition-colors text-[10px] font-bold text-slate-600 border border-slate-200"
                     wire:click="viewCloseRegisterReport">
@@ -117,7 +117,7 @@
                     x-init="$nextTick(() => { if ($refs.searchInput) $refs.searchInput.focus(); })">
                     <div class="relative">
                         <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">search</span>
-                        <input class="w-full pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-md focus:ring-2 focus:ring-[#e67e22]/20 focus:border-[#e67e22] outline-none text-sm transition-all"
+                        <input class="w-full pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-md focus:ring-2 focus:ring-[#D4AF37]/20 focus:border-[#D4AF37] outline-none text-sm transition-all"
                             x-ref="searchInput"
                             wire:model.live.debounce.300ms="search"
                             placeholder="Scan barcode or type product name..." type="text"
@@ -155,7 +155,7 @@
                             <div class="flex items-center gap-3 p-3 cursor-pointer border-b border-slate-50 last:border-0 transition-colors"
                                 data-search-result
                                 data-search-index="{{ $sIndex }}"
-                                :class="highlightIndex === {{ $sIndex }} ? 'bg-orange-50 border-l-2 !border-l-[#e67e22]' : 'hover:bg-slate-50'"
+                                :class="highlightIndex === {{ $sIndex }} ? 'bg-yellow-50 border-l-2 !border-l-[#D4AF37]' : 'hover:bg-slate-50'"
                                 wire:click="addToCart({{ json_encode($res) }})"
                                 x-on:mouseenter="highlightIndex = {{ $sIndex }}">
                                 <img src="{{ $this->getImageUrl($res['image']) }}"
@@ -171,7 +171,7 @@
                                         @endif
                                     </p>
                                 </div>
-                                <span class="text-xs font-black text-[#e67e22]">Rs. {{ number_format($res['price'], 2) }}</span>
+                                <span class="text-xs font-black text-[#D4AF37]">Rs. {{ number_format($res['price'], 2) }}</span>
                             </div>
                             @endforeach
                         </div>
@@ -267,7 +267,7 @@
                                         value="{{ $displayDiscount }}"
                                         wire:change="updateDiscount({{ $index }}, $event.target.value)"
                                         wire:key="disc-{{ $cartKey }}"
-                                        class="w-full px-2 py-1 text-[10px] font-bold text-center bg-slate-50 border border-slate-200 rounded hover:border-[#e67e22]/30 focus:border-[#e67e22] focus:outline-none transition-all {{ $discountPerUnit > 0 ? 'text-green-600 bg-green-50/50' : 'text-slate-400' }}" />
+                                        class="w-full px-2 py-1 text-[10px] font-bold text-center bg-slate-50 border border-slate-200 rounded hover:border-[#D4AF37]/30 focus:border-[#D4AF37] focus:outline-none transition-all {{ $discountPerUnit > 0 ? 'text-green-600 bg-green-50/50' : 'text-slate-400' }}" />
                                     @if($discountPerUnit > 0)
                                     <div class="text-[9px] text-green-600 mt-0.5 font-mono">
                                         @if($discountType === 'percentage' && $discountPercent > 0)
@@ -347,7 +347,7 @@
                             </div>
                         </div>
                         <div>
-                            <button class="w-full py-2 bg-white border border-slate-200 rounded text-[10px] font-black flex items-center justify-center gap-2 hover:bg-slate-50 hover:border-[#e67e22]/50 transition-all text-slate-600 shadow-sm uppercase tracking-tighter"
+                            <button class="w-full py-2 bg-white border border-slate-200 rounded text-[10px] font-black flex items-center justify-center gap-2 hover:bg-slate-50 hover:border-[#D4AF37]/50 transition-all text-slate-600 shadow-sm uppercase tracking-tighter"
                                 wire:click="openSaleDiscountModal">
                                 <span class="material-symbols-outlined text-base">sell</span>
                                 APPLY GLOBAL DISCOUNT
@@ -357,9 +357,9 @@
                     <div class="grid grid-cols-2 gap-4 items-center border-t border-slate-200 pt-4">
                         <div class="flex justify-between items-baseline">
                             <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Total</span>
-                            <span class="text-3xl font-black text-[#e67e22] tracking-tighter">Rs. {{ number_format($grandTotal, 2) }}</span>
+                            <span class="text-3xl font-black text-[#D4AF37] tracking-tighter">Rs. {{ number_format($grandTotal, 2) }}</span>
                         </div>
-                        <button class="w-full bg-[#e67e22] hover:bg-orange-600 text-white font-black py-3 rounded-lg flex items-center justify-center gap-2 shadow-xl shadow-orange-500/20 transition-all text-xs uppercase tracking-widest disabled:opacity-40 disabled:grayscale disabled:cursor-not-allowed group"
+                        <button class="w-full bg-[#D4AF37] hover:bg-yellow-600 text-white font-black py-3 rounded-lg flex items-center justify-center gap-2 shadow-xl shadow-yellow-500/20 transition-all text-xs uppercase tracking-widest disabled:opacity-40 disabled:grayscale disabled:cursor-not-allowed group"
                             wire:click="validateAndCreateSale" {{ count($cart) == 0 ? 'disabled' : '' }}>
                             <span class="material-symbols-outlined text-xl group-hover:scale-110 transition-transform">payments</span>
                             Complete Sale
@@ -376,13 +376,13 @@
                         <div class="flex-1">
                             <label class="text-[10px] font-black text-slate-400 uppercase mb-1.5 block tracking-widest">Customer Selection</label>
                             <div class="relative group">
-                                <span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-lg group-focus-within:text-[#e67e22] transition-colors">person</span>
-                                <select class="w-full pl-9 pr-10 py-2 bg-slate-50 border border-slate-200 rounded-md outline-none text-xs font-bold appearance-none focus:ring-2 focus:ring-[#e67e22]/10 focus:border-[#e67e22] transition-all" wire:model.live="customerId">
+                                <span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-lg group-focus-within:text-[#D4AF37] transition-colors">person</span>
+                                <select class="w-full pl-9 pr-10 py-2 bg-slate-50 border border-slate-200 rounded-md outline-none text-xs font-bold appearance-none focus:ring-2 focus:ring-[#D4AF37]/10 focus:border-[#D4AF37] transition-all" wire:model.live="customerId">
                                     @foreach($customers as $customer)
                                     <option value="{{ $customer->id }}">{{ $customer->business_name ?? $customer->name }} ({{ $customer->phone }})</option>
                                     @endforeach
                                 </select>
-                                <button class="absolute right-8 top-1/2 -translate-y-1/2 text-[#e67e22] p-1.5 hover:bg-orange-50 rounded-full transition-all" wire:click="openCustomerModal" title="Add Customer">
+                                <button class="absolute right-8 top-1/2 -translate-y-1/2 text-[#D4AF37] p-1.5 hover:bg-yellow-50 rounded-full transition-all" wire:click="openCustomerModal" title="Add Customer">
                                     <span class="material-symbols-outlined text-lg">person_add</span>
                                 </button>
                                 <span class="material-symbols-outlined absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-300 text-lg pointer-events-none">expand_more</span>
@@ -392,7 +392,7 @@
                             <label class="text-[10px] font-black text-slate-400 uppercase mb-1.5 block tracking-widest">Price Type</label>
                             <div class="relative">
                                 <span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-lg">sell</span>
-                                <select class="w-full pl-9 pr-8 py-2 bg-slate-50 border border-slate-200 rounded-md outline-none text-xs font-bold appearance-none focus:border-[#e67e22] transition-all" wire:model.live="priceType">
+                                <select class="w-full pl-9 pr-8 py-2 bg-slate-50 border border-slate-200 rounded-md outline-none text-xs font-bold appearance-none focus:border-[#D4AF37] transition-all" wire:model.live="priceType">
                                     <option value="retail">Retail Price</option>
                                     <option value="wholesale">Wholesale</option>
                                     <option value="distribute">Distribute Price</option>
@@ -404,22 +404,10 @@
 
                     {{-- Customer Balance Information (Conditional) --}}
                     @if($customerId && $customerId != '' && $selectedCustomer && $selectedCustomer->type != 'Walking Customer')
-                    <div class="p-3 bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200 rounded-lg grid grid-cols-4 gap-2">
+                    <div class="p-3 bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200 rounded-lg grid grid-cols-1 gap-2">
                         <div class="text-center p-2 bg-white rounded border border-slate-100">
                             <div class="text-[8px] font-black text-slate-400 uppercase tracking-wider mb-1">Opening Balance</div>
                             <div class="text-sm font-black text-slate-800">{{ number_format($customerOpeningBalanceDisplay, 2) }}</div>
-                        </div>
-                        <div class="text-center p-2 bg-white rounded border border-slate-100">
-                            <div class="text-[8px] font-black text-slate-400 uppercase tracking-wider mb-1">Due Amount</div>
-                            <div class="text-sm font-black text-amber-600">{{ number_format($customerDueAmountDisplay, 2) }}</div>
-                        </div>
-                        <div class="text-center p-2 bg-white rounded border border-slate-100">
-                            <div class="text-[8px] font-black text-slate-400 uppercase tracking-wider mb-1">Overpaid</div>
-                            <div class="text-sm font-black text-green-600">{{ number_format($customerOverpaidAmountDisplay, 2) }}</div>
-                        </div>
-                        <div class="text-center p-2 bg-white rounded border border-slate-100">
-                            <div class="text-[8px] font-black text-slate-400 uppercase tracking-wider mb-1">Total Due</div>
-                            <div class="text-sm font-black text-slate-800">{{ number_format($customerTotalDueDisplay, 2) }}</div>
                         </div>
                     </div>
                     @endif
@@ -428,12 +416,12 @@
                     <div class="grid grid-cols-2 gap-3">
                         <button class="flex items-center justify-center gap-2 py-2.5 bg-slate-100 border border-slate-200 rounded-md hover:bg-slate-200 hover:border-slate-300 transition-all font-black text-[10px] text-slate-600 uppercase tracking-tighter shadow-sm"
                             wire:click="toggleCategoryPanel">
-                            <span class="material-symbols-outlined text-lg text-[#e67e22]">category</span>
+                            <span class="material-symbols-outlined text-lg text-[#D4AF37]">category</span>
                             FILTER BY CATEGORY
                         </button>
                         <button class="flex items-center justify-center gap-2 py-2.5 bg-slate-100 border border-slate-200 rounded-md hover:bg-slate-200 hover:border-slate-300 transition-all font-black text-[10px] text-slate-600 uppercase tracking-tighter shadow-sm"
                             wire:click="toggleBrandPanel">
-                            <span class="material-symbols-outlined text-lg text-[#e67e22]">branding_watermark</span>
+                            <span class="material-symbols-outlined text-lg text-[#D4AF37]">branding_watermark</span>
                             FILTER BY BRAND
                         </button>
                     </div>
@@ -476,7 +464,7 @@
 
                                     <div class="mt-auto flex items-end justify-between">
                                         <div class="flex flex-col">
-                                            <span class="text-[#e67e22] font-black text-sm leading-none tracking-tighter">Rs. {{ number_format($product['price'], 0) }}</span>
+                                            <span class="text-[#D4AF37] font-black text-sm leading-none tracking-tighter">Rs. {{ number_format($product['price'], 0) }}</span>
                                             <span class="text-[9px] text-slate-400 font-bold mt-1.5">
                                                 <span class="{{ ($product['stock'] ?? 0) <= 5 ? 'text-amber-500' : 'text-green-600' }}">Avail: {{ $product['stock'] }}</span>
                                                 @if(($product['pending'] ?? 0) > 0)
@@ -484,7 +472,7 @@
                                                 @endif
                                             </span>
                                         </div>
-                                        <div class="bg-slate-100 p-1.5 rounded-md group-hover:bg-[#e67e22] group-hover:text-white transition-all shadow-sm">
+                                        <div class="bg-slate-100 p-1.5 rounded-md group-hover:bg-[#D4AF37] group-hover:text-white transition-all shadow-sm">
                                             <span class="material-symbols-outlined text-base font-black">add</span>
                                         </div>
                                     </div>
@@ -515,13 +503,13 @@
         </button>
     </div>
     <div class="p-2 overflow-y-auto flex-1 custom-scrollbar">
-        <button class=" mb-1 text-center  p-3 rounded-lg transition-all border border-slate-100 {{ !$selectedCategory ? 'bg-[#e67e22] text-white shadow-lg shadow-orange-500/30' : 'hover:bg-slate-100 text-slate-600' }}"
+        <button class=" mb-1 text-center  p-3 rounded-lg transition-all border border-slate-100 {{ !$selectedCategory ? 'bg-[#D4AF37] text-white shadow-lg shadow-yellow-500/30' : 'hover:bg-slate-100 text-slate-600' }}"
             wire:click="showAllProducts">
             <span class="font-black text-xs tracking-tight">Show All Items</span>
             <span class="text-[10px] font-bold opacity-70">{{ count($products) }}</span>
         </button>
         @foreach($categories as $category)
-        <button class=" mb-1 text-center p-3 rounded-lg transition-all border border-slate-100 {{ $selectedCategory == $category->id ? 'bg-[#e67e22] text-white shadow-lg shadow-orange-500/30' : 'hover:bg-slate-100 text-slate-600' }}"
+        <button class=" mb-1 text-center p-3 rounded-lg transition-all border border-slate-100 {{ $selectedCategory == $category->id ? 'bg-[#D4AF37] text-white shadow-lg shadow-yellow-500/30' : 'hover:bg-slate-100 text-slate-600' }}"
             wire:click="selectCategory({{ $category->id }})">
             <span class="font-black text-xs tracking-tight">{{ $category->category_name }}</span>
             <span class="text-[10px] font-bold opacity-70">{{ $category->products_count }}</span>
@@ -988,10 +976,10 @@
                     <div class="receipt-row">
 
                         <div class="receipt-center">
-                            <h2 class="mb-0">HARDMEN (PVT) LTD</h2>
+                            <h2 class="mb-0">JaffnaGold (PVT) LTD</h2>
                             <p class="mb-0 text-muted" style="color:#666; font-size:12px;">TOOLS WITH POWER</p>
                             <p style="margin:0; text-align:center;"><strong> 421/2, Doolmala, thihariya, Kalagedihena.</strong></p>
-                            <p style="margin:0; text-align:center;"><strong>TEL :</strong> (077) 9752950, <strong>EMAIL :</strong> Hardmenlanka@gmail.com</p>
+                            <p style="margin:0; text-align:center;"><strong>TEL :</strong> (077) 9752950, <strong>EMAIL :</strong> JaffnaGoldlanka@gmail.com</p>
                             <p style="margin:0; text-align:center; font-size:11px; margin-top:8px;"><strong></strong></p>
                         </div>
                     </div>
@@ -1001,8 +989,20 @@
                 <div style="display:flex; gap:20px; margin-bottom:12px; justify-content:space-between; align-items:flex-start;">
                     <div style="flex:0 0 45%; text-align:left;">
                         @if($createdSale->customer)
-                        <p style="margin:0; font-size:12px;"><strong>Name:</strong> {{ $createdSale->customer->name }}</p>
-                        <p style="margin:0; font-size:12px;"><strong>Phone:</strong> {{ $createdSale->customer->phone }}</p>
+                        <p style="margin:0; font-size:12px;"><strong>Name:</strong> 
+                            @if($createdSale->customer->name === 'Walking Customer' && $createdSale->walking_customer_name)
+                                {{ $createdSale->walking_customer_name }}
+                            @else
+                                {{ $createdSale->customer->name }}
+                            @endif
+                        </p>
+                        <p style="margin:0; font-size:12px;"><strong>Phone:</strong> 
+                            @if($createdSale->customer->name === 'Walking Customer' && $createdSale->walking_customer_phone)
+                                {{ $createdSale->walking_customer_phone }}
+                            @else
+                                {{ $createdSale->customer->phone }}
+                            @endif
+                        </p>
                         <p style="margin:0; font-size:12px;"><strong>Type:</strong> {{ ucfirst($createdSale->customer_type) }}</p>
                         @else
                         <p class="text-muted">Walk-in Customer</p>
@@ -1115,8 +1115,8 @@
                     <div>
                         <p style="margin:0; font-size:12px;">Thank you for your business!</p>
                         <p style="margin:0; font-size:12px; display:flex; align-items:center; justify-content:center; gap:12px;">
-                            <span class="material-symbols-outlined" style="font-size:14px;"></span> www.hardmen.lk
-                            <span class="material-symbols-outlined" style="font-size:14px;"></span> info@hardmen.lk
+                            <span class="material-symbols-outlined" style="font-size:14px;"></span> www.JaffnaGold.lk
+                            <span class="material-symbols-outlined" style="font-size:14px;"></span> info@JaffnaGold.lk
                         </p>
 
                     </div>
@@ -1135,7 +1135,7 @@
     @if($showCloseRegisterModal)
     <div class="bg-white rounded-3xl shadow-2xl w-full max-w-xl overflow-hidden relative transform transition-all border border-slate-100">
         <div class="bg-slate-900 p-8 text-center relative overflow-hidden">
-            <div class="absolute inset-0 opacity-10 bg-[url('https://hardmen.lk/logo.png')] bg-center bg-no-repeat bg-contain scale-150"></div>
+            <div class="absolute inset-0 opacity-10 bg-[url('https://JaffnaGold.lk/logo.png')] bg-center bg-no-repeat bg-contain scale-150"></div>
             <h3 class="text-xl font-black text-white uppercase tracking-[0.2em] relative z-10">Terminal Summary</h3>
             <p class="text-slate-400 text-[10px] font-bold mt-2 relative z-10">{{ date('d M Y | H:i') }}</p>
         </div>
@@ -1285,7 +1285,7 @@
             <html>
             <head>
                 <meta charset="utf-8">
-                <title>Invoice - HARDMEN (PVT) LTD</title>
+                <title>Invoice - JaffnaGold (PVT) LTD</title>
                 <style>
                     @page { 
                         size: letter portrait; 

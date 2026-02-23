@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $title ?? 'HARDMEN PVT LTD' }}</title>
+    <title>{{ $title ?? 'JaffnaGold PVT LTD' }}</title>
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -35,7 +35,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-image: url('../images/bgproduct.jpg');
+            background-image: url('../images/jgold.png');
             background-size: cover;
             background-position: center;
             z-index: 0;

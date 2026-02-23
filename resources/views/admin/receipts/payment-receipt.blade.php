@@ -24,7 +24,7 @@
 </head>
 <body>
     <div class="header">
-        <div class="company-name">HARDMEN (PVT) LTD</div>
+        <div class="company-name">JaffnaGold (PVT) LTD</div>
         <div class="receipt-title">PAYMENT RECEIPT</div>
     </div>
 

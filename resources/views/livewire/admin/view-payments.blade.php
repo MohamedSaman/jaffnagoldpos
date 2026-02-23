@@ -285,9 +285,9 @@
                         <div class="receipt-container">
                             <!-- Receipt Header -->
                             <div class="text-center mb-4">
-                                <h3 class="mb-0">HARDMEN (PVT) LTD (PVT) LTD</h3>
+                                <h3 class="mb-0">JaffnaGold (PVT) LTD (PVT) LTD</h3>
                                 <p class="mb-0 text-muted small">103 H,Yatiyanthota Road,Seethawaka,avissawella.</p>
-                                <p class="mb-0 text-muted small">Phone: (077) 9752950 | Email: Hardmenlanka@gmail.com</p>
+                                <p class="mb-0 text-muted small">Phone: (077) 9752950 | Email: JaffnaGoldlanka@gmail.com</p>
                                 <h4 class="mt-3 border-bottom border-2 pb-2">PAYMENT RECEIPT</h4>
                             </div>
 

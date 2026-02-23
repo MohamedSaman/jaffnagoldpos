@@ -18,12 +18,12 @@
         }
 
         .content-tab.active {
-            color: #f58320;
-            border-bottom-color: #f58320;
+            color: var(--primary);
+            border-bottom-color: var(--primary);
         }
 
         .content-tab:hover:not(.active) {
-            color: #f58320;
+            color: var(--primary);
             border-bottom-color: #dee2e6;
         }
 
@@ -153,8 +153,8 @@
 
         .form-control:focus,
         .form-select:focus {
-            box-shadow: 0 0 0 3px rgba(245, 131, 32, 0.15);
-            border-color: #f58320;
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
+            border-color: var(--primary);
         }
 
         /* Modern button styling */
@@ -166,13 +166,13 @@
         }
 
         .btn-primary {
-            background-color: #f58320;
-            border-color: #f58320;
+            background-color: var(--primary);
+            border-color: var(--primary);
         }
 
         .btn-primary:hover {
-            background-color: #d16d0e;
-            border-color: #d16d0e;
+            background-color: var(--primary-600);
+            border-color: var(--primary-600);
             transform: translateY(-2px);
         }
 
@@ -211,13 +211,13 @@
         }
 
         .nav-tabs-custom .nav-link.active {
-            color: #f58320;
-            border-bottom-color: #f58320;
+            color: var(--primary);
+            border-bottom-color: var(--primary);
             background-color: transparent;
         }
 
         .nav-tabs-custom .nav-link:hover {
-            color: #f58320;
+            color: var(--primary);
             border-bottom-color: #dee2e6;
         }
 
@@ -1208,29 +1208,11 @@
                             </div>
                             <div class="card-body p-4">
                                 <div class="row">
-                                    <div class="col-md-4">
-                                        <div class="mb-1">
-                                            <label for="code" class="form-label fw-semibold">Code:</label>
-                                            <input type="text" class="form-control" id="code" wire:model="code">
-                                            @error('code')
-                                            <span class="text-danger small">* {{ $message }}</span>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-12">
                                         <div class="mb-1">
                                             <label for="name" class="form-label fw-semibold">Name:</label>
                                             <input type="text" class="form-control" id="name" wire:model="name">
                                             @error('name')
-                                            <span class="text-danger small">* {{ $message }}</span>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="mb-1">
-                                            <label for="model" class="form-label fw-semibold">Model:</label>
-                                            <input type="text" class="form-control" id="model" wire:model="model">
-                                            @error('model')
                                             <span class="text-danger small">* {{ $message }}</span>
                                             @enderror
                                         </div>
@@ -1247,25 +1229,7 @@
                             </div>
                             <div class="card-body p-4">
                                 <div class="row">
-                                    <div class="col-md-4">
-                                        <div class="mb-1">
-                                            <label for="brand" class="form-label fw-semibold">Brand:</label>
-                                            <select class="form-select" id="brand" wire:model="brand">
-                                                <option value="">Select Brand</option>
-                                                @foreach ($brands as $brand)
-                                                <option value="{{ $brand->id }}" {{ $brand->id == 'Default Brand' ?
-                                                    'selected' : '' }}>
-                                                    {{ $brand->brand_name }}
-                                                    @if($brand->id == 'Default Brand') (Default) @endif
-                                                </option>
-                                                @endforeach
-                                            </select>
-                                            @error('brand')
-                                            <span class="text-danger small">* {{ $message }}</span>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-6">
                                         <div class="mb-1">
                                             <label for="category" class="form-label fw-semibold">Category:</label>
                                             <select class="form-select" id="category" wire:model="category">
@@ -1283,7 +1247,7 @@
                                             @enderror
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-6">
                                         <div class="mb-1">
                                             <label for="supplier" class="form-label fw-semibold">Supplier:</label>
                                             <select class="form-select" id="supplier" wire:model="supplier">

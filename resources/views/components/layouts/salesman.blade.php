@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ $title ?? 'Salesman Portal' }} - Hardmen</title>
-    <link rel="icon" type="image/png" href="{{ asset('images/hardmenicon.png') }}">
+    <title>{{ $title ?? 'Salesman Portal' }} - JaffnaGold</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/JaffnaGoldicon.png') }}">
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
@@ -21,28 +21,29 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
-        /* Theme tokens: Orange & White theme */
+        /* Theme tokens: Premium Gold & Black theme */
         :root {
             /* Clean Page Background */
-            --page-bg: #f3f4f6;
+            --page-bg: #fcfcfc;
             --surface: #ffffff;
 
-            /* Professional Brand Palette - Vibrant Orange & Neutral Accents */
-            --primary: #f58320;
-            --primary-600: #e07010;
-            --primary-700: #c66008;
-            --primary-50: #fff7ed;
-            --primary-100: #ffedd5;
+            /* Premium Gold Palette */
+            --primary: #D4AF37; /* Metallic Gold */
+            --primary-600: #C5A028; /* Deep Gold */
+            --primary-700: #B8860B; /* Dark Goldenrod */
+            --primary-50: #fffcf0; /* Light Gold Tint */
+            --primary-100: #fef9c3;
 
-            /* Functional Colors */
-            --success: #10b981;
+            /* Functional Colors - Refined for Gold Theme */
+            --success: #1a1a1a;
+            --success-real: #10b981;
             --warning: #f59e0b;
             --danger: #ef4444;
             --info: #3b82f6;
 
             /* Refined Neutral Palette */
-            --text-main: #111827;
-            --text-muted: #6b7280;
+            --text-main: #000000;
+            --text-muted: #4b5563;
             --text-light: #9ca3af;
             --border: #e5e7eb;
             --border-light: #f3f4f6;
@@ -65,7 +66,7 @@
         }
 
         .fw-800 { font-weight: 800 !important; }
-        .text-orange { color: #f58320 !important; }
+        .text-gold { color: var(--primary) !important; }
 
         /* Sidebar styles */
         .sidebar {
@@ -74,11 +75,12 @@
             left: 0;
             width: 270px;
             height: 100vh;
-            background: linear-gradient(180deg, #cec1a5 0%, #bf9038 100%);
-            color: #ffffff;
+            background: #ffffff;
+            color: var(--text-main);
             z-index: 1030;
             transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
             overflow-y: auto;
+            box-shadow: 1px 0 0 var(--border);
         }
 
         .sidebar::-webkit-scrollbar {
@@ -135,8 +137,8 @@
         }
 
         .sidebar-header {
-            padding: 20px 20px 0;
-            margin-bottom: 5px;
+            padding: 15px 15px 0;
+            margin-bottom: 2px;
         }
 
         .sidebar-title {
@@ -151,16 +153,23 @@
             margin: 2px 0;
         }
 
+        .sidebar-separator {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            margin: 5px 20px;
+            opacity: 0.4;
+        }
+
         .nav-link {
             color: var(--text-muted);
-            padding: 6px 24px;
-            margin: 4px 12px;
+            padding: 8px 16px;
+            margin: 2px 10px;
             border-radius: 8px;
             transition: all 0.2s;
             display: flex;
             align-items: center;
             font-weight: 500;
-            color: rgba(255, 255, 255, 0.8) !important;
+            color: var(--text-muted) !important;
         }
 
         .nav-link.active {
@@ -310,14 +319,14 @@
             width: 36px;
             height: 36px;
             border-radius: 50%;
-            background: #f58320;
-            color: #ffffff;
+            background: var(--primary);
+            color: #000000;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 600;
             letter-spacing: -0.03em;
-            border: 2px solid #f58320;
+            border: 2px solid #000000;
         }
 
         .admin-name {
@@ -408,10 +417,10 @@
         <div class="sidebar">
             <div class="sidebar-header d-flex justify-content-center">
                 <div class="sidebar-title">
-                    <img src="{{ asset('images/HARDMEN.png') }}" alt="Logo" width="250">
+                    <img src="{{ asset('images/JaffnaGold.webp') }}" alt="Logo" width="180">
                 </div>
             </div>
-            <hr style="color:#fff;">
+            <div class="sidebar-separator"></div>
             <ul class="nav flex-column">
                 <li>
                     <a class="nav-link {{ request()->routeIs('salesman.dashboard') ? 'active' : '' }}" href="{{ route('salesman.dashboard') }}">
@@ -519,13 +528,13 @@
 
             <!-- Centered Company Name (hidden on small screens) -->
             <div class="flex-grow-1 d-none d-md-flex justify-content-center">
-                <h5 class="m-0 fw-bold" style="letter-spacing: -0.02em; color:#f58320;">Salesman Portal</h5>
+                <h5 class="m-0 fw-bold" style="letter-spacing: -0.02em; color:var(--primary);">Salesman Portal</h5>
             </div>
 
             <!-- Real-time Clock -->
             <div class="d-none d-lg-flex align-items-center gap-4 me-3">
-                <div id="digitalClock" class="fw-800 font-monospace text-orange px-3 py-2 rounded-3 bg-white border shadow-sm" 
-                    style="font-size: 1.5rem; letter-spacing: 0.1em; border-color: rgba(245, 131, 32, 0.2); min-width: 150px; text-align: center;">
+                <div id="digitalClock" class="fw-800 font-monospace text-gold px-3 py-2 rounded-3 bg-white border shadow-sm" 
+                    style="font-size: 1.5rem; letter-spacing: 0.1em; border-color: var(--primary); min-width: 150px; text-align: center;">
                     00:00:00
                 </div>
             </div>

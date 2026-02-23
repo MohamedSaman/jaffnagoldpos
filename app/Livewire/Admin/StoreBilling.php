@@ -2309,6 +2309,8 @@ class StoreBilling extends Component
                     'sale_id' => Sale::generateSaleId(),
                     'invoice_number' => Sale::generateInvoiceNumber(),
                     'customer_id' => $customer->id,
+                    'walking_customer_name' => $customer->name === 'Walking Customer' ? $this->walkingCustomerName : null,
+                    'walking_customer_phone' => $customer->name === 'Walking Customer' ? $this->walkingCustomerPhone : null,
                     'customer_type' => $customer->type,
                     'subtotal' => $this->subtotal,
                     'discount_amount' => $this->totalDiscount + $this->additionalDiscountAmount,

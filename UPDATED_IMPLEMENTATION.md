@@ -42,7 +42,7 @@ The variant system has been redesigned to use **JSON storage** for variant value
 ### Step 1: Run Migrations
 
 ```bash
-cd "c:\Users\ABC\Desktop\WebXkey Project\Hardmen"
+cd "c:\Users\ABC\Desktop\WebXkey Project\JaffnaGold"
 php artisan migrate
 ```
 
