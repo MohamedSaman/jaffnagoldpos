@@ -266,7 +266,7 @@
             <div style="display: flex; align-items: center; justify-content: space-between;">
                 <!-- Left: Logo -->
                 <div style="flex: 0 0 150px;">
-                    <img src="{{ public_path('images/JaffnaGold.webp') }}" alt="Logo" style="max-height:80px;">
+                    <img src="{{ public_path('images/jg.png') }}" alt="Logo" style="max-height:80px;">
                 </div>
                 <!-- Center: Company Name -->
                 <div style="flex: 1; text-align: center;">

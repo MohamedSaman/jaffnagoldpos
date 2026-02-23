@@ -26,18 +26,18 @@
             --page-bg: #fcfcfc;
             --surface: #ffffff;
 
-            /* Premium Gold Palette */
-            --primary: #D4AF37; /* Metallic Gold */
-            --primary-600: #C5A028; /* Deep Gold */
-            --primary-700: #B8860B; /* Dark Goldenrod */
-            --primary-50: #fffcf0; /* Light Gold Tint */
-            --primary-100: #fef9c3;
+            /* JG Logo Blue Palette */
+            --primary: #161b97; /* Logo Blue */
+            --primary-600: #12167d; /* Deep Blue */
+            --primary-700: #0e1163; /* Darker Blue */
+            --primary-50: #f0f2ff; /* Light Blue Tint */
+            --primary-100: #e0e4ff;
 
-            /* Functional Colors - Refined for Gold Theme */
+            /* Functional Colors - JG Logo Red */
             --success: #1a1a1a;
             --success-real: #10b981;
             --warning: #f59e0b;
-            --danger: #ef4444;
+            --danger: #f30b1f; /* Logo Red */
             --info: #3b82f6;
 
             /* Refined Neutral Palette */
@@ -65,7 +65,10 @@
         }
 
         .fw-800 { font-weight: 800 !important; }
-        .text-gold { color: var(--primary) !important; }
+        .text-jg-blue { color: var(--primary) !important; }
+        .bg-jg-blue { background-color: var(--primary) !important; }
+        .text-jg-red { color: var(--danger) !important; }
+        .bg-jg-red { background-color: var(--danger) !important; }
 
         /* Ensure dropdowns in table are not clipped */
         .table-responsive {
@@ -534,7 +537,7 @@
         <div class="sidebar">
             <div class="sidebar-header d-flex justify-content-center">
                 <div class="sidebar-title">
-                    <img src="{{ asset('images/JaffnaGold.webp') }}" alt="Logo" width="180">
+                    <img src="{{ asset('images/jg.png') }}" alt="Logo" width="120">
                 </div>
             </div>
             <div class="sidebar-separator"></div>

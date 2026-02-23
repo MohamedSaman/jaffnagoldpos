@@ -307,7 +307,7 @@
             <div class="d-flex align-items-center justify-content-between mb-3">
                 {{-- Left: Logo --}}
                 <div style="flex: 0 0 120px; margin-right:10px;">
-                    <img src="{{ url('images/JaffnaGold.webp') }}" alt="Logo" class="img-fluid" style="max-height:50px; width:auto;">
+                    <img src="{{ url('images/jg.png') }}" alt="Logo" class="img-fluid" style="max-height:50px; width:auto;">
                 </div>
                 {{-- Center: Company Name --}}
                 <div class="text-center" style="flex: 1;">

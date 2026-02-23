@@ -21,24 +21,24 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
-        /* Theme tokens: Premium Gold & Black theme */
+        /* Theme tokens: Premium Blue & Black theme */
         :root {
             /* Clean Page Background */
             --page-bg: #fcfcfc;
             --surface: #ffffff;
 
-            /* Premium Gold Palette */
-            --primary: #D4AF37; /* Metallic Gold */
-            --primary-600: #C5A028; /* Deep Gold */
-            --primary-700: #B8860B; /* Dark Goldenrod */
-            --primary-50: #fffcf0; /* Light Gold Tint */
-            --primary-100: #fef9c3;
+            /* JG Logo Blue Palette */
+            --primary: #161b97; /* Logo Blue */
+            --primary-600: #12167d; /* Deep Blue */
+            --primary-700: #0e1163; /* Darker Blue */
+            --primary-50: #f0f2ff; /* Light Blue Tint */
+            --primary-100: #e0e4ff;
 
-            /* Functional Colors - Refined for Gold Theme */
+            /* Functional Colors - JG Logo Red */
             --success: #1a1a1a;
             --success-real: #10b981;
             --warning: #f59e0b;
-            --danger: #ef4444;
+            --danger: #f30b1f; /* Logo Red */
             --info: #3b82f6;
 
             /* Refined Neutral Palette */
@@ -66,7 +66,10 @@
         }
 
         .fw-800 { font-weight: 800 !important; }
-        .text-gold { color: var(--primary) !important; }
+        .text-jg-blue { color: var(--primary) !important; }
+        .bg-jg-blue { background-color: var(--primary) !important; }
+        .text-jg-red { color: var(--danger) !important; }
+        .bg-jg-red { background-color: var(--danger) !important; }
 
         /* Sidebar styles */
         .sidebar {
@@ -226,7 +229,7 @@
                 left: 68px;
                 top: 0;
                 width: 240px;
-                background: #bf9038 !important; /* Matches salesman theme gradient end */
+                background: var(--primary) !important; 
                 box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2) !important;
                 border-radius: 12px !important;
                 border: 1px solid rgba(255, 255, 255, 0.1) !important;
@@ -320,13 +323,13 @@
             height: 36px;
             border-radius: 50%;
             background: var(--primary);
-            color: #000000;
+            color: #ffffff;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 600;
             letter-spacing: -0.03em;
-            border: 2px solid #000000;
+            border: 2px solid var(--primary-600);
         }
 
         .admin-name {
@@ -417,7 +420,7 @@
         <div class="sidebar">
             <div class="sidebar-header d-flex justify-content-center">
                 <div class="sidebar-title">
-                    <img src="{{ asset('images/JaffnaGold.webp') }}" alt="Logo" width="180">
+                    <img src="{{ asset('images/jg.png') }}" alt="Logo" width="120">
                 </div>
             </div>
             <div class="sidebar-separator"></div>
@@ -533,7 +536,7 @@
 
             <!-- Real-time Clock -->
             <div class="d-none d-lg-flex align-items-center gap-4 me-3">
-                <div id="digitalClock" class="fw-800 font-monospace text-gold px-3 py-2 rounded-3 bg-white border shadow-sm" 
+                <div id="digitalClock" class="fw-800 font-monospace text-jg-blue px-3 py-2 rounded-3 bg-white border shadow-sm" 
                     style="font-size: 1.5rem; letter-spacing: 0.1em; border-color: var(--primary); min-width: 150px; text-align: center;">
                     00:00:00
                 </div>

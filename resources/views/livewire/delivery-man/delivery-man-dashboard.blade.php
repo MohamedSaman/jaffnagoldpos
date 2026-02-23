@@ -3,7 +3,7 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h3 class="fw-bold text-dark mb-2">
-                <i class="bi bi-truck text-gold me-2"></i> Delivery Dashboard
+                <i class="bi bi-truck text-jg-blue me-2"></i> Delivery Dashboard
             </h3>
             <p class="text-muted mb-0">Welcome back, {{ auth()->user()->name }}!</p>
         </div>
@@ -66,7 +66,7 @@
                     <div class="d-flex align-items-center justify-content-between">
                         <div>
                             <p class="text-muted small mb-1">Pending Payment Approvals</p>
-                            <h3 class="fw-bold text-gold mb-0">{{ $pendingPayments }}</h3>
+                            <h3 class="fw-bold text-jg-blue mb-0">{{ $pendingPayments }}</h3>
                         </div>
                         <div class="bg-info bg-opacity-10 rounded-circle p-3">
                             <i class="bi bi-clock-history text-info fs-4"></i>

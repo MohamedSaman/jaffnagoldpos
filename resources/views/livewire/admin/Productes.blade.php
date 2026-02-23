@@ -153,7 +153,7 @@
 
         .form-control:focus,
         .form-select:focus {
-            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
+            box-shadow: 0 0 0 3px rgba(22, 27, 151, 0.15);
             border-color: var(--primary);
         }
 

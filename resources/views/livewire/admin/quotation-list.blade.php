@@ -485,7 +485,7 @@
             <div class="modal-header border-0 py-4 px-4" 
                  style="background: white; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #ddd;">
                 <div style="flex: 0 0 auto;">
-                    <img src="{{ asset('images/JaffnaGold.webp') }}" alt="Logo" class="img-fluid" style="max-height: 55px;">
+                    <img src="{{ asset('images/jg.png') }}" alt="Logo" class="img-fluid" style="max-height: 55px;">
                 </div>
                 <div style="flex: 1; text-align: center;">
                     <h3 class="mb-0 fw-bold" style="color: #333; font-size: 1.4rem; letter-spacing: 0.5px;">JaffnaGold (PVT) LTD</h3>

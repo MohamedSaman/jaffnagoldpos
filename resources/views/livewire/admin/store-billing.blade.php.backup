@@ -714,7 +714,7 @@
                             <div class="d-flex align-items-center justify-content-between mb-3">
                                 {{-- Left: Logo --}}
                                 <div style="flex: 0 0 150px;">
-                                    <img src="{{ asset('images/JaffnaGold.webp') }}" alt="Logo" class="img-fluid" style="max-height:80px;">
+                                    <img src="{{ asset('images/jg.png') }}" alt="Logo" class="img-fluid" style="max-height:80px;">
                                 </div>
 
                                 {{-- Center: Company Name --}}
@@ -887,7 +887,7 @@
                     {{-- Print Header (hidden on screen, shown on print) --}}
                     <div class="print-header text-center mb-4">
                         <div class="w-100 d-flex justify-content-center">
-                            <img src="{{ asset('images/JaffnaGold.webp') }}" alt="Logo" class="img-fluid" style="max-height:100px;">
+                            <img src="{{ asset('images/jg.png') }}" alt="Logo" class="img-fluid" style="max-height:100px;">
                         </div>
                         <p>421/2, Doolmala, thihariya, Kalagedihena.</p>
                         <p><strong>TEL:</strong> (077) 9752950 | <strong>EMAIL:</strong> JaffnaGoldlanka@gmail.com</p>

@@ -242,8 +242,8 @@
     <div class="quotation-container">
         {{-- Header Section --}}
         <div class="header-section">
-            @if(file_exists(public_path('images/JaffnaGold.webp')))
-            <img src="{{ public_path('images/JaffnaGold.webp') }}" alt="Company Logo" class="logo">
+            @if(file_exists(public_path('images/jg.png')))
+            <img src="{{ public_path('images/jg.png') }}" alt="Company Logo" class="logo">
             @endif
             <div class="company-name">JaffnaGold (PVT) LTD</div>
             <div class="company-tagline">Gold Shop</div>

@@ -11,8 +11,8 @@
         <!-- Scripts -->
         <style>
             :root {
-                --primary: #D4AF37;
-                --primary-dark: #B8860B;
+                --primary: #161b97;
+                --primary-dark: #12167d;
                 --black: #000000;
                 --white: #ffffff;
             }
@@ -70,7 +70,7 @@
                 align-items: center;
                 justify-content: center;
                 border: 2px solid var(--primary);
-                box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+                box-shadow: 0 0 20px rgba(22, 27, 151, 0.3);
             }
 
             .form-group {
@@ -86,15 +86,15 @@
 
             .form-control:focus {
                 border-color: var(--primary);
-                box-shadow: 0 0 0 0.25rem rgba(212, 175, 55, 0.1);
+                box-shadow: 0 0 0 0.25rem rgba(22, 27, 151, 0.1);
             }
 
             .login-btn {
                 width: 100%;
                 border-radius: 10px;
                 padding: 12px;
-                background-color: var(--black);
-                color: var(--primary);
+                background-color: var(--primary);
+                color: #ffffff;
                 border: 1px solid var(--primary);
                 font-weight: 700;
                 text-transform: uppercase;
@@ -103,8 +103,8 @@
             }
 
             .login-btn:hover {
-                background-color: var(--primary);
-                color: var(--black);
+                background-color: var(--primary-dark);
+                color: #ffffff;
                 transform: translateY(-2px);
                 box-shadow: 0 10px 20px rgba(0,0,0,0.2);
             }

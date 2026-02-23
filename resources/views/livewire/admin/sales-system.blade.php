@@ -290,7 +290,7 @@
                 <div class="card-body text-center">
                     <div class="mb-3">
                         <div class="fw-bold fs-5">Grand Total</div>
-                        <div class="fw-bold fs-5 text-gold">Rs.{{ number_format($grandTotal, 2) }}</div>
+                        <div class="fw-bold fs-5 text-jg-blue">Rs.{{ number_format($grandTotal, 2) }}</div>
                     </div>
                     <button class="btn btn-success btn-lg px-5" wire:click="createSale"
                         {{ count($cart) == 0 ? 'disabled' : '' }}>
@@ -372,7 +372,7 @@
                     <div class="d-flex align-items-center justify-content-between mb-3">
                         {{-- Left: Logo --}}
                         <div style="flex: 0 0 150px;">
-                            <img src="{{ asset('images/JaffnaGold.webp') }}" alt="Logo" class="img-fluid" style="max-height:80px;">
+                            <img src="{{ asset('images/jg.png') }}" alt="Logo" class="img-fluid" style="max-height:80px;">
                         </div>
 
                         {{-- Center: Company Name --}}

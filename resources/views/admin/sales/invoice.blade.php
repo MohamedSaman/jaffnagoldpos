@@ -312,7 +312,7 @@
             <table>
                 <tr>
                     <td class="logo-section">
-                        <img src="{{ public_path('images/JaffnaGold.webp') }}" alt="Logo">
+                        <img src="{{ public_path('images/jg.png') }}" alt="Logo">
                     </td>
                     <td class="company-section">
                         <h2>JaffnaGold (PVT) LTD</h2>

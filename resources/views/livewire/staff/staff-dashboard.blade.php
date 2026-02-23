@@ -269,19 +269,19 @@
             }
 
             .in-stock {
-                background-color: var(--black);
-                color: var(--primary);
+                background-color: var(--primary);
+                color: #ffffff;
             }
 
             .low-stock {
-                background-color: #FAF9F6;
-                color: var(--primary-600);
-                border: 1px solid var(--primary);
+                background-color: #fef2f2;
+                color: var(--danger);
+                border: 1px solid var(--danger);
             }
 
             .out-of-stock {
-                background-color: #f8d7da;
-                color: #842029;
+                background-color: #000000;
+                color: #ffffff;
             }
 
             .progress {
@@ -538,10 +538,6 @@
                 height: 3px;
             }
             
-            .content-tabs::-webkit-scrollbar-thumb {
-                background-color: rgba(0,0,0,.2);
-                border-radius: 3px;
-            }
         </style>
     @endpush
 
@@ -570,7 +566,7 @@
                             <small>{{ $revenuePercentage }}% of total sales</small>
                         </div>
                         <div class="progress">
-                            <div class="progress-bar bg-gold" role="progressbar"
+                            <div class="progress-bar bg-jg-blue" role="progressbar"
                                 style="width: {{ $revenuePercentage }}%;" aria-valuenow="{{ $revenuePercentage }}"
                                 aria-valuemin="0" aria-valuemax="100"></div>
                         </div>
@@ -583,11 +579,11 @@
                     <!-- Fully Paid Invoices Information -->
                     <div class="stat-info mt-2 mt-md-3 pt-2 border-top">
                         <div class="d-flex justify-content-between align-items-center">
-                            <small class="text-muted"><i class="bi bi-check-circle-fill text-gold me-1"></i> Fully
+                            <small class="text-muted"><i class="bi bi-check-circle-fill text-jg-blue me-1"></i> Fully
                                 Paid</small>
-                            <span class="badge bg-black text-gold">{{ $fullPaidCount }}</span>
+                            <span class="badge bg-black text-white">{{ $fullPaidCount }}</span>
                         </div>
-                        <small class="d-block text-end text-gold fw-bold">Rs.{{ number_format($fullPaidAmount, 2) }}</small>
+                        <small class="d-block text-end text-jg-blue fw-bold">Rs.{{ number_format($fullPaidAmount, 2) }}</small>
                     </div>
                 </div>
             </div>
@@ -969,10 +965,10 @@
                 labels: @json(collect($dailySales)->pluck('date')),
                 datasets: [{
                     label: 'Daily Sales',
-                    backgroundColor: 'rgba(212, 175, 55, 0.1)',
-                    borderColor: '#D4AF37',
+                    backgroundColor: 'rgba(22, 27, 151, 0.1)',
+                    borderColor: '#161b97',
                     borderWidth: 3,
-                    pointBackgroundColor: '#D4AF37',
+                    pointBackgroundColor: '#161b97',
                     pointBorderColor: '#000',
                     pointBorderWidth: 2,
                     pointRadius: 5,
