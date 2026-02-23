@@ -843,7 +843,6 @@ class Products extends Component
             'status' => 'received',
             'total_amount' => $totalAmount,
             'due_amount' => 0, // Cash Paid
-            'discount_amount' => 0,
         ]);
 
         // Create purchase order items

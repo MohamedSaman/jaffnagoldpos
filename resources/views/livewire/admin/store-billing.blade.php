@@ -404,22 +404,10 @@
 
                     {{-- Customer Balance Information (Conditional) --}}
                     @if($customerId && $customerId != '' && $selectedCustomer && $selectedCustomer->type != 'Walking Customer')
-                    <div class="p-3 bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200 rounded-lg grid grid-cols-4 gap-2">
+                    <div class="p-3 bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200 rounded-lg grid grid-cols-1 gap-2">
                         <div class="text-center p-2 bg-white rounded border border-slate-100">
                             <div class="text-[8px] font-black text-slate-400 uppercase tracking-wider mb-1">Opening Balance</div>
                             <div class="text-sm font-black text-slate-800">{{ number_format($customerOpeningBalanceDisplay, 2) }}</div>
-                        </div>
-                        <div class="text-center p-2 bg-white rounded border border-slate-100">
-                            <div class="text-[8px] font-black text-slate-400 uppercase tracking-wider mb-1">Due Amount</div>
-                            <div class="text-sm font-black text-amber-600">{{ number_format($customerDueAmountDisplay, 2) }}</div>
-                        </div>
-                        <div class="text-center p-2 bg-white rounded border border-slate-100">
-                            <div class="text-[8px] font-black text-slate-400 uppercase tracking-wider mb-1">Overpaid</div>
-                            <div class="text-sm font-black text-green-600">{{ number_format($customerOverpaidAmountDisplay, 2) }}</div>
-                        </div>
-                        <div class="text-center p-2 bg-white rounded border border-slate-100">
-                            <div class="text-[8px] font-black text-slate-400 uppercase tracking-wider mb-1">Total Due</div>
-                            <div class="text-sm font-black text-slate-800">{{ number_format($customerTotalDueDisplay, 2) }}</div>
                         </div>
                     </div>
                     @endif
@@ -1001,8 +989,20 @@
                 <div style="display:flex; gap:20px; margin-bottom:12px; justify-content:space-between; align-items:flex-start;">
                     <div style="flex:0 0 45%; text-align:left;">
                         @if($createdSale->customer)
-                        <p style="margin:0; font-size:12px;"><strong>Name:</strong> {{ $createdSale->customer->name }}</p>
-                        <p style="margin:0; font-size:12px;"><strong>Phone:</strong> {{ $createdSale->customer->phone }}</p>
+                        <p style="margin:0; font-size:12px;"><strong>Name:</strong> 
+                            @if($createdSale->customer->name === 'Walking Customer' && $createdSale->walking_customer_name)
+                                {{ $createdSale->walking_customer_name }}
+                            @else
+                                {{ $createdSale->customer->name }}
+                            @endif
+                        </p>
+                        <p style="margin:0; font-size:12px;"><strong>Phone:</strong> 
+                            @if($createdSale->customer->name === 'Walking Customer' && $createdSale->walking_customer_phone)
+                                {{ $createdSale->walking_customer_phone }}
+                            @else
+                                {{ $createdSale->customer->phone }}
+                            @endif
+                        </p>
                         <p style="margin:0; font-size:12px;"><strong>Type:</strong> {{ ucfirst($createdSale->customer_type) }}</p>
                         @else
                         <p class="text-muted">Walk-in Customer</p>
