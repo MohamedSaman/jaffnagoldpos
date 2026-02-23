@@ -1002,7 +1002,7 @@
                     @else
                     <div style="display: flex;">
                         <span style="width: 110px;">Payment Method</span>
-                        <span>: ONLINE TRANFER</span>
+                        <span>: ONLINE TRANSFER</span>
                     </div>
                     @endif
                     <div style="border-bottom: 1px dashed #000; margin: 8px 0;"></div>
