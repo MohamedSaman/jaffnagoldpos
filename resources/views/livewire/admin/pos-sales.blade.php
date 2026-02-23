@@ -358,7 +358,7 @@ use App\Models\Sale;
                             <div class="receipt-row">
                                 <div class="receipt-center">
                                     <h2 class="mb-0">JaffnaGold (PVT) LTD</h2>
-                                    <p class="mb-0 text-muted" style="color:#666; font-size:12px;">TOOLS WITH POWER</p>
+                                    <p class="mb-0 text-muted" style="color:#666; font-size:12px;">Gold Shop</p>
                                     <p style="margin:0; text-align:center;"><strong>421/2, Doolmala, thihariya, Kalagedihena.</strong></p>
                                     <p style="margin:0; text-align:center;"><strong>TEL:</strong> (077) 9752950, <strong>EMAIL:</strong> JaffnaGoldlanka@gmail.com</p>
                                 </div>

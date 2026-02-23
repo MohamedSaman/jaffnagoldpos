@@ -246,7 +246,7 @@
             <img src="{{ public_path('images/JaffnaGold.webp') }}" alt="Company Logo" class="logo">
             @endif
             <div class="company-name">JaffnaGold (PVT) LTD</div>
-            <div class="company-tagline">TOOLS WITH POWER</div>
+            <div class="company-tagline">Gold Shop</div>
             <div class="quotation-title">QUOTATION</div>
         </div>
 
