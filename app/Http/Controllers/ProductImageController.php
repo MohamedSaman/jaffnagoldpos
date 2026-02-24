@@ -161,7 +161,7 @@ class ProductImageController extends Controller
                     'current_perms' => decoct(fileperms($uploadPath) & 0777)
                 ]);
                 $useStorageFallback = true;
-                
+
                 // Create storage/app/public/images directory
                 $storageDir = storage_path('app/public/images');
                 if (!is_dir($storageDir)) {

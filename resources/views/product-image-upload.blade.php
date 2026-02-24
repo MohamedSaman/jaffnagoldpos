@@ -575,10 +575,10 @@
                 <strong>⚠️ Upload Error!</strong><br>
                 {{ session('error') }}
                 @php
-                    $error = session('error');
-                    $isPermissionError = strpos($error, 'directory') !== false || 
-                                        strpos($error, 'writable') !== false ||
-                                        strpos($error, 'Unable to write') !== false;
+                $error = session('error');
+                $isPermissionError = strpos($error, 'directory') !== false ||
+                strpos($error, 'writable') !== false ||
+                strpos($error, 'Unable to write') !== false;
                 @endphp
                 @if($isPermissionError)
                 <div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid rgba(220, 53, 69, 0.3);">
