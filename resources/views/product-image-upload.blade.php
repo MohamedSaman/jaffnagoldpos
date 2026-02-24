@@ -564,8 +564,12 @@
                 <div class="current-image-section">
                     <div class="current-image-label">Current Image</div>
                     <div class="current-image-wrap">
-                        @if($product->getRawOriginal('image') && $product->getRawOriginal('image') !== 'images/product.jpg')
-                            <img src="{{ asset($product->getRawOriginal('image')) }}" alt="{{ $product->name }}">
+                        @php
+                            $rawImage = $product->getRawOriginal('image');
+                            $hasImage = $rawImage && $rawImage !== '' && $rawImage !== 'images/product.jpg' && $rawImage !== 'images/products/product.jpg';
+                        @endphp
+                        @if($hasImage)
+                            <img src="{{ asset($rawImage) }}?t={{ time() }}" alt="{{ $product->name }}">
                         @else
                             <div class="no-image-text">
                                 <i class="bi bi-image"></i>

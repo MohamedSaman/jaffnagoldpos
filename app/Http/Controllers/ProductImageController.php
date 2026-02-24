@@ -60,20 +60,28 @@ class ProductImageController extends Controller
         try {
             // Generate a unique filename using product code + timestamp
             $extension = $request->file('image')->getClientOriginalExtension();
-            $filename = Str::slug($product->code) . '-' . time() . '.' . $extension;
+            $filename = Str::slug($product->getRawOriginal('code')) . '-' . time() . '.' . $extension;
 
             // Create the directory if it doesn't exist
-            $uploadPath = public_path('images/products');
+            $uploadPath = public_path('images');
             if (!file_exists($uploadPath)) {
                 mkdir($uploadPath, 0755, true);
             }
 
-            // Store the image in public/images/products
+            // Delete old image if it exists (not the default)
+            $oldImage = $product->getRawOriginal('image');
+            if ($oldImage && $oldImage !== 'images/product.jpg' && file_exists(public_path($oldImage))) {
+                @unlink(public_path($oldImage));
+            }
+
+            // Store the image in public/images
             $request->file('image')->move($uploadPath, $filename);
 
-            // Save the relative path to the database
-            $imagePath = 'images/products/' . $filename;
-            $product->update(['image' => $imagePath]);
+            // Save the relative path directly to the database (bypass accessor)
+            $imagePath = 'images/' . $filename;
+            \DB::table('product_details')
+                ->where('id', $product->id)
+                ->update(['image' => $imagePath]);
 
             Log::info('Product image uploaded', [
                 'product_id' => $product->id,
