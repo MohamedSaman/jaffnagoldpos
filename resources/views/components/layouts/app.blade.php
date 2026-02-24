@@ -60,8 +60,8 @@
 
         .user-icon-container i {
             font-size: 3rem;
-            color: #000000;
-            background: #f0f0f0;
+            color: #ffffff;
+            background: #161b97;
             border-radius: 50%;
             width: 70px;
             height: 70px;
@@ -94,10 +94,17 @@
             width: 100%;
             border-radius: 25px;
             padding: 10px;
-            background-color: #0d6efd;
+            background-color: #161b97;
+            color: #ffffff;
             border: none;
             font-weight: 600;
             margin-bottom: 20px;
+            transition: background-color 0.3s;
+        }
+
+        .login-btn:hover {
+            background-color: #12167d;
+            color: #ffffff;
         }
 
         .divider {

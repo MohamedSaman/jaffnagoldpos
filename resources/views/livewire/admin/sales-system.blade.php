@@ -152,81 +152,154 @@
                                                     wire:change="updatePrice({{ $index }}, $event.target.value)"
                                                     value="{{ $item['price'] }}" min="0" step="0.01">
                                             </div>
-                                        </td>
-                                        <td>
-                                            <div class="qty-controls">
-                                                <button class="qty-btn" type="button" wire:click="decrementQuantity({{ $index }})">-</button>
-                                                <input type="number" class="qty-input"
-                                                    wire:change="updateQuantity({{ $index }}, $event.target.value)"
-                                                    value="{{ $item['quantity'] }}" min="1" max="{{ $item['stock'] }}">
-                                                <button class="qty-btn" type="button" wire:click="incrementQuantity({{ $index }})">+</button>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="input-group input-group-sm">
-                                                <span class="input-group-text bg-white border-end-0 text-muted">Rs</span>
-                                                <input type="number" class="form-control form-control-sm border-start-0 ps-0 text-danger"
-                                                    wire:change="updateDiscount({{ $index }}, $event.target.value)"
-                                                    value="{{ $item['discount'] }}" min="0" step="0.01">
-                                            </div>
-                                        </td>
-                                        <td class="text-end align-middle">
-                                            <span class="fw-bold text-dark">Rs.{{ number_format($item['total'], 2) }}</span>
-                                        </td>
-                                        <td class="text-center align-middle">
-                                            <button class="btn btn-sm btn-outline-danger border-0" wire:click="removeFromCart({{ $index }})">
-                                                <i class="bi bi-trash3"></i>
+                                        </div>
+                                    </td>
+                                    <td class="fw-bold">
+                                        <input type="number" class="form-control-sm text-primary" style="min-width:90px;"
+                                            wire:change="updatePrice({{ $index }}, $event.target.value)"
+                                            value="{{ $item['price'] }}" min="0" step="0.01"
+                                            placeholder="0.00">
+                                    </td>
+                                    <td>
+                                        <div class="input-group input-group-sm">
+                                            <button class="btn btn-outline-secondary" type="button"
+                                                wire:click="decrementQuantity({{ $index }})">-</button>
+                                            <input type="number" class="form-control text-center"
+                                                wire:change="updateQuantity({{ $index }}, $event.target.value)"
+                                                value="{{ $item['quantity'] }}" min="1" max="{{ $item['stock'] }}">
+                                            <button class="btn btn-outline-secondary" type="button"
+                                                wire:click="incrementQuantity({{ $index }})">+</button>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <input type="number" class="form-control form-control-sm text-danger"
+                                            wire:change="updateDiscount({{ $index }}, $event.target.value)"
+                                            value="{{ $item['discount'] }}" min="0" step="0.01"
+                                            placeholder="0.00">
+                                    </td>
+                                    <td class="fw-bold">
+                                        Rs.{{ number_format($item['total'], 2) }}
+                                    </td>
+                                    <td class="text-center">
+                                        <button class="btn btn-sm btn-outline-danger"
+                                            wire:click="removeFromCart({{ $index }})"
+                                            title="Delete">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                            <tfoot class="table-light">
+                                <tr>
+                                    <td colspan="5" class="text-end fw-bold">Subtotal:</td>
+                                    <td class="fw-bold">Rs.{{ number_format($subtotal, 2) }}</td>
+                                    <td></td>
+                                </tr>
+
+                                {{-- Additional Discount Section --}}
+                                <tr>
+                                    <td colspan="3" class="text-end fw-bold align-middle">
+                                        Additional Discount:
+                                        @if($additionalDiscount > 0)
+                                        <button type="button" class=" text-danger p-0 ms-1 border-0 bg-opacity-0"
+                                            wire:click="removeAdditionalDiscount" title="Remove discount">
+                                            <i class="bi bi-x-circle"></i>
+                                        </button>
+                                        @endif
+                                    </td>
+                                    <td colspan="2">
+                                        <div class="input-group input-group-sm">
+                                            <input type="number"
+                                                class="form-control form-control-sm text-danger"
+                                                wire:model.live="additionalDiscount"
+                                                min="0"
+                                                step="{{ $additionalDiscountType === 'percentage' ? '1' : '0.01' }}"
+                                                @if($additionalDiscountType==='percentage' ) max="100" @endif
+                                                placeholder="0{{ $additionalDiscountType === 'percentage' ? '' : '.00' }}">
+
+                                            <span class="input-group-text">
+                                                {{ $additionalDiscountType === 'percentage' ? '%' : 'Rs.' }}
+                                            </span>
+
+                                            <button type="button"
+                                                class="btn btn-outline-secondary"
+                                                wire:click="toggleDiscountType"
+                                                title="Switch Discount Type">
+                                                <i class="bi bi-arrow-repeat"></i>
                                             </button>
-                                        </td>
-                                    </tr>
-                                    @endforeach
+                                        </div>
+                                    </td>
+                                    <td class="fw-bold text-danger">
+                                        @if($additionalDiscount > 0)
+                                        - Rs.{{ number_format($additionalDiscountAmount, 2) }}
+                                        @if($additionalDiscountType === 'percentage')
+                                        <div class="text-muted small">({{ $additionalDiscount }}%)</div>
+                                        @endif
+                                        @else
+                                        <span class="text-muted">-</span>
+                                        @endif
+                                    </td>
+                                    <td></td>
+                                </tr>
 
-                                    @if(count($cart) === 0)
-                                    <tr>
-                                        <td colspan="7" class="text-center py-5 text-muted">
-                                            <i class="bi bi-cart-x display-6 d-block mb-3 opacity-25"></i>
-                                            Your cart is empty. Scan products or search to add items.
-                                        </td>
-                                    </tr>
-                                    @endif
-                                </tbody>
-                            </table>
-                        </div>
-
-                        {{-- Subtotal and Additional Discount Bar --}}
-                        @if(count($cart) > 0)
-                        <div class="bg-light p-2 d-flex flex-wrap justify-content-between align-items-center border-top gap-2">
-                            <div class="d-flex align-items-center gap-3">
-                                <span class="fw-bold text-muted" style="font-size: 0.75rem; text-transform: uppercase;">Additional Discount:</span>
-                                <div class="d-flex align-items-center gap-1 bg-white p-1 rounded border">
-                                    <input type="number"
-                                        class="form-control form-control-sm border-0 shadow-none p-0 px-2 fw-bold text-dark"
-                                        wire:model.live="additionalDiscount"
-                                        min="0"
-                                        step="{{ $additionalDiscountType === 'percentage' ? '1' : '0.01' }}"
-                                        @if($additionalDiscountType === 'percentage') max="100" @endif
-                                        placeholder="0"
-                                        style="width: 70px; font-size: 0.85rem; background: transparent;">
-                                    <span class="badge bg-dark text-gold py-1" style="font-size: 0.7rem; min-width: 30px;">
-                                        {{ $additionalDiscountType === 'percentage' ? '%' : 'Rs' }}
-                                    </span>
-                                    <button type="button" class="btn btn-sm btn-light border p-0 px-2"
-                                        wire:click="toggleDiscountType" style="height: 24px;">
-                                        <i class="bi bi-arrow-repeat" style="font-size: 0.75rem;"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="text-end">
-                                <div class="text-dark fw-bold" style="font-size: 1rem; letter-spacing: -0.01em;">Subtotal: <span class="text-muted fw-normal" style="font-size: 0.85rem;">Rs.</span>{{ number_format($subtotal, 2) }}</div>
-                                @if($additionalDiscountAmount > 0)
-                                <div class="text-danger fw-bold" style="font-size: 0.8rem;">Discount: -Rs.{{ number_format($additionalDiscountAmount, 2) }}</div>
-                                @endif
-                            </div>
-                        </div>
-                        @endif
+                                {{-- Grand Total
+                                <tr>
+                                    <td colspan="5" class="text-end fw-bold fs-5">Grand Total:</td>
+                                    <td class="fw-bold fs-5 text-primary">Rs.{{ number_format($grandTotal, 2) }}</td>
+                                <td></td>
+                                </tr> --}}
+                            </tfoot>
+                        </table>
                     </div>
+                    @else
+                    <div class="text-center text-muted py-5">
+                        <i class="bi bi-cart display-4 d-block mb-2"></i>
+                        No items added yet
+                    </div>
+                    @endif
+                </div>
+                @if(count($cart) > 0)
+                <div class="card-footer">
+                    <button class="btn btn-danger" wire:click="clearCart">
+                        <i class="bi bi-trash me-2"></i>Clear All Items
+                    </button>
+                </div>
+                @endif
+            </div>
+        </div>
+
+        {{-- Notes --}}
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-chat-text me-2"></i>Notes
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <textarea class="form-control" wire:model="notes" rows="3"
+                        placeholder="Add any notes for this sale..."></textarea>
                 </div>
             </div>
+        </div>
+
+        {{-- Create Sale Button --}}
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <div class="fw-bold fs-5">Grand Total</div>
+                        <div class="fw-bold fs-5 text-gold">Rs.{{ number_format($grandTotal, 2) }}</div>
+                    </div>
+                    <button class="btn btn-success btn-lg px-5" wire:click="createSale"
+                        {{ count($cart) == 0 ? 'disabled' : '' }}>
+                        <i class="bi bi-cart-check me-2"></i>Complete Sale
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
             {{-- Bottom Section: Delivery, Payment & Create Sale --}}
             <div class="row g-3 pt-3 border-top">
@@ -301,20 +374,21 @@
 
     {{-- Sale Preview Modal --}}
     @if($showSaleModal && $createdSale)
-    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.8); backdrop-filter: blur(8px);">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content border-gold border-opacity-50 overflow-hidden">
-                <div class="modal-header bg-black text-gold border-gold border-opacity-25">
-                    <h5 class="modal-title fw-bold">SALE COMPLETED SUCCESSFULLY</h5>
-                    <button type="button" class="btn-close btn-close-white" wire:click="createNewSale"></button>
-                </div>
-                <div class="modal-body p-0">
-                    <div class="p-4" id="saleReceiptPrintContent" style="background: white;">
-                        {{-- Receipt Header --}}
-                        <div class="text-center mb-4 border-bottom pb-3">
-                            <img src="{{ asset('images/JaffnaGold.webp') }}" alt="Logo" class="mb-2" style="max-height: 80px;">
-                            <h3 class="fw-bold mb-0">JaffnaGold (PVT) Ltd</h3>
-                            <p class="text-muted small mb-0">Premium Jewellery Billing</p>
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content rounded-0" id="printableInvoice">
+                {{-- Screen Only Header (visible on screen, hidden on print) --}}
+                <div class="screen-only-header p-4">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        {{-- Left: Logo --}}
+                        <div style="flex: 0 0 150px;">
+                            <img src="{{ asset('images/JaffnaGold.webp') }}" alt="Logo" class="img-fluid" style="max-height:80px;">
+                        </div>
+
+                        {{-- Center: Company Name --}}
+                        <div class="text-center" style="flex: 1;">
+                            <h2 class="mb-0 fw-bold" style="font-size: 2.5rem; letter-spacing: 2px;">JaffnaGold (PVT) LTD</h2>
+                            <p class="mb-0 text-muted small">Gold Shop</p>
                         </div>
 
                         <div class="row mb-4">

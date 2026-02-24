@@ -8,11 +8,11 @@
         @layer base {
             :root {
                 /* Accent palette - tweak these for different color themes */
-                --accent-50: #fffcf0;
-                --accent-100: #fef9c3;
-                --accent-300: #eab308;
-                --accent-500: #D4AF37; /* primary metallic gold accent */
-                --accent-700: #B8860B;
+                --accent-50: #f0f2ff;
+                --accent-100: #e0e4ff;
+                --accent-300: #4361ee;
+                --accent-500: #161b97; /* logo blue accent */
+                --accent-700: #12167d;
                 --bg-pos: #fcfcfc;
                 --muted: #64748b;
             }
@@ -29,7 +29,7 @@
 
             /* Header */
             .pos-billing-terminal header { background: linear-gradient(90deg, var(--accent-50), #ffffff); border-bottom: 1px solid rgba(0,0,0,0.04); }
-            .pos-billing-terminal header .bg-gold-gradient { background: linear-gradient(135deg,var(--accent-500),var(--accent-700)); box-shadow: 0 6px 18px rgba(184,134,11,0.12); }
+            .pos-billing-terminal header .bg-blue-gradient { background: linear-gradient(135deg,var(--accent-500),var(--accent-700)); box-shadow: 0 6px 18px rgba(22,27,151,0.12); }
 
             /* Accent buttons */
             .btn-accent { background: linear-gradient(90deg,var(--accent-500),var(--accent-700)); color: white; }
@@ -77,13 +77,13 @@
         <header class="bg-white border-b border-slate-200 px-3 py-0 flex items-center justify-between shadow-sm shrink-0">
             <div class="flex items-center gap-2">
                 <div class="flex items-center">
-                    <img src="{{ asset('images/JaffnaGold.webp') }}" class="h-20 w-auto" alt="Logo">
+                    <img src="{{ asset('images/jg.png') }}" class="h-20 w-auto" alt="Logo">
                 </div>
             </div>
 
             <div class="flex items-center gap-2">
                 <div class="bg-slate-100 px-3 py-1 rounded border border-slate-200">
-                    <span class="font-mono text-base font-bold text-[#D4AF37] tracking-widest" id="posClock">00:00:00</span>
+                    <span class="font-mono text-base font-bold text-[#161b97] tracking-widest" id="posClock">00:00:00</span>
                 </div>
                 <button class="flex items-center gap-2 px-4 py-2 rounded-full bg-slate-100 hover:bg-slate-200 transition-colors text-xs font-bold text-slate-600 border border-slate-200"
                     wire:click="viewCloseRegisterReport">
@@ -110,7 +110,7 @@
                     x-init="$nextTick(() => { if ($refs.searchInput) $refs.searchInput.focus(); })">
                     <div class="relative">
                         <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">search</span>
-                        <input class="w-full pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-md focus:ring-2 focus:ring-[#D4AF37]/20 focus:border-[#D4AF37] outline-none text-sm transition-all"
+                        <input class="w-full pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-md focus:ring-2 focus:ring-[#161b97]/20 focus:border-[#161b97] outline-none text-sm transition-all"
                             x-ref="searchInput"
                             wire:model.live.debounce.300ms="search"
                             placeholder="Scan barcode or type product name..." type="text"
@@ -148,7 +148,7 @@
                             <div class="flex items-center gap-3 p-3 cursor-pointer border-b border-slate-50 last:border-0 transition-colors"
                                 data-search-result
                                 data-search-index="{{ $sIndex }}"
-                                :class="highlightIndex === {{ $sIndex }} ? 'bg-yellow-50 border-l-2 !border-l-[#D4AF37]' : 'hover:bg-slate-50'"
+                                :class="highlightIndex === {{ $sIndex }} ? 'bg-blue-50 border-l-2 !border-l-[#161b97]' : 'hover:bg-slate-50'"
                                 wire:click="addToCart({{ json_encode($res) }})"
                                 x-on:mouseenter="highlightIndex = {{ $sIndex }}">
                                 <img src="{{ $this->getImageUrl($res['image']) }}"
@@ -164,7 +164,7 @@
                                         @endif
                                     </p>
                                 </div>
-                                <span class="text-xs font-black text-[#D4AF37]">Rs. {{ number_format($res['price'], 2) }}</span>
+                                <span class="text-xs font-black text-[#161b97]">Rs. {{ number_format($res['price'], 2) }}</span>
                             </div>
                             @endforeach
                         </div>
@@ -218,7 +218,7 @@
                                                         }
                                                     });
                                                 "
-                                                class="w-16 h-7 text-center text-xs font-black bg-white border-y border-slate-200 focus:outline-none focus:border-[#D4AF37] transition-colors [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none" />
+                                                class="w-16 h-7 text-center text-xs font-black bg-white border-y border-slate-200 focus:outline-none focus:border-[#161b97] transition-colors [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none" />
                                             <button class="w-7 h-7 flex items-center justify-center rounded-r border border-l-0 border-slate-200 bg-slate-100 hover:bg-slate-200 text-sm font-bold text-slate-600 transition-all" wire:click="incrementQuantity({{ $index }})">+</button>
                                         </div>
                                     </div>
@@ -231,7 +231,7 @@
                                             wire:change="updatePrice({{ $index }}, $event.target.value)"
                                             wire:key="price-{{ $cartKey }}"
                                             x-on:keydown.enter.prevent="$wire.updatePrice({{ $index }}, $event.target.value)"
-                                            class="w-24 h-7 text-right text-xs font-bold bg-slate-50 border border-slate-200 rounded px-2 focus:outline-none focus:border-[#D4AF37] transition-colors" />
+                                            class="w-24 h-7 text-right text-xs font-bold bg-slate-50 border border-slate-200 rounded px-2 focus:outline-none focus:border-[#161b97] transition-colors" />
                                     </div>
                                 </td>
                                 <td class="px-2 py-2 text-center">
@@ -271,7 +271,7 @@
                                             <button type="button"
                                                 @click="mode = mode === 'fixed' ? 'pct' : 'fixed'; apply()"
                                                 class="h-full px-1.5 text-[8px] font-black border-l transition-colors whitespace-nowrap"
-                                                :class="mode === 'pct' ? 'bg-emerald-500 text-white border-emerald-400' : 'bg-[#D4AF37] text-white border-yellow-400'"
+                                                :class="mode === 'pct' ? 'bg-emerald-500 text-white border-emerald-400' : 'bg-[#161b97] text-white border-yellow-400'"
                                                 x-text="mode === 'pct' ? '%' : 'Rs'">
                                             </button>
                                         </div>
@@ -346,7 +346,7 @@
                             </div>
                         </div>
                         <div>
-                            <button class="w-full py-2 bg-white border border-slate-200 rounded text-[10px] font-black flex items-center justify-center gap-2 hover:bg-slate-50 hover:border-[#D4AF37]/50 transition-all text-slate-600 shadow-sm uppercase tracking-tighter"
+                            <button class="w-full py-2 bg-white border border-slate-200 rounded text-[10px] font-black flex items-center justify-center gap-2 hover:bg-slate-50 hover:border-[#161b97]/50 transition-all text-slate-600 shadow-sm uppercase tracking-tighter"
                                 wire:click="openSaleDiscountModal">
                                 <span class="material-symbols-outlined text-base">sell</span>
                                 APPLY GLOBAL DISCOUNT
@@ -356,9 +356,9 @@
                     <div class="grid grid-cols-2 gap-4 items-center border-t border-slate-200 pt-4">
                         <div class="flex justify-between items-baseline">
                             <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Total</span>
-                            <span class="text-3xl font-black text-[#D4AF37] tracking-tighter">Rs. {{ number_format($grandTotal, 2) }}</span>
+                            <span class="text-3xl font-black text-[#161b97] tracking-tighter">Rs. {{ number_format($grandTotal, 2) }}</span>
                         </div>
-                        <button class="w-full bg-[#D4AF37] hover:bg-yellow-600 text-white font-black py-3 rounded-lg flex items-center justify-center gap-2 shadow-xl shadow-yellow-500/20 transition-all text-xs uppercase tracking-widest disabled:opacity-40 disabled:grayscale disabled:cursor-not-allowed group"
+                        <button class="w-full bg-[#161b97] hover:bg-blue-800 text-white font-black py-3 rounded-lg flex items-center justify-center gap-2 shadow-xl shadow-blue-500/20 transition-all text-xs uppercase tracking-widest disabled:opacity-40 disabled:grayscale disabled:cursor-not-allowed group"
                             wire:click="validateAndCreateSale" {{ count($cart) == 0 ? 'disabled' : '' }}>
                             <span class="material-symbols-outlined text-xl group-hover:scale-110 transition-transform">payments</span>
                             Complete Sale
@@ -375,13 +375,13 @@
                         <div class="flex-1">
                             <label class="text-[9px] font-black text-slate-400 uppercase mb-1 block tracking-widest">Customer Selection</label>
                             <div class="relative group">
-                                <span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-lg group-focus-within:text-[#D4AF37] transition-colors">person</span>
-                                <select class="w-full pl-9 pr-10 py-2 bg-slate-50 border border-slate-200 rounded-md outline-none text-xs font-bold appearance-none focus:ring-2 focus:ring-[#D4AF37]/10 focus:border-[#D4AF37] transition-all" wire:model.live="customerId">
+                                <span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-lg group-focus-within:text-[#161b97] transition-colors">person</span>
+                                <select class="w-full pl-9 pr-10 py-2 bg-slate-50 border border-slate-200 rounded-md outline-none text-xs font-bold appearance-none focus:ring-2 focus:ring-[#161b97]/10 focus:border-[#161b97] transition-all" wire:model.live="customerId">
                                     @foreach($customers as $customer)
                                     <option value="{{ $customer->id }}">{{ $customer->business_name ?? $customer->name }} ({{ $customer->phone }})</option>
                                     @endforeach
                                 </select>
-                                <button class="absolute right-8 top-1/2 -translate-y-1/2 text-[#D4AF37] p-1.5 hover:bg-yellow-50 rounded-full transition-all" wire:click="openCustomerModal" title="Add Customer">
+                                <button class="absolute right-8 top-1/2 -translate-y-1/2 text-[#161b97] p-1.5 hover:bg-yellow-50 rounded-full transition-all" wire:click="openCustomerModal" title="Add Customer">
                                     <span class="material-symbols-outlined text-lg">person_add</span>
                                 </button>
                                 <span class="material-symbols-outlined absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-300 text-lg pointer-events-none">expand_more</span>
@@ -391,7 +391,7 @@
                             <label class="text-[9px] font-black text-slate-400 uppercase mb-1 block tracking-widest">Price Type</label>
                             <div class="relative">
                                 <span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-lg">sell</span>
-                                <select class="w-full pl-9 pr-8 py-2 bg-slate-50 border border-slate-200 rounded-md outline-none text-xs font-bold appearance-none focus:border-[#D4AF37] transition-all" wire:model.live="priceType">
+                                <select class="w-full pl-9 pr-8 py-2 bg-slate-50 border border-slate-200 rounded-md outline-none text-xs font-bold appearance-none focus:border-[#161b97] transition-all" wire:model.live="priceType">
                                     <option value="retail">Retail Price</option>
                                     <option value="wholesale">Wholesale</option>
                                     <option value="distribute">Distribute Price</option>
@@ -413,12 +413,12 @@
                     <div class="grid grid-cols-2 gap-2">
                         <button class="flex items-center justify-center gap-1.5 py-1.5 bg-slate-100 border border-slate-200 rounded-md hover:bg-slate-200 hover:border-slate-300 transition-all font-black text-[9px] text-slate-600 uppercase tracking-tighter shadow-sm"
                             wire:click="toggleCategoryPanel">
-                            <span class="material-symbols-outlined text-sm text-[#D4AF37]">category</span>
+                            <span class="material-symbols-outlined text-sm text-[#161b97]">category</span>
                             FILTER BY CATEGORY
                         </button>
                         <button class="flex items-center justify-center gap-1.5 py-1.5 bg-slate-100 border border-slate-200 rounded-md hover:bg-slate-200 hover:border-slate-300 transition-all font-black text-[9px] text-slate-600 uppercase tracking-tighter shadow-sm"
                             wire:click="toggleBrandPanel">
-                            <span class="material-symbols-outlined text-sm text-[#D4AF37]">branding_watermark</span>
+                            <span class="material-symbols-outlined text-sm text-[#161b97]">branding_watermark</span>
                             FILTER BY BRAND
                         </button>
                     </div>
@@ -461,7 +461,7 @@
 
                                     <div class="mt-auto flex items-end justify-between">
                                         <div class="flex flex-col">
-                                            <span class="text-[#D4AF37] font-black text-[11px] leading-none tracking-tighter">Rs. {{ number_format($product['price'], 0) }}</span>
+                                            <span class="text-[#161b97] font-black text-[11px] leading-none tracking-tighter">Rs. {{ number_format($product['price'], 0) }}</span>
                                             <span class="text-[7px] text-slate-400 font-bold mt-0.5">
                                                 <span class="{{ ($product['stock'] ?? 0) <= 5 ? 'text-amber-500' : 'text-green-600' }}">Avail: {{ $product['stock'] }}</span>
                                                 @if(($product['pending'] ?? 0) > 0)
@@ -469,7 +469,7 @@
                                                 @endif
                                             </span>
                                         </div>
-                                        <div class="bg-slate-100 p-1 rounded group-hover:bg-[#D4AF37] group-hover:text-white transition-all">
+                                        <div class="bg-slate-100 p-1 rounded group-hover:bg-[#161b97] group-hover:text-white transition-all">
                                             <span class="material-symbols-outlined text-sm font-black">add</span>
                                         </div>
                                     </div>
@@ -500,13 +500,13 @@
         </button>
     </div>
     <div class="p-2 overflow-y-auto flex-1 custom-scrollbar">
-        <button class=" mb-1 text-center  p-3 rounded-lg transition-all border border-slate-100 {{ !$selectedCategory ? 'bg-[#D4AF37] text-white shadow-lg shadow-yellow-500/30' : 'hover:bg-slate-100 text-slate-600' }}"
+        <button class=" mb-1 text-center  p-3 rounded-lg transition-all border border-slate-100 {{ !$selectedCategory ? 'bg-[#161b97] text-white shadow-lg shadow-blue-500/30' : 'hover:bg-slate-100 text-slate-600' }}"
             wire:click="showAllProducts">
             <span class="font-black text-xs tracking-tight">Show All Items</span>
             <span class="text-[10px] font-bold opacity-70">{{ count($products) }}</span>
         </button>
         @foreach($categories as $category)
-        <button class=" mb-1 text-center p-3 rounded-lg transition-all border border-slate-100 {{ $selectedCategory == $category->id ? 'bg-[#D4AF37] text-white shadow-lg shadow-yellow-500/30' : 'hover:bg-slate-100 text-slate-600' }}"
+        <button class=" mb-1 text-center p-3 rounded-lg transition-all border border-slate-100 {{ $selectedCategory == $category->id ? 'bg-[#161b97] text-white shadow-lg shadow-yellow-500/30' : 'hover:bg-slate-100 text-slate-600' }}"
             wire:click="selectCategory({{ $category->id }})">
             <span class="font-black text-xs tracking-tight">{{ $category->category_name }}</span>
             <span class="text-[10px] font-bold opacity-70">{{ $category->products_count }}</span>
@@ -551,8 +551,8 @@
         {{-- Header --}}
         <div class="bg-gradient-to-r from-slate-900 to-slate-800 px-5 py-3.5 flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-lg bg-[#D4AF37]/20 border border-[#D4AF37]/30 flex items-center justify-center">
-                    <span class="material-symbols-outlined text-[#D4AF37] text-base">person</span>
+                <div class="w-8 h-8 rounded-lg bg-[#161b97]/20 border border-[#161b97]/30 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-[#161b97] text-base">person</span>
                 </div>
                 <div>
                     <h3 class="font-black text-sm text-white uppercase tracking-widest leading-none">Customer Details</h3>
@@ -569,14 +569,14 @@
             <div>
                 <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1.5 block">Customer Name</label>
                 <input type="text"
-                    class="w-full px-3 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl text-xs font-bold outline-none focus:border-[#D4AF37] transition-colors"
+                    class="w-full px-3 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl text-xs font-bold outline-none focus:border-[#161b97] transition-colors"
                     wire:model="walkingCustomerName" placeholder="Enter customer name..."
                     x-init="$nextTick(() => $el.focus())">
             </div>
             <div>
                 <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1.5 block">Contact Number</label>
                 <input type="text"
-                    class="w-full px-3 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl text-xs font-bold outline-none focus:border-[#D4AF37] transition-colors"
+                    class="w-full px-3 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl text-xs font-bold outline-none focus:border-[#161b97] transition-colors"
                     wire:model="walkingCustomerPhone" placeholder="07xxxxxxxx">
             </div>
         </div>
@@ -586,7 +586,7 @@
                 wire:click="skipWalkingCustomerDetails">
                 Skip
             </button>
-            <button class="px-8 py-2.5 bg-[#D4AF37] hover:bg-yellow-600 text-white rounded-xl text-[10px] font-black uppercase shadow-lg shadow-yellow-500/20 transition-colors"
+            <button class="px-8 py-2.5 bg-[#161b97] hover:bg-yellow-600 text-white rounded-xl text-[10px] font-black uppercase shadow-lg shadow-yellow-500/20 transition-colors"
                 wire:click="saveWalkingCustomerDetails">
                 Continue to Payment
             </button>
@@ -723,8 +723,8 @@
         {{-- Header --}}
         <div class="shrink-0 bg-gradient-to-r from-slate-900 to-slate-800 px-5 py-3.5 flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-lg bg-[#D4AF37]/20 border border-[#D4AF37]/30 flex items-center justify-center">
-                    <span class="material-symbols-outlined text-[#D4AF37] text-base">payments</span>
+                <div class="w-8 h-8 rounded-lg bg-[#161b97]/20 border border-[#161b97]/30 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-[#161b97] text-base">payments</span>
                 </div>
                 <div>
                     <h3 class="font-black text-sm text-white uppercase tracking-widest leading-none">Secure Transaction</h3>
@@ -749,13 +749,13 @@
                     <div class="flex rounded-xl overflow-hidden border border-slate-200 bg-slate-50">
                         <button type="button"
                             wire:click="$set('paymentMethod','cash')"
-                            class="flex-1 flex items-center justify-center gap-2 py-2.5 text-xs font-black uppercase transition-all {{ $paymentMethod === 'cash' ? 'bg-[#D4AF37] text-white shadow-sm' : 'text-slate-500 hover:bg-slate-100' }}">
+                            class="flex-1 flex items-center justify-center gap-2 py-2.5 text-xs font-black uppercase transition-all {{ $paymentMethod === 'cash' ? 'bg-[#161b97] text-white shadow-sm' : 'text-slate-500 hover:bg-slate-100' }}">
                             <span class="material-symbols-outlined text-base">payments</span>
                             Cash
                         </button>
                         <button type="button"
                             wire:click="$set('paymentMethod','bank_transfer')"
-                            class="flex-1 flex items-center justify-center gap-2 py-2.5 text-xs font-black uppercase transition-all border-l border-slate-200 {{ $paymentMethod === 'bank_transfer' ? 'bg-[#D4AF37] text-white shadow-sm' : 'text-slate-500 hover:bg-slate-100' }}">
+                            class="flex-1 flex items-center justify-center gap-2 py-2.5 text-xs font-black uppercase transition-all border-l border-slate-200 {{ $paymentMethod === 'bank_transfer' ? 'bg-[#161b97] text-white shadow-sm' : 'text-slate-500 hover:bg-slate-100' }}">
                             <span class="material-symbols-outlined text-base">account_balance</span>
                             Bank
                         </button>
@@ -770,7 +770,7 @@
                         <div class="relative flex items-center">
                             <span class="absolute left-3 text-[10px] font-black text-slate-400 pointer-events-none">Rs.</span>
                             <input type="number"
-                                class="w-full pl-9 pr-3 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl text-xl font-black text-slate-800 outline-none focus:border-[#D4AF37] transition-colors"
+                                class="w-full pl-9 pr-3 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl text-xl font-black text-slate-800 outline-none focus:border-[#161b97] transition-colors"
                                 wire:model.live="amountReceived">
                         </div>
                     </div>
@@ -792,20 +792,20 @@
                         <div class="relative flex items-center">
                             <span class="absolute left-3 text-[10px] font-black text-slate-400 pointer-events-none">Rs.</span>
                             <input type="number"
-                                class="w-full pl-9 pr-3 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl text-xl font-black text-slate-800 outline-none focus:border-[#D4AF37] transition-colors"
+                                class="w-full pl-9 pr-3 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl text-xl font-black text-slate-800 outline-none focus:border-[#161b97] transition-colors"
                                 wire:model.live="bankTransferAmount">
                         </div>
                     </div>
                     <div>
                         <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-1.5">Bank Name</label>
                         <input type="text"
-                            class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold outline-none focus:border-[#D4AF37] transition-colors"
+                            class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold outline-none focus:border-[#161b97] transition-colors"
                             wire:model="bankTransferBankName" placeholder="e.g. Commercial Bank">
                     </div>
                     <div>
                         <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-1.5">Reference / Slip No.</label>
                         <input type="text"
-                            class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold outline-none focus:border-[#D4AF37] transition-colors"
+                            class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold outline-none focus:border-[#161b97] transition-colors"
                             wire:model="bankTransferReferenceNumber" placeholder="Transaction reference">
                     </div>
                 </div>
@@ -814,7 +814,7 @@
                 {{-- Notes --}}
                 <div class="mt-auto">
                     <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-1.5">Notes</label>
-                    <textarea class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold outline-none focus:border-[#D4AF37] transition-colors resize-none"
+                    <textarea class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold outline-none focus:border-[#161b97] transition-colors resize-none"
                         wire:model="paymentNotes" placeholder="Optional transaction notes..." rows="2"></textarea>
                 </div>
             </div>
@@ -850,16 +850,16 @@
                 <div class="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl px-5 py-4 flex items-center justify-between">
                     <div>
                         <p class="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em]">Grand Total</p>
-                        <p class="text-3xl font-black text-[#D4AF37] tracking-tight mt-0.5">Rs. {{ number_format($grandTotal, 2) }}</p>
+                        <p class="text-3xl font-black text-[#161b97] tracking-tight mt-0.5">Rs. {{ number_format($grandTotal, 2) }}</p>
                     </div>
-                    <div class="w-12 h-12 rounded-xl bg-[#D4AF37]/15 border border-[#D4AF37]/30 flex items-center justify-center">
-                        <span class="material-symbols-outlined text-[#D4AF37] text-xl">paid</span>
+                    <div class="w-12 h-12 rounded-xl bg-[#161b97]/15 border border-[#161b97]/30 flex items-center justify-center">
+                        <span class="material-symbols-outlined text-[#161b97] text-xl">paid</span>
                     </div>
                 </div>
 
                 {{-- Method Badge --}}
                 <div class="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 rounded-xl">
-                    <span class="material-symbols-outlined text-[#D4AF37] text-base">{{ $paymentMethod === 'cash' ? 'payments' : 'account_balance' }}</span>
+                    <span class="material-symbols-outlined text-[#161b97] text-base">{{ $paymentMethod === 'cash' ? 'payments' : 'account_balance' }}</span>
                     <div class="flex-1">
                         <p class="text-[9px] font-black text-slate-400 uppercase tracking-wider">Paying via</p>
                         <p class="text-xs font-black text-slate-700">{{ $paymentMethod === 'cash' ? 'Cash Payment' : 'Bank Transfer' }}</p>
@@ -875,7 +875,7 @@
                 <div class="mt-auto flex gap-3">
                     <button class="flex-1 py-3 bg-white border-2 border-slate-200 text-slate-500 font-black rounded-xl uppercase tracking-wider hover:bg-slate-50 transition-all text-xs"
                         wire:click="closePaymentModal">Cancel</button>
-                    <button class="flex-[2] py-3 bg-[#D4AF37] hover:bg-yellow-600 text-white font-black rounded-xl uppercase tracking-wider shadow-lg shadow-yellow-500/20 text-xs flex items-center justify-center gap-2 transition-all"
+                    <button class="flex-[2] py-3 bg-[#161b97] hover:bg-yellow-600 text-white font-black rounded-xl uppercase tracking-wider shadow-lg shadow-yellow-500/20 text-xs flex items-center justify-center gap-2 transition-all"
                         wire:click="completeSaleWithPaymentAndPrint">
                         <span class="material-symbols-outlined text-base">print_connect</span>
                         Process & Print
@@ -892,8 +892,8 @@
         {{-- Header --}}
         <div class="bg-gradient-to-r from-slate-900 to-slate-800 px-5 py-3.5 flex items-center justify-between shrink-0">
             <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-lg bg-[#D4AF37]/20 border border-[#D4AF37]/30 flex items-center justify-center">
-                    <span class="material-symbols-outlined text-[#D4AF37] text-base">receipt_long</span>
+                <div class="w-8 h-8 rounded-lg bg-[#161b97]/20 border border-[#161b97]/30 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-[#161b97] text-base">receipt_long</span>
                 </div>
                 <div>
                     <h3 class="font-black text-sm text-white uppercase tracking-widest leading-none">Transaction Finalized</h3>
@@ -940,6 +940,15 @@
                         <span style="width: 85px;">Cashier</span>
                         <span>: {{ $createdSale->user->name ?? 'Admin' }}</span>
                     </div>
+                    <div><strong>Type:</strong> {{ ucfirst($createdSale->customer_type) }}</div>
+                    @else
+                    <div><strong>Name:</strong> Walk-in Customer</div>
+                    @endif
+                </div>
+                <div style="font-size:11px; text-align:right; line-height:1.7;">
+                    <div><strong>Invoice:</strong> {{ $createdSale->invoice_number }}</div>
+                    <div><strong>Date:</strong> {{ $createdSale->created_at->format('d/m/Y h:i A') }}</div>
+                    <div><strong>Status:</strong> <span style="color:#161b97; font-weight:800;">{{ ucfirst($createdSale->payment_status ?? 'Paid') }}</span></div>
                 </div>
 
                 <div style="border-bottom: 1px dashed #000; margin: 8px 0;"></div>
@@ -961,6 +970,29 @@
                         <span style="flex: 1; text-align: right;">{{ number_format($item->unit_price, 0) }}</span>
                     </div>
                     @endforeach
+                </tbody>
+            </table>
+
+            {{-- Payment Info + Order Summary --}}
+            @php
+                $originalSubtotal = $createdSale->items->sum(fn($i) => $i->unit_price * $i->quantity);
+                $totalDiscountRs = $originalSubtotal - $createdSale->total_amount;
+                $discountPercentage = $originalSubtotal > 0 ? ($totalDiscountRs / $originalSubtotal) * 100 : 0;
+            @endphp
+            <div style="display:flex; gap:16px; border-top:2px solid #1e293b; padding-top:10px;">
+                {{-- Payment Info --}}
+                <div style="flex:1; font-size:11px;">
+                    <div style="font-size:9px; font-weight:900; text-transform:uppercase; letter-spacing:2px; color:#94a3b8; margin-bottom:6px;">Payment Information</div>
+                    @if($createdSale->payments && $createdSale->payments->count() > 0)
+                        @foreach($createdSale->payments as $payment)
+                        <div style="padding:6px 8px; border-left:3px solid {{ $payment->is_completed ? '#161b97' : '#fbbf24' }}; background:#f8fafc; margin-bottom:4px; border-radius:0 4px 4px 0;">
+                            <div><strong>{{ $payment->is_completed ? 'Paid' : 'Scheduled' }}:</strong> Rs.{{ number_format($payment->amount, 2) }}</div>
+                            <div style="color:#64748b;">{{ ucfirst(str_replace('_', ' ', $payment->payment_method)) }}</div>
+                        </div>
+                        @endforeach
+                    @else
+                        <div style="color:#94a3b8;">No payment info available</div>
+                    @endif
                 </div>
 
                 <div style="border-bottom: 1px dashed #000; margin: 8px 0;"></div>
@@ -1026,7 +1058,7 @@
                 onclick="printInvoice()">
                 <span class="material-symbols-outlined text-base">print</span> Print Invoice
             </button>
-            <button class="px-8 py-2.5 bg-[#D4AF37] hover:bg-yellow-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-yellow-500/20 transition-colors"
+            <button class="px-8 py-2.5 bg-[#161b97] hover:bg-yellow-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-yellow-500/20 transition-colors"
                 wire:click="downloadInvoice">Download PDF</button>
         </div>
     </div>

@@ -282,7 +282,7 @@
                     <div class="d-flex align-items-center justify-content-between mb-3">
                         {{-- Left: Logo --}}
                         <div style="flex: 0 0 150px;">
-                            <img src="{{ asset('images/JaffnaGold.webp') }}" alt="Logo" class="img-fluid" style="max-height:80px;">
+                            <img src="{{ asset('images/jg.png') }}" alt="Logo" class="img-fluid" style="max-height:80px;">
                         </div>
 
                         {{-- Center: Company Name --}}

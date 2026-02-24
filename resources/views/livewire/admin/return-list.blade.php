@@ -131,7 +131,7 @@
                 <!-- Header – logo + company name -->
                 <div class="modal-header text-center border-0" style="background: linear-gradient(135deg, #2a83df 0%, #1a5fb8 100%); color: #fff;">
                     <div class="w-100">
-                        <img src="{{ asset('images/JaffnaGold.webp') }}" alt="Logo"
+                        <img src="{{ asset('images/jg.png') }}" alt="Logo"
                              class="img-fluid mb-2" style="max-height:60px;">
                         <h4 class="mb-0 fw-bold">JaffnaGold (PVT) LTD</h4>
                         

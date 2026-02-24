@@ -493,7 +493,7 @@
                 <div class="modal-header border-0 py-4 px-4" 
                      style="background: white; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #ddd;">
                     <div style="flex: 0 0 auto;">
-                        <img src="{{ asset('images/JaffnaGold.webp') }}" alt="Logo" class="img-fluid" style="max-height: 55px;">
+                        <img src="{{ asset('images/jg.png') }}" alt="Logo" class="img-fluid" style="max-height: 55px;">
                     </div>
                     <div style="flex: 1; text-align: center;">
                         <h3 class="mb-0 fw-bold" style="color: #333; font-size: 1.4rem; letter-spacing: 0.5px;">JaffnaGold (PVT) LTD</h3>
@@ -658,8 +658,8 @@
     }
 
     .search-result-item.active {
-        background-color: #e7f3ff !important;
-        border-left: 3px solid #0d6efd;
+        background-color: rgba(22, 27, 151, 0.1) !important;
+        border-left: 3px solid #161b97;
     }
 
     .table th {
@@ -701,12 +701,12 @@
     }
 
     .quotation-preview .header {
-        border-bottom: 2px solid #057642ff;
+        border-bottom: 2px solid #161b97;
         padding-bottom: 1rem;
     }
 
     .quotation-preview table th {
-        background-color: #038d4fff;
+        background-color: #161b97;
         color: white;
         border: none;
     }
