@@ -533,6 +533,17 @@
 </head>
 
 <body>
+    <!-- Debug Console (fixed at bottom-right) -->
+    <div id="debugConsole" style="position: fixed; bottom: 0; right: 0; width: 100%; max-width: 450px; max-height: 280px; background: #0f172a; color: #10b981; border: 2px solid #10b981; border-radius: 8px 8px 0 0; padding: 12px; overflow-y: auto; z-index: 10000; font-family: 'Courier New', monospace; font-size: 11px; line-height: 1.5; display: none; box-shadow: 0 -4px 12px rgba(0,0,0,0.3);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px solid #10b981; padding-bottom: 8px; font-weight: bold;">
+            <span>🔧 Upload Debug Console</span>
+            <button onclick="toggleDebugConsole()" style="background: none; border: none; color: #10b981; cursor: pointer; font-size: 16px; padding: 0;">✕</button>
+        </div>
+        <div id="debugOutput" style="max-height: 240px; overflow-y: auto; font-size: 10px;"></div>
+    </div>
+
+    <!-- Debug Toggle Button -->
+    <button id="debugToggle" onclick="toggleDebugConsole()" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; background: #161b97; color: #fff; border: none; width: 50px; height: 50px; border-radius: 50%; font-size: 20px; cursor: pointer; display: none; box-shadow: 0 4px 12px rgba(22, 27, 151, 0.3); transition: all 0.3s;" title="Toggle debug console">🔧</button>
 
     <!-- Header -->
     <div class="page-header">

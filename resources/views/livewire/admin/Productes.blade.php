@@ -847,8 +847,7 @@
                                                         <span class="badge bg-success bg-opacity-25 text-success">In Stock</span>
                                                         @else
                                                         <span class="badge bg-danger bg-opacity-25 text-danger">Out of Stock</span>
-                                                        @endif 
-                                                        
+                                                        @endif
                                                     </div>
                                                 </div>
                                             </div>
