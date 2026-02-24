@@ -643,40 +643,113 @@
     </div>
 
     <script>
+        // Store the compressed file for form submission
+        let compressedFile = null;
+
         function previewImage(input) {
             const file = input.files[0];
             if (!file) return;
 
-            // Sync both file inputs: if camera was used, update gallery name and vice versa
-            const galleryInput = document.getElementById('galleryInput');
-            const cameraInput = document.getElementById('cameraInput');
-
-            // Create a DataTransfer to set files on the other input
-            if (input.id === 'cameraInput') {
-                const dt = new DataTransfer();
-                dt.items.add(file);
-                galleryInput.files = dt.files;
-            } else {
-                const dt = new DataTransfer();
-                dt.items.add(file);
-                cameraInput.files = dt.files;
-            }
-
+            // Show preview immediately with original
             const reader = new FileReader();
             reader.onload = function(e) {
                 document.getElementById('previewImg').src = e.target.result;
                 document.getElementById('imagePreview').classList.add('show');
                 document.getElementById('dropZone').classList.add('has-file');
-                document.getElementById('submitBtn').disabled = false;
 
-                // File info
+                // Show original file info
                 document.getElementById('fileName').textContent = file.name;
                 const sizeKB = (file.size / 1024).toFixed(1);
                 const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
                 document.getElementById('fileSize').textContent = file.size > 1024 * 1024
-                    ? sizeMB + ' MB'
+                    ? sizeMB + ' MB (compressing...)'
                     : sizeKB + ' KB';
+
+                // Compress the image
+                compressImage(file, function(compFile) {
+                    compressedFile = compFile;
+                    // Update file size display with compressed size
+                    const compSizeKB = (compFile.size / 1024).toFixed(1);
+                    const compSizeMB = (compFile.size / (1024 * 1024)).toFixed(2);
+                    let sizeText = compFile.size > 1024 * 1024
+                        ? compSizeMB + ' MB'
+                        : compSizeKB + ' KB';
+
+                    if (compFile.size < file.size) {
+                        const saved = (((file.size - compFile.size) / file.size) * 100).toFixed(0);
+                        sizeText += ' (compressed ' + saved + '%)';
+                    }
+                    document.getElementById('fileSize').textContent = sizeText;
+                    document.getElementById('submitBtn').disabled = false;
+                });
             };
+            reader.readAsDataURL(file);
+        }
+
+        /**
+         * Compress image using Canvas API
+         * Resizes to max 1200px and compresses to JPEG ~0.8 quality
+         */
+        function compressImage(file, callback) {
+            const maxWidth = 1200;
+            const maxHeight = 1200;
+            const quality = 0.8;
+
+            // If file is already small (< 2MB), use as-is
+            if (file.size < 2 * 1024 * 1024) {
+                callback(file);
+                return;
+            }
+
+            const img = new Image();
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                img.onload = function() {
+                    let width = img.width;
+                    let height = img.height;
+
+                    // Calculate new dimensions
+                    if (width > maxWidth || height > maxHeight) {
+                        const ratio = Math.min(maxWidth / width, maxHeight / height);
+                        width = Math.round(width * ratio);
+                        height = Math.round(height * ratio);
+                    }
+
+                    // Draw to canvas
+                    const canvas = document.createElement('canvas');
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    // Convert to blob
+                    canvas.toBlob(function(blob) {
+                        if (blob) {
+                            const compressedFile = new File([blob], file.name.replace(/\.[^.]+$/, '.jpg'), {
+                                type: 'image/jpeg',
+                                lastModified: Date.now()
+                            });
+                            callback(compressedFile);
+                        } else {
+                            // Fallback to original
+                            callback(file);
+                        }
+                    }, 'image/jpeg', quality);
+                };
+
+                img.onerror = function() {
+                    // If image can't be loaded, use original
+                    callback(file);
+                };
+
+                img.src = e.target.result;
+            };
+
+            reader.onerror = function() {
+                callback(file);
+            };
+
             reader.readAsDataURL(file);
         }
 
@@ -686,13 +759,49 @@
             document.getElementById('imagePreview').classList.remove('show');
             document.getElementById('dropZone').classList.remove('has-file');
             document.getElementById('submitBtn').disabled = true;
+            compressedFile = null;
         }
 
-        // Form submission loading state
-        document.getElementById('uploadForm')?.addEventListener('submit', function() {
+        // Intercept form submission to use compressed file
+        document.getElementById('uploadForm')?.addEventListener('submit', function(e) {
+            e.preventDefault();
+
             const btn = document.getElementById('submitBtn');
             btn.classList.add('loading');
             btn.disabled = true;
+
+            const form = this;
+            const formData = new FormData(form);
+
+            // Replace the image with compressed version
+            if (compressedFile) {
+                formData.delete('image');
+                formData.append('image', compressedFile, compressedFile.name);
+            }
+
+            // Submit via fetch
+            fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'text/html',
+                }
+            })
+            .then(response => {
+                if (response.redirected) {
+                    window.location.href = response.url;
+                } else {
+                    // Reload the page to show success/error message
+                    window.location.reload();
+                }
+            })
+            .catch(error => {
+                console.error('Upload error:', error);
+                btn.classList.remove('loading');
+                btn.disabled = false;
+                alert('Upload failed. Please try again.');
+            });
         });
     </script>
 </body>
