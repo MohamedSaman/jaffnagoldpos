@@ -49,6 +49,9 @@ class Products extends Component
     public $barcodeMode = 'create';
     public $barcodeLookupProductId = null;
 
+    // Track if barcode was auto-generated (needs printing) or manually entered
+    public $barcodeGenerated = false;
+
     // Purchase date for auto-creating purchase records
     public $purchaseDate;
 
@@ -72,15 +75,15 @@ class Products extends Component
 
     // Edit form fields
     public $editId, $editCode, $editName, $editModel, $editBrand, $editCategory, $editImage, $existingImage,
-        $editDescription, $editBarcode, $editStatus, $editSupplierPrice, $editRetailPrice, $editWholesalePrice,
-        $editDiscountPrice, $editDamageStock;
+    $editDescription, $editBarcode, $editStatus, $editSupplierPrice, $editRetailPrice, $editWholesalePrice,
+    $editDiscountPrice, $editDamageStock;
 
     // Track original pricing mode when opening edit modal so we don't accidentally delete variant rows
     public $original_pricing_mode = 'single';
 
     // Stock Adjustment fields
     public $adjustmentProductId, $adjustmentProductName, $adjustmentAvailableStock, $adjustmentDamageStock,
-        $damageQuantity, $availableQuantity;
+    $damageQuantity, $availableQuantity;
 
     // View Product
     public $viewProduct;
@@ -279,7 +282,7 @@ class Products extends Component
      */
     private function sanitizeVariantKey($value): string
     {
-        $str = (string)$value;
+        $str = (string) $value;
         // replace non-alphanumeric with underscore
         // Use a stable hash to ensure uniqueness even when the display value
         // contains non-alphanumeric characters (e.g. quotes, +, -) which
@@ -570,7 +573,32 @@ class Products extends Component
      */
     public function updatedBarcode($value)
     {
+        // If barcode is manually typed/scanned, mark as not generated
+        $this->barcodeGenerated = false;
         $this->lookupBarcode();
+    }
+
+    /**
+     * Generate a unique barcode (13-digit EAN-style).
+     * Sets barcodeGenerated = true so barcode_printed will be 'No'.
+     */
+    public function generateBarcode()
+    {
+        do {
+            // Generate a 12-digit number and calculate EAN-13 check digit
+            $code = '200' . str_pad(mt_rand(0, 999999999), 9, '0', STR_PAD_LEFT);
+            $sum = 0;
+            for ($i = 0; $i < 12; $i++) {
+                $sum += (int) $code[$i] * ($i % 2 === 0 ? 1 : 3);
+            }
+            $checkDigit = (10 - ($sum % 10)) % 10;
+            $barcode = $code . $checkDigit;
+        } while (ProductDetail::where('barcode', $barcode)->exists());
+
+        $this->barcode = $barcode;
+        $this->barcodeGenerated = true;
+        $this->barcodeMode = 'create';
+        $this->barcodeLookupProductId = null;
     }
 
     /**
@@ -682,6 +710,7 @@ class Products extends Component
                 'image' => $this->image ?: $product->image,
                 'description' => $this->description,
                 'barcode' => $this->barcode,
+                'barcode_printed' => $this->barcodeGenerated ? 'No' : ($product->barcode_printed ?? 'Yes'),
                 'status' => $this->status ?? 'active',
                 'supplier_id' => $this->supplier,
             ]);
@@ -739,7 +768,7 @@ class Products extends Component
                     foreach ($this->sortVariantValues($values) as $val) {
                         $k = $this->sanitizeVariantKey($val);
                         $priceData = $this->variant_prices[$k] ?? [];
-                        $variantValue = trim((string)$val);
+                        $variantValue = trim((string) $val);
 
                         // Update price
                         ProductPrice::updateOrCreate(
@@ -876,7 +905,7 @@ class Products extends Component
                             'order_id' => $purchaseOrder->id,
                             'product_id' => $product->id,
                             'variant_id' => $variant->id,
-                            'variant_value' => trim((string)$val),
+                            'variant_value' => trim((string) $val),
                             'quantity' => $qty,
                             'received_quantity' => $qty,
                             'unit_price' => $priceData['supplier_price'] ?? 0,
@@ -921,7 +950,7 @@ class Products extends Component
         if (empty(trim($this->image ?? ''))) {
             $this->image = null;
         }
-        
+
         // Ensure we have a product code before validation. The UI may let users omit
         // the code and rely on auto-generation; generate it here so validation for
         // 'code' (required) passes and we keep a stable product code.
@@ -956,6 +985,7 @@ class Products extends Component
                 'image' => $this->image,
                 'description' => $this->description,
                 'barcode' => $this->barcode,
+                'barcode_printed' => $this->barcodeGenerated ? 'No' : 'Yes',
                 'status' => 'active',
                 'brand_id' => $this->brand,
                 'category_id' => $this->category,
@@ -1015,7 +1045,7 @@ class Products extends Component
                         $priceData = $this->variant_prices[$sanitized] ?? [];
 
                         // Normalize variant value for consistent DB matching
-                        $variantValue = trim((string)$value);
+                        $variantValue = trim((string) $value);
 
                         Log::info("Processing variant value: {$variantValue}", [
                             'sanitized_key' => $sanitized,
@@ -1191,6 +1221,7 @@ class Products extends Component
         $this->variant_key_map = [];
         $this->barcodeMode = 'create';
         $this->barcodeLookupProductId = null;
+        $this->barcodeGenerated = false;
         $this->purchaseDate = date('Y-m-d');
         $this->resetValidation();
     }
@@ -1704,7 +1735,7 @@ class Products extends Component
                 ]);
             }
 
-            $damageQty = (int)$this->damageQuantity;
+            $damageQty = (int) $this->damageQuantity;
             $currentAvailable = $stock->available_stock;
             $currentDamage = $stock->damage_stock;
 
@@ -1725,7 +1756,8 @@ class Products extends Component
             }
 
             foreach ($batches as $batch) {
-                if ($remainingDamage <= 0) break;
+                if ($remainingDamage <= 0)
+                    break;
 
                 $deductQty = min($remainingDamage, $batch->remaining_quantity);
                 $batch->remaining_quantity -= $deductQty;
@@ -1818,7 +1850,7 @@ class Products extends Component
                 ]);
             }
 
-            $addQty = (int)$this->availableQuantity;
+            $addQty = (int) $this->availableQuantity;
             $currentAvailable = $stock->available_stock;
 
             // 🔹 Add to oldest active batch OR create new batch
@@ -2155,23 +2187,25 @@ class Products extends Component
         }
 
         // Only validate specific fields in real-time to improve performance
-        if (in_array($propertyName, [
-            'name',
-            'code',
-            'brand',
-            'category',
-            'supplier_price',
-            'selling_price',
-            'available_stock',
-            'editName',
-            'editCode',
-            'editBrand',
-            'editCategory',
-            'editSupplierPrice',
-            'editSellingPrice',
-            'damageQuantity',
-            'availableQuantity'
-        ])) {
+        if (
+            in_array($propertyName, [
+                'name',
+                'code',
+                'brand',
+                'category',
+                'supplier_price',
+                'selling_price',
+                'available_stock',
+                'editName',
+                'editCode',
+                'editBrand',
+                'editCategory',
+                'editSupplierPrice',
+                'editSellingPrice',
+                'damageQuantity',
+                'availableQuantity'
+            ])
+        ) {
             $this->validateOnly($propertyName);
         }
     }

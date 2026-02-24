@@ -1029,6 +1029,12 @@
                                     <i class="bi bi-layers"></i> <span>Product Variant</span>
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link py-2" href="{{ route('admin.barcode-print') }}">
+                                    <i class="bi bi-upc-scan"></i> <span>Barcode Print</span>
+                                </a>
+                            </li>
+
                         </ul>
                     </div>
                 </li>
