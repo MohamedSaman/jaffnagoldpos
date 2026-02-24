@@ -1339,38 +1339,6 @@
                             </div>
                         </div>
 
-                        <div class="card mb-4">
-                            <div class="card-header">
-                                <h5 class="card-title mb-0">
-                                    <i class="bi bi-card-text text-primary me-2"></i> Product Information
-                                </h5>
-                            </div>
-                            <div class="card-body p-4">
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        <div class="mb-1">
-                                            <label for="image" class="form-label fw-semibold">Image:</label>
-                                            <input type="text" class="form-control" id="image" wire:model="image">
-                                            @error('image')
-                                            <span class="text-danger small">* {{ $message }}</span>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <div class="mb-1">
-                                            <label for="description" class="form-label fw-semibold">Description:</label>
-                                            <textarea class="form-control" id="description" rows="3"
-                                                wire:model="description"></textarea>
-                                            @error('description')
-                                            <span class="text-danger small">* {{ $message }}</span>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
 
                         <div class="card mb-4">
                             <div class="card-header">
