@@ -85,6 +85,11 @@
             </div>
 
             <div class="flex items-center gap-2">
+                <button class="flex items-center gap-2 px-4 py-2 rounded-full bg-slate-100 hover:bg-slate-200 transition-colors text-xs font-bold text-slate-600 border border-slate-200"
+                    wire:click="goToDashboard">
+                    <span class="material-symbols-outlined text-base">dashboard</span>
+                    DASHBOARD
+                </button>
                 <div class="bg-slate-100 px-3 py-1 rounded border border-slate-200">
                     <span class="font-mono text-base font-bold text-[#161b97] tracking-widest" id="posClock">00:00:00</span>
                 </div>

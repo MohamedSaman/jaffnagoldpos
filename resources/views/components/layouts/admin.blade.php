@@ -260,11 +260,15 @@
 
         .sidebar-title {
             font-weight: 600;
-            font-size: 1.2rem;
+            font-size: 1.4rem;
             color: #1e293b;
             letter-spacing: -0.02em;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             
         }
+        
 
         /* Navigation styles */
         .nav-item {
@@ -952,8 +956,8 @@
             <div class="sidebar-header d-flex justify-content-center">
                 <div class="sidebar-title">
 
-                    <img src="{{ asset('images/jg.png') }}" alt="Logo" width="120">
-
+                    <img src="{{ asset('images/jg.png') }}" alt="Logo" width="60">
+                    <div>JAFFNA GOLD</div>
                 </div>
             </div>
             <div class="sidebar-separator"></div>
@@ -1045,11 +1049,11 @@
                                     <i class="bi bi-table"></i> <span>List Sales</span>
                                 </a>
                             </li>
-                            <li class="nav-item">
+                            <!-- <li class="nav-item">
                                 <a class="nav-link py-2" href="{{ route('admin.pos-sales') }}">
                                     <i class="bi bi-shop"></i> <span>POS Sales list</span>
                                 </a>
-                            </li>
+                            </li> -->
                             <li class="nav-item">
                                 <a class="nav-link {{ request()->routeIs('admin.sale-approval') ? 'active' : '' }}" href="{{ route('admin.sale-approval') }}">
                                     <i class="bi bi-check-circle"></i> <span>Staff Sale List</span>

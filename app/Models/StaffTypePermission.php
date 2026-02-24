@@ -171,6 +171,7 @@ class StaffTypePermission extends Model
                 'view_products',
                 'view_wholesale_price',
                 'view_retail_price',
+                'create_sales',
             ],
         ];
     }

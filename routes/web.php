@@ -98,6 +98,7 @@ use App\Livewire\DeliveryMan\DeliveryManPaymentCollection;
 use App\Livewire\DeliveryMan\DeliveryManPaymentList;
 use App\Livewire\ShopStaff\ShopStaffDashboard;
 use App\Livewire\ShopStaff\ShopStaffProductList;
+use App\Livewire\ShopStaff\StoreBilling as ShopStaffStoreBilling;
 
 /*
 |--------------------------------------------------------------------------
@@ -558,4 +559,5 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',
     ->group(function () {
         Route::get('/dashboard', ShopStaffDashboard::class)->name('dashboard');
         Route::get('/products', ShopStaffProductList::class)->name('products');
+        Route::get('/store-billing', ShopStaffStoreBilling::class)->name('store-billing');
     });

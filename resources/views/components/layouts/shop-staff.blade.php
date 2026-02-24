@@ -19,6 +19,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    @stack('styles')
 
     <style>
         /* Theme tokens: Premium Blue & Black theme */
@@ -419,10 +420,21 @@
                     </a>
                 </li>
                 
+                <li>
+                    <a class="nav-link {{ request()->routeIs('shop-staff.store-billing') ? 'active' : '' }}" href="{{ route('shop-staff.store-billing') }}">
+                        <i class="bi bi-cart-plus"></i> <span>Store Billing</span>
+                    </a>
+                </li>
+                
                 @php
                     $staffType = auth()->user()->staff_type ?? 'shop_staff';
                     $permissionModel = new \App\Models\StaffTypePermission();
                 @endphp
+                
+                {{-- Sales Section --}}
+                @if($permissionModel->hasPermission($staffType, 'create_sales'))
+                {{-- Already added static link above for convenience, or can wrap it here --}}
+                @endif
                 
                 {{-- Products Section --}}
                 @if($permissionModel->hasPermission($staffType, 'view_products'))
@@ -541,5 +553,6 @@
             }
         });
     </script>
+    @stack('scripts')
 </body>
 </html>
