@@ -1422,53 +1422,41 @@
                                 </div>
 
                                 @if($pricing_mode === 'single')
-                                    <!-- Single Price Mode -->
-                                    <div class="row">
-                                        <div class="col-md-4">
-                                            <div class="mb-1">
-                                                <label for="supplier_price" class="form-label fw-semibold">
-                                                    <i class="bi bi-cash-stack text-secondary"></i> Supplier Price:
-                                                </label>
-                                                <div class="input-group">
-                                                    <span class="input-group-text">Rs.</span>
-                                                    <input type="number" step="0.01" class="form-control"
-                                                        id="supplier_price" wire:model.live="supplier_price">
-                                                </div>
-                                                @error('supplier_price')
-                                                    <span class="text-danger small">* {{ $message }}</span>
-                                                @enderror
+                                <!-- Single Price Mode -->
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="mb-1">
+                                            <label for="supplier_price" class="form-label fw-semibold">
+                                                <i class="bi bi-cash-stack text-secondary"></i> Supplier Price:
+                                            </label>
+                                            <div class="input-group">
+                                                <span class="input-group-text">Rs.</span>
+                                                <input type="number" step="0.01" class="form-control"
+                                                    id="supplier_price" wire:model="supplier_price">
                                             </div>
                                         </div>
-                                        <div class="col-md-4">
-                                            <div class="mb-1">
-                                                <label for="retail_price" class="form-label fw-semibold">
-                                                    <i class="bi bi-shop text-success"></i> Retail Price:
-                                                    <small class="text-muted">(auto: cost × 1.8)</small>
-                                                </label>
-                                                <div class="input-group">
-                                                    <span class="input-group-text">Rs.</span>
-                                                    <input type="number" step="0.01" class="form-control" id="retail_price"
-                                                        wire:model="retail_price">
-                                                </div>
-                                                @error('retail_price')
-                                                    <span class="text-danger small">* {{ $message }}</span>
-                                                @enderror
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="mb-1">
+                                            <label for="retail_price" class="form-label fw-semibold">
+                                                <i class="bi bi-shop text-success"></i> Retail Price:
+                                            </label>
+                                            <div class="input-group">
+                                                <span class="input-group-text">Rs.</span>
+                                                <input type="number" step="0.01" class="form-control" id="retail_price"
+                                                    wire:model="retail_price">
                                             </div>
                                         </div>
-                                        <div class="col-md-4">
-                                            <div class="mb-1">
-                                                <label for="wholesale_price" class="form-label fw-semibold">
-                                                    <i class="bi bi-boxes text-info"></i> Wholesale Price:
-                                                    <small class="text-muted">(auto: cost × 1.5)</small>
-                                                </label>
-                                                <div class="input-group">
-                                                    <span class="input-group-text">Rs.</span>
-                                                    <input type="number" step="0.01" class="form-control"
-                                                        id="wholesale_price" wire:model="wholesale_price">
-                                                </div>
-                                                @error('wholesale_price')
-                                                    <span class="text-danger small">* {{ $message }}</span>
-                                                @enderror
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="mb-1">
+                                            <label for="wholesale_price" class="form-label fw-semibold">
+                                                <i class="bi bi-boxes text-info"></i> Wholesale Price:
+                                            </label>
+                                            <div class="input-group">
+                                                <span class="input-group-text">Rs.</span>
+                                                <input type="number" step="0.01" class="form-control" id="wholesale_price"
+                                                    wire:model="wholesale_price">
                                             </div>
                                         </div>
                                     </div>
@@ -1940,51 +1928,39 @@
                     </div>
                     <div class="card-body p-4">
                         @if($pricing_mode === 'single')
-                            <div class="row">
-                                <div class="col-md-4">
-                                    <div class="mb-1">
-                                        <label for="editSupplierPrice" class="form-label fw-semibold">Supplier
-                                            Price:</label>
-                                        <div class="input-group">
-                                            <span class="input-group-text">Rs.</span>
-                                            <input type="number" step="0.01" class="form-control" id="editSupplierPrice"
-                                                wire:model.live="editSupplierPrice">
-                                        </div>
-                                        @error('editSupplierPrice')
-                                            <span class="text-danger small">* {{ $message }}</span>
-                                        @enderror
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-1">
+                                    <label for="editSupplierPrice" class="form-label fw-semibold">Supplier
+                                        Price:</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">Rs.</span>
+                                        <input type="number" step="0.01" class="form-control"
+                                            id="editSupplierPrice" wire:model="editSupplierPrice">
                                     </div>
                                 </div>
-                                <div class="col-md-4">
-                                    <div class="mb-1">
-                                        <label for="editRetailPrice" class="form-label fw-semibold">Retail
-                                            Price:
-                                            <small class="text-muted">(auto: cost × 1.8)</small>
-                                        </label>
-                                        <div class="input-group">
-                                            <span class="input-group-text">Rs.</span>
-                                            <input type="number" step="0.01" class="form-control" id="editRetailPrice"
-                                                wire:model="editRetailPrice">
-                                        </div>
-                                        @error('editRetailPrice')
-                                            <span class="text-danger small">* {{ $message }}</span>
-                                        @enderror
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-1">
+                                    <label for="editRetailPrice" class="form-label fw-semibold">Retail
+                                        Price:
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">Rs.</span>
+                                        <input type="number" step="0.01" class="form-control"
+                                            id="editRetailPrice" wire:model="editRetailPrice">
                                     </div>
                                 </div>
-                                <div class="col-md-4">
-                                    <div class="mb-1">
-                                        <label for="editWholesalePrice" class="form-label fw-semibold">Wholesale
-                                            Price:
-                                            <small class="text-muted">(auto: cost × 1.5)</small>
-                                        </label>
-                                        <div class="input-group">
-                                            <span class="input-group-text">Rs.</span>
-                                            <input type="number" step="0.01" class="form-control" id="editWholesalePrice"
-                                                wire:model="editWholesalePrice">
-                                        </div>
-                                        @error('editWholesalePrice')
-                                            <span class="text-danger small">* {{ $message }}</span>
-                                        @enderror
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-1">
+                                    <label for="editWholesalePrice" class="form-label fw-semibold">Wholesale
+                                        Price:
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">Rs.</span>
+                                        <input type="number" step="0.01" class="form-control"
+                                            id="editWholesalePrice" wire:model="editWholesalePrice">
                                     </div>
                                 </div>
                             </div>

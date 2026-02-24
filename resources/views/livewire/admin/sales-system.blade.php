@@ -58,9 +58,17 @@
 
                 {{-- Product Search (Right) --}}
                 <div class="col-md-6">
-                    <div class="input-header mb-1">
-                        <i class="bi bi-search me-2 text-gold small"></i>
-                        <span class="fw-bold small">Product Search / Scan Barcode</span>
+                    <div class="d-flex justify-content-between align-items-end mb-1">
+                        <div class="input-header">
+                            <i class="bi bi-search me-2 text-gold small"></i>
+                            <span class="fw-bold small">Product Search / Scan Barcode</span>
+                        </div>
+                        <div class="price-type-selection">
+                            <select class="form-select form-select-sm border-gold fw-bold text-dark" wire:model.live="priceType" style="font-size: 0.75rem; width: 120px; background-color: #f8f9fa;">
+                                <option value="retail">Retail (10%)</option>
+                                <option value="wholesale">Wholesale (25%)</option>
+                            </select>
+                        </div>
                     </div>
                     <div class="search-input-wrapper">
                         <i class="bi bi-upc-scan search-icon"></i>
@@ -168,11 +176,14 @@
                                         </td>
                                         <td>
                                             <div class="input-group input-group-sm rounded-3 overflow-hidden border">
-                                                <span class="input-group-text bg-white border-0 text-muted" style="font-size: 0.8rem;">Rs</span>
-                                                <input type="number" class="form-control border-0 ps-0 fw-bold text-danger text-end pe-3"
+                                                <input type="text" class="form-control border-0 ps-2 fw-bold text-danger text-end pe-2"
                                                     wire:change="updateDiscount({{ $index }}, $event.target.value)"
-                                                    value="{{ $item['discount'] }}" min="0" step="0.01">
+                                                    value="{{ ($item['discount_percentage'] ?? 0) > 0 ? ($item['discount_percentage'] . '%') : $item['discount'] }}" 
+                                                    style="font-size: 0.8rem;">
                                             </div>
+                                            @if(($item['discount_percentage'] ?? 0) > 0)
+                                            <div class="text-center" style="margin-top: -3px;"><small class="text-muted" style="font-size: 0.65rem;">(Rs.{{ number_format($item['discount'], 2) }})</small></div>
+                                            @endif
                                         </td>
                                         <td class="text-end pe-4 fw-bold text-dark fs-6">
                                             Rs.{{ number_format($item['total'], 2) }}
@@ -380,6 +391,20 @@
                                         <span class="text-muted small">Invoice No:</span>
                                         <span class="fw-bold text-dark small">#{{ $createdSale->invoice_number }}</span>
                                     </div>
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <span class="text-muted">Total Discount:</span>
+                                            <span class="text-danger fw-bold">- Rs.{{ number_format($this->totalDiscount + ($additionalDiscountAmount ?? 0), 2) }}</span>
+                                        </div>
+                                        @php
+                                        $totalOriginalPrice = collect($cart)->sum(function($item) { return $item['price'] * $item['quantity']; });
+                                        $totalDisc = $this->totalDiscount + ($additionalDiscountAmount ?? 0);
+                                        $totalDiscPercent = $totalOriginalPrice > 0 ? ($totalDisc / $totalOriginalPrice * 100) : 0;
+                                        @endphp
+                                        @if($totalDiscPercent > 0)
+                                        <div class="text-end mb-2" style="margin-top: -10px;">
+                                            <small class="badge bg-danger-soft text-danger fw-black" style="font-size: 0.65rem;">Total Discount Percentage: {{ number_format($totalDiscPercent, 2) }}%</small>
+                                        </div>
+                                        @endif
                                     <div class="d-flex justify-content-between mb-1">
                                         <span class="text-muted small">Date:</span>
                                         <span class="fw-bold text-dark small">{{ $createdSale->created_at->format('M d, Y | h:i A') }}</span>
@@ -388,6 +413,34 @@
                                         <span class="text-muted small">Status:</span>
                                         <span class="text-success fw-bold small"><i class="bi bi-patch-check-fill me-1"></i>{{ $createdSale->status }}</span>
                                     </div>
+                                     <div class="text-center mt-3" wire:ignore
+                                          x-data="{ 
+                                             saleId: '{{ $createdSale->invoice_number ?? $createdSale->sale_id }}',
+                                             init() {
+                                                 this.renderBarcode();
+                                             },
+                                             renderBarcode() {
+                                                 let attempts = 0;
+                                                 const tryRender = () => {
+                                                     if (typeof JsBarcode === 'function' && this.$refs.barcode) {
+                                                         JsBarcode(this.$refs.barcode, this.saleId, {
+                                                             format: 'CODE128',
+                                                             width: 1.2,
+                                                             height: 35,
+                                                             displayValue: true,
+                                                             fontSize: 10,
+                                                             margin: 0
+                                                         });
+                                                     } else if (attempts < 30) {
+                                                         attempts++;
+                                                         setTimeout(tryRender, 200);
+                                                     }
+                                                 };
+                                                 tryRender();
+                                             }
+                                          }">
+                                         <img x-ref="barcode" style="max-width: 100%;" />
+                                     </div>
                                 </div>
                             </div>
                         </div>

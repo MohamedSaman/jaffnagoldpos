@@ -17,6 +17,7 @@ use App\Models\Cheque;
 use App\Models\POSSession;
 use App\Models\ProductStock;
 use App\Models\ProductBatch;
+use App\Models\Setting;
 use App\Services\FIFOStockService;
 
 use Illuminate\Support\Facades\Auth;
@@ -131,6 +132,8 @@ class StoreBilling extends Component
     public $showWalkingCustomerModal = false;
     public $walkingCustomerName = '';
     public $walkingCustomerPhone = '';
+
+    public $warrantyThreshold = 1000;
 
     // Payment Modal Properties
     public $amountReceived = 0;
@@ -386,6 +389,7 @@ class StoreBilling extends Component
         $this->loadBrands();
         $this->loadProducts();
         $this->tempChequeDate = now()->format('Y-m-d');
+        $this->loadWarrantySettings();
     }
 
     /**
@@ -909,7 +913,7 @@ class StoreBilling extends Component
 
     public function getGrandTotalProperty()
     {
-        return $this->subtotalAfterItemDiscounts - $this->additionalDiscountAmount;
+        return (float)($this->subtotalAfterItemDiscounts ?? 0) - (float)($this->additionalDiscountAmount ?? 0);
     }
 
     public function getTotalPaidAmountProperty()
@@ -1025,6 +1029,38 @@ class StoreBilling extends Component
     // When price type changes
     public function updatedPriceType($value)
     {
+        // When price type changes, update all existing items in cart
+        foreach ($this->cart as $index => $item) {
+            // Get the corresponding product record to get the correct price
+            $productRecord = ProductDetail::with(['price', 'prices'])->find($item['product_id']);
+            if (!$productRecord) continue;
+
+            // Find correct price record for variant
+            $priceRecord = $productRecord->price;
+            if ($item['variant_value'] && $item['variant_value'] !== '') {
+                $priceRecord = $productRecord->prices->firstWhere('variant_value', $item['variant_value']) ?? $productRecord->price;
+            }
+
+            // Get the new price based on priceType
+            $newPrice = $this->getPriceValue($priceRecord);
+            $this->cart[$index]['price'] = $newPrice;
+
+            // Apply automatic discount percentage
+            $discountPercentage = 0;
+            if ($value === 'retail') {
+                $discountPercentage = 10;
+            } elseif ($value === 'wholesale') {
+                $discountPercentage = 25;
+            }
+
+            // Update item discount using new percentage
+            $discountAmount = ($newPrice * $discountPercentage) / 100;
+            $this->cart[$index]['discount_type'] = 'percentage';
+            $this->cart[$index]['discount_percentage'] = $discountPercentage;
+            $this->cart[$index]['discount'] = round($discountAmount, 2);
+            $this->cart[$index]['total'] = ($newPrice - $this->cart[$index]['discount']) * $this->cart[$index]['quantity'];
+        }
+
         $this->loadProducts();
     }
 
@@ -1045,6 +1081,26 @@ class StoreBilling extends Component
             } elseif ($this->paymentMethod === 'multiple') {
                 $this->cashAmount = $this->grandTotal;
             }
+        }
+    }
+
+    // Ensure amountReceived is always numeric
+    public function updatedAmountReceived($value)
+    {
+        if ($value === '' || !is_numeric($value)) {
+            $this->amountReceived = 0;
+        } else {
+            $this->amountReceived = (float)$value;
+        }
+    }
+
+    // Ensure bankTransferAmount is always numeric
+    public function updatedBankTransferAmount($value)
+    {
+        if ($value === '' || !is_numeric($value)) {
+            $this->bankTransferAmount = 0;
+        } else {
+            $this->bankTransferAmount = (float)$value;
         }
     }
 
@@ -1684,7 +1740,15 @@ class StoreBilling extends Component
                 return $item;
             })->toArray();
         } else {
-            $discountPrice = ProductDetail::find($baseProductId)->price->discount_price ?? 0;
+            // Apply automatic discount percentage based on priceType
+            $discountPercentage = 0;
+            if ($this->priceType === 'retail') {
+                $discountPercentage = 10;
+            } elseif ($this->priceType === 'wholesale') {
+                $discountPercentage = 25;
+            }
+
+            $discountPrice = ($product['price'] * $discountPercentage) / 100;
 
             $newItem = [
                 'key' => uniqid('cart_'),  // Add unique key to maintain state
@@ -1697,10 +1761,10 @@ class StoreBilling extends Component
                 'model' => $product['model'] ?? null,
                 'price' => $product['price'],
                 'quantity' => 1,
-                'discount' => $discountPrice,
-                'discount_type' => 'fixed',  // Default discount type
-                'discount_percentage' => 0,  // Store percentage value if applicable
-                'total' => $product['price'] - $discountPrice,
+                'discount' => round($discountPrice, 2),
+                'discount_type' => 'percentage',
+                'discount_percentage' => $discountPercentage,
+                'total' => $product['price'] - round($discountPrice, 2),
                 'stock' => $product['stock'],
                 'pending' => $product['pending'] ?? 0,
                 'image' => $product['image'] ?? null,
@@ -2327,6 +2391,9 @@ class StoreBilling extends Component
                 ]);
             }
 
+            // Fetch warranty threshold from settings
+            $warrantyThreshold = Setting::where('key', 'warranty_min_amount')->value('value') ?? 1000;
+
             // Create sale items and deduct stock using FIFO method
             foreach ($this->cart as $item) {
                 // Resolve base product id (handle variant entries where 'product_id' exists)
@@ -2350,6 +2417,8 @@ class StoreBilling extends Component
                     'total' => $item['total'],
                     'variant_value' => $variantValue,
                     'variant_id' => $variantId,
+                    'has_warranty' => ($item['total'] / $item['quantity']) >= $warrantyThreshold,
+                    'warranty_duration' => ($item['total'] / $item['quantity']) >= $warrantyThreshold ? '6 Months' : null,
                 ]);
 
                 // Deduct stock using FIFO method (updates both ProductBatch and ProductStock)

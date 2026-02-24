@@ -19,7 +19,7 @@
 
         @page {
             size: 6in 4in;
-            margin: 0;
+            margin: 1px;
         }
 
         body {

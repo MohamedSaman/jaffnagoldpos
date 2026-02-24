@@ -43,7 +43,7 @@ class Products extends Component
 
     // Create form fields
     public $code, $name, $model, $brand, $category, $image, $description, $barcode, $status, $supplier;
-    public $supplier_price, $retail_price, $wholesale_price, $distributor_price, $discount_price, $available_stock, $damage_stock;
+    public $supplier_price, $retail_price, $wholesale_price, $discount_price, $available_stock, $damage_stock;
 
     // Barcode lookup mode: 'create' or 'edit'
     public $barcodeMode = 'create';
@@ -251,7 +251,6 @@ class Products extends Component
         $this->supplier_price = 0;
         $this->retail_price = 0;
         $this->wholesale_price = 0;
-        $this->distributor_price = null;
         $this->discount_price = 0;
 
         // Set default purchase date to today
@@ -919,29 +918,9 @@ class Products extends Component
         }
     }
 
-    /**
-     * Auto-calculate retail and wholesale prices from supplier price.
-     * Retail = (Supplier × 2) - 10% = Supplier × 1.8
-     * Wholesale = (Supplier × 2) - 25% = Supplier × 1.5
-     */
-    public function updatedSupplierPrice($value)
-    {
-        if (is_numeric($value) && $value > 0) {
-            $this->retail_price = round($value * 1.8, 2);
-            $this->wholesale_price = round($value * 1.5, 2);
-        }
-    }
 
-    /**
-     * Auto-calculate edit retail and wholesale prices from edit supplier price.
-     */
-    public function updatedEditSupplierPrice($value)
-    {
-        if (is_numeric($value) && $value > 0) {
-            $this->editRetailPrice = round($value * 1.8, 2);
-            $this->editWholesalePrice = round($value * 1.5, 2);
-        }
-    }
+
+
 
     // 🔹 Create Product
     public function createProduct()
@@ -1204,7 +1183,6 @@ class Products extends Component
             'supplier_price',
             'retail_price',
             'wholesale_price',
-            'distributor_price',
             'discount_price',
             'available_stock',
             'damage_stock',

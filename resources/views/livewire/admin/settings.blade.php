@@ -163,6 +163,49 @@
             </div>
         </div>
 
+        {{-- POS Settings Accordion --}}
+        <div class="accordion-item border-0 mb-4 shadow-sm rounded-4">
+            <h2 class="accordion-header" id="headingPOSSettings">
+                <button class="accordion-button fw-semibold bg-white text-dark rounded-4 collapsed"
+                    type="button" data-bs-toggle="collapse"
+                    data-bs-target="#collapsePOSSettings" aria-expanded="false"
+                    aria-controls="collapsePOSSettings">
+                    <i class="bi bi-cart-check fs-5 me-3 text-warning"></i>
+                    POS & Warranty Settings
+                </button>
+            </h2>
+            <div id="collapsePOSSettings" class="accordion-collapse collapse"
+                aria-labelledby="headingPOSSettings" data-bs-parent="#settingsAccordion">
+                <div class="accordion-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-body">
+                                    <h6 class="fw-bold mb-3"><i class="bi bi-shield-check me-2 text-primary"></i>Warranty Configuration</h6>
+                                    <div class="mb-3">
+                                        <label class="form-label fw-semibold">Minimum Amount for 6-Month Warranty</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">Rs.</span>
+                                            <input type="number" wire:model="warranty_min_amount" class="form-control @error('warranty_min_amount') is-invalid @enderror" placeholder="1000">
+                                            @error('warranty_min_amount')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                        <small class="text-muted mt-1 d-block">Products with a final price (after discount) equal to or greater than this amount will automatically get a 6-month warranty.</small>
+                                    </div>
+                                    <div class="text-end">
+                                        <button class="btn btn-warning text-white" wire:click="savePOSSettings">
+                                            <i class="bi bi-save me-1"></i> Save POS Settings
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         {{-- System Configurations Accordion --}}
         <div class="accordion-item border-0 mb-4 shadow-sm rounded-4">
             <h2 class="accordion-header" id="headingSystemConfigs">

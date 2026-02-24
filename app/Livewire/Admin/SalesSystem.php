@@ -63,6 +63,9 @@ class SalesSystem extends Component
     public $additionalDiscount = 0;
     public $additionalDiscountType = 'fixed'; // 'fixed' or 'percentage'
 
+    // Price Type Selection
+    public $priceType = 'wholesale'; // 'retail', 'wholesale', or 'distribute'
+
     // Modals
     public $showSaleModal = false;
     public $showCustomerModal = false;
@@ -154,6 +157,55 @@ class SalesSystem extends Component
             // If customer is deselected, set back to walking customer
             $this->setDefaultCustomer();
         }
+    }
+
+    // When price type changes
+    public function updatedPriceType($value)
+    {
+        // When price type changes, update all existing items in cart
+        foreach ($this->cart as $index => $item) {
+            // Get the corresponding product record to get the correct price
+            $productRecord = ProductDetail::with(['price', 'prices'])->find($item['id']);
+            if (!$productRecord) continue;
+
+            // Find correct price record for variant
+            $priceRecord = $productRecord->price;
+            if ($item['variant_value']) {
+                $priceRecord = $productRecord->prices->firstWhere('variant_value', $item['variant_value']) ?? $productRecord->price;
+            }
+
+            // Get the new price based on priceType
+            $newPrice = $this->getPriceValue($priceRecord);
+            $this->cart[$index]['price'] = $newPrice;
+
+            // Apply automatic discount percentage
+            $discountPercentage = 0;
+            if ($value === 'retail') {
+                $discountPercentage = 10;
+            } elseif ($value === 'wholesale') {
+                $discountPercentage = 25;
+            }
+
+            // Update item discount using new percentage
+            $discountAmount = ($newPrice * $discountPercentage) / 100;
+            $this->cart[$index]['discount'] = round($discountAmount, 2);
+            $this->cart[$index]['discount_type'] = 'percentage';
+            $this->cart[$index]['discount_percentage'] = $discountPercentage;
+            $this->cart[$index]['total'] = ($newPrice - $this->cart[$index]['discount']) * $this->cart[$index]['quantity'];
+        }
+    }
+
+    // Helper method to get price based on price type
+    public function getPriceValue($priceRecord)
+    {
+        if (!$priceRecord) return 0;
+        
+        return match ($this->priceType) {
+            'retail' => $priceRecord->retail_price ?? 0,
+            'wholesale' => $priceRecord->wholesale_price ?? 0,
+            'distribute' => $priceRecord->distributor_price ?? $priceRecord->wholesale_price ?? 0,
+            default => $priceRecord->retail_price ?? 0,
+        };
     }
 
     // Reset customer fields
@@ -278,7 +330,7 @@ class SalesSystem extends Component
 
                             // Find matching price record for this variant value
                             $priceRecord = $product->prices->firstWhere('variant_value', $stock->variant_value) ?? $product->price;
-                            $sellingPrice = $priceRecord->selling_price ?? 0;
+                            $sellingPrice = $this->getPriceValue($priceRecord);
                             $discountPrice = $priceRecord->discount_price ?? 0;
 
                             $items[] = [
@@ -297,12 +349,15 @@ class SalesSystem extends Component
                         }
                     } else {
                         // Single product (no variants)
+                        $priceRecord = $product->price;
+                        $sellingPrice = $this->getPriceValue($priceRecord);
+
                         $items[] = [
                             'id' => $product->id,
                             'name' => $product->name,
                             'code' => $product->code,
                             'model' => $product->model,
-                            'price' => $product->price->selling_price ?? 0,
+                            'price' => $sellingPrice,
                             'discount_price' => $product->price->discount_price ?? 0,
                             'stock' => $product->stock->available_stock ?? 0,
                             'sold' => $product->stock->sold_count ?? 0,
@@ -371,11 +426,15 @@ class SalesSystem extends Component
             $this->cart[$existingIndex]['quantity'] += 1;
             $this->cart[$existingIndex]['total'] = ($this->cart[$existingIndex]['price'] - $this->cart[$existingIndex]['discount']) * $this->cart[$existingIndex]['quantity'];
         } else {
-            // Get discount price: for variant use passed discount_price, for single check DB
-            $discountPrice = $product['discount_price'] ?? 0;
-            if (!$discountPrice) {
-                $discountPrice = ProductDetail::find($product['id'])->price->discount_price ?? 0;
+            // Apply automatic discount percentage based on priceType
+            $discountPercentage = 0;
+            if ($this->priceType === 'retail') {
+                $discountPercentage = 10;
+            } elseif ($this->priceType === 'wholesale') {
+                $discountPercentage = 25;
             }
+
+            $discountPrice = ($product['price'] * $discountPercentage) / 100;
 
             $newItem = [
                 'key' => uniqid('cart_'),
@@ -385,8 +444,10 @@ class SalesSystem extends Component
                 'model' => $product['model'],
                 'price' => $product['price'],
                 'quantity' => 1,
-                'discount' => $discountPrice,
-                'total' => $product['price'] - $discountPrice,
+                'discount' => round($discountPrice, 2),
+                'discount_type' => 'percentage',
+                'discount_percentage' => $discountPercentage,
+                'total' => $product['price'] - round($discountPrice, 2),
                 'stock' => $product['stock'],
                 'variant_id' => $product['variant_id'] ?? null,
                 'variant_value' => $product['variant_value'] ?? null,

@@ -199,6 +199,9 @@
                                             class="w-8 h-8 rounded-md border border-slate-200 object-cover shrink-0">
                                         <div class="min-w-0">
                                             <h4 class="text-xs font-bold text-slate-700 truncate max-w-[120px]" title="{{ $item['name'] }}">{{ $item['name'] }}</h4>
+                                            @if(($item['total'] / $item['quantity']) >= $warrantyThreshold)
+                                            <p class="text-[9px] text-emerald-600 font-bold italic">6-Month Warranty</p>
+                                            @endif
                                             <p class="text-[9px] text-slate-400 font-mono">{{ $item['code'] }}</p>
                                         </div>
                                     </div>
@@ -340,7 +343,7 @@
                             </div>
                             <div class="flex justify-between text-xs">
                                 <span class="text-slate-400 font-semibold">Total Discount</span>
-                                <span class="font-bold text-red-500">- Rs. {{ number_format($totalDiscountRs, 2) }} @if($totalDiscountPercent > 0)<span class="text-slate-400 font-semibold">({{ number_format($totalDiscountPercent, 2) }}%)</span>@endif</span>
+                                <span class="font-bold text-red-500">- Rs. {{ number_format($totalDiscountRs, 2) }} <span class="text-slate-400 font-semibold">({{ number_format($totalDiscountPercent, 2) }}%)</span></span>
                             </div>
                             @endif
                             <div class="flex justify-between text-xs">
@@ -959,11 +962,24 @@
                 <!-- Items -->
                 <div style="font-size: 11px;">
                     @foreach($createdSale->items as $item)
-                    <div style="display: flex; margin-bottom: 4px;">
-                        <span style="flex: 2;">{{ $item->product_name }}</span>
+                    <div style="display: flex; margin-bottom: 2px;">
+                        <span style="flex: 2;">
+                            {{ $item->product_name }}
+                            @if($item->has_warranty)
+                            <div style="font-size: 8px; font-weight: bold; font-style: italic; color: #161b97; margin-top: 1px;">- {{ $item->warranty_duration }} Warranty</div>
+                            @endif
+                        </span>
                         <span style="flex: 0.5; text-align: center; font-weight: bold;">{{ $item->quantity }}</span>
                         <span style="flex: 1; text-align: right; font-weight: bold;">{{ number_format($item->unit_price, 0) }}</span>
                     </div>
+                    @if($item->discount_per_unit > 0)
+                    <div style="display: flex; font-size: 9px; color: #444; margin-top: -1px; margin-bottom: 3px;">
+                        <span style="flex: 2; padding-left: 10px;">
+                            Disc: {{ number_format($item->discount_per_unit, 0) }} 
+                            @if($item->discount_percentage > 0) ({{ number_format($item->discount_percentage, 0) }}%) @endif
+                        </span>
+                    </div>
+                    @endif
                     @endforeach
                 </div>
 
@@ -974,6 +990,7 @@
                     @php
                     $originalSubtotal = $createdSale->items->sum(fn($i) => $i->unit_price * $i->quantity);
                     $totalDiscountRs = $createdSale->discount_amount;
+                    $totalDiscPercentage = $originalSubtotal > 0 ? ($totalDiscountRs / $originalSubtotal * 100) : 0;
                     @endphp
                     <div style="display: flex; justify-content: space-between; margin-bottom: 2px; font-weight: bold;">
                         <span>Sub Total</span>
@@ -981,7 +998,7 @@
                     </div>
                     @if($totalDiscountRs > 0)
                     <div style="display: flex; justify-content: space-between; margin-bottom: 2px; font-weight: bold;">
-                        <span>Discount</span>
+                        <span>Discount @if($totalDiscPercentage > 0)({{ number_format($totalDiscPercentage, 1) }}%)@endif</span>
                         <span>-{{ number_format($totalDiscountRs, 0) }}</span>
                     </div>
                     @endif
@@ -1034,6 +1051,38 @@
                     @endif
                     @endif
                     <div style="border-bottom: 1px dashed #000; margin: 8px 0;"></div>
+                </div>
+
+                {{-- Receipt Barcode --}}
+                <div class="flex justify-center my-2" wire:ignore
+                     x-data="{ 
+                        saleId: '{{ $createdSale->invoice_number ?? $createdSale->sale_id }}',
+                        init() {
+                            this.renderBarcode();
+                        },
+                        renderBarcode() {
+                            let attempts = 0;
+                            const tryRender = () => {
+                                if (typeof JsBarcode === 'function' && this.$refs.barcode) {
+                                    JsBarcode(this.$refs.barcode, this.saleId, {
+                                        format: 'CODE128',
+                                        width: 1.5,
+                                        height: 60,
+                                        displayValue: true,
+                                        fontSize: 14,
+                                        background: '#ffffff',
+                                        lineColor: '#000000',
+                                        margin: 10
+                                    });
+                                } else if (attempts < 30) {
+                                    attempts++;
+                                    setTimeout(tryRender, 200);
+                                }
+                            };
+                            tryRender();
+                        }
+                     }">
+                    <img x-ref="barcode" style="max-width: 100%;" />
                 </div>
 
                 <!-- Footer -->

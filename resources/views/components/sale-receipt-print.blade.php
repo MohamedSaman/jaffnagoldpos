@@ -52,7 +52,12 @@
                 <td>{{ $item->product_name }}</td>
                 <td class="text-center">{{ $item->quantity }}</td>
                 <td class="text-end">Rs.{{ number_format($item->unit_price, 2) }}</td>
-                <td class="text-end">Rs.{{ number_format($item->unit_discount, 2) }}</td>
+                <td class="text-end">
+                    Rs.{{ number_format($item->discount_per_unit, 2) }}
+                    @if($item->discount_percentage > 0)
+                    <br><small>({{ number_format($item->discount_percentage, 1) }}%)</small>
+                    @endif
+                </td>
                 <td class="text-end">Rs.{{ number_format($item->total, 2) }}</td>
             </tr>
             @endforeach
@@ -63,8 +68,13 @@
                 <td class="text-end"><strong>Rs.{{ number_format($sale->subtotal, 2) }}</strong></td>
             </tr>
             @if($sale->discount_amount > 0)
+            @php
+                $totalDiscountPercent = $sale->subtotal > 0 ? ($sale->discount_amount / $sale->subtotal * 100) : 0;
+            @endphp
             <tr class="totals-row">
-                <td colspan="6" class="text-end"><strong>Discount</strong></td>
+                <td colspan="6" class="text-end">
+                    <strong>Discount @if($totalDiscountPercent > 0)({{ number_format($totalDiscountPercent, 1) }}%)@endif</strong>
+                </td>
                 <td class="text-end"><strong>-Rs.{{ number_format($sale->discount_amount, 2) }}</strong></td>
             </tr>
             @endif

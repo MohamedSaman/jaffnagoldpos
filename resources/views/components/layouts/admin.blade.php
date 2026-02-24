@@ -11,8 +11,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-    <!-- Barcode scanner library -->
+    <!-- Barcode libraries -->
     <script src="https://cdn.jsdelivr.net/npm/quagga@0.12.1/dist/quagga.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Inter font from Google Fonts -->
@@ -1302,12 +1303,12 @@
                     <a class="nav-link" href="{{ route('admin.profit-loss') }}">
                         <i class="bi bi-graph-up-arrow"></i> <span>Profit & Loss</span>
                     </a>
-                </li>
+                </li>-->
                 <li>
                     <a class="nav-link" href="{{ route('admin.settings') }}">
                         <i class="bi bi-gear"></i> <span>Settings</span>
                     </a>
-                </li> -->
+                </li> 
             </ul>
         </div>
 
