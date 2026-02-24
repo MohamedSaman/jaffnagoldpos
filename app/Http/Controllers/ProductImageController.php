@@ -62,8 +62,14 @@ class ProductImageController extends Controller
             $extension = $request->file('image')->getClientOriginalExtension();
             $filename = Str::slug($product->code) . '-' . time() . '.' . $extension;
 
+            // Create the directory if it doesn't exist
+            $uploadPath = public_path('images/products');
+            if (!file_exists($uploadPath)) {
+                mkdir($uploadPath, 0755, true);
+            }
+
             // Store the image in public/images/products
-            $request->file('image')->move(public_path('images/products'), $filename);
+            $request->file('image')->move($uploadPath, $filename);
 
             // Save the relative path to the database
             $imagePath = 'images/products/' . $filename;
