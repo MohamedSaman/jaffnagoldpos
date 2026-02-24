@@ -38,7 +38,10 @@
             /* Product cards */
             .product-card { @apply bg-white rounded-xl border border-slate-100 overflow-hidden shadow-md; }
             .product-card .card-body { @apply p-4; }
-            .product-card img { @apply object-contain; }
+            /* Ensure grid product images fill the display area uniformly */
+            .product-card img, .product-grid-img { width: 100%; height: 100%; object-fit: cover; object-position: center; }
+            /* Cart thumbnails: fixed square size */
+            .cart-thumb { width: 32px; height: 32px; object-fit: cover; object-position: center; border-radius: 6px; }
             .product-card .price { color: var(--accent-700); font-weight: 800; }
 
             /* 'In stock' badge */
@@ -910,9 +913,9 @@
 
         {{-- Invoice Content --}}
         <div class="p-2 bg-white flex justify-center" id="printableInvoice">
-            <div class="receipt-container" style="width: 72mm; padding: 0 4mm; background: white; color: #000; font-family: 'Courier New', Courier, monospace; line-height: 1.2; font-size: 12px; box-sizing: border-box;">
+            <div class="receipt-container" style="width: 76mm; padding: 0 3mm; background: white; color: #000; font-family: 'Courier New', Courier, monospace; line-height: 1.2; font-size: 12px; box-sizing: border-box;">
                 <!-- Thermal Receipt Header -->
-                <div style="text-align:center; font-weight:bold;">
+                <div style="text-align:center; font-weight:bold; padding-top: 3mm;">
                     <div style="border-top: 2px solid #000; border-bottom: 2px solid #000; padding: 5px 0; margin-bottom: 5px; font-size: 16px; text-transform: uppercase;">
                         JAFFNA GOLD COVERING
                     </div>
@@ -968,8 +971,8 @@
                 <!-- Totals -->
                 <div style="font-size: 11px;">
                     @php
-                        $originalSubtotal = $createdSale->items->sum(fn($i) => $i->unit_price * $i->quantity);
-                        $totalDiscountRs = $createdSale->discount_amount;
+                    $originalSubtotal = $createdSale->items->sum(fn($i) => $i->unit_price * $i->quantity);
+                    $totalDiscountRs = $createdSale->discount_amount;
                     @endphp
                     <div style="display: flex; justify-content: space-between; margin-bottom: 2px; font-weight: bold;">
                         <span>Sub Total</span>
@@ -981,38 +984,38 @@
                         <span>-{{ number_format($totalDiscountRs, 0) }}</span>
                     </div>
                     @endif
-                    
+
                     <div style="border-bottom: 1px dashed #000; margin: 5px 0;"></div>
-                    
+
                     <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 14px;">
                         <span>TOTAL</span>
                         <span>{{ number_format($createdSale->total_amount, 0) }}</span>
                     </div>
-                    
+
                     <div style="border-bottom: 1px dashed #000; margin: 5px 0;"></div>
                 </div>
 
                 <!-- Payment Method -->
                 <div style="font-size: 11px; margin-bottom: 5px;">
                     @if($createdSale->payments && $createdSale->payments->count() > 0)
-                        @foreach($createdSale->payments as $payment)
-                        <div style="display: flex; margin-bottom: 2px;">
-                            <span style="width: 110px;font-weight: bold;">Payment Method</span>
-                            <span>: {{ strtoupper(str_replace('_', ' ', $payment->payment_method)) }}</span>
-                        </div>
-                        @endforeach
+                    @foreach($createdSale->payments as $payment)
+                    <div style="display: flex; margin-bottom: 2px;">
+                        <span style="width: 110px;font-weight: bold;">Payment Method</span>
+                        <span>: {{ strtoupper(str_replace('_', ' ', $payment->payment_method)) }}</span>
+                    </div>
+                    @endforeach
                     @else
-                        @if($createdSale->payment_type == 'full')
-                        <div style="display: flex;">
-                            <span style="width: 110px;font-weight: bold;">Payment Method</span>
-                            <span>: CASH</span>
-                        </div>
-                        @else
-                        <div style="display: flex;">
-                            <span style="width: 110px;font-weight: bold;">Payment Method</span>
-                            <span>: ONLINE TRANSFER</span>
-                        </div>
-                        @endif
+                    @if($createdSale->payment_type == 'full')
+                    <div style="display: flex;">
+                        <span style="width: 110px;font-weight: bold;">Payment Method</span>
+                        <span>: CASH</span>
+                    </div>
+                    @else
+                    <div style="display: flex;">
+                        <span style="width: 110px;font-weight: bold;">Payment Method</span>
+                        <span>: ONLINE TRANSFER</span>
+                    </div>
+                    @endif
                     @endif
                     <div style="border-bottom: 1px dashed #000; margin: 8px 0;"></div>
                 </div>
@@ -1176,33 +1179,35 @@
                 <style>
                     @page { 
                         size: 80mm auto; 
-                        margin: 0; 
-                    }
-                    html, body {
-                        margin: 0;
-                        padding: 0;
-                        width: 80mm;
-                        background: #fff;
+                        margin: 0mm; 
                     }
                     * {
                         box-sizing: border-box;
                         -webkit-print-color-adjust: exact;
+                        print-color-adjust: exact;
                     }
-                    body { 
+                    html {
+                        margin: 0;
+                        padding: 0;
+                    }
+                    body {
+                        margin: 0;
+                        padding: 0;
+                        width: 80mm;
+                        background: #fff;
                         font-family: 'Courier New', Courier, monospace; 
                         font-size: 11px;
                         color: #000;
                         font-weight: bold;
-                        padding: 0;
                     }
                     .receipt-container {
                         width: 80mm;
                         margin: 0;
-                        padding: 2mm 4mm;
+                        padding: 3mm 3mm 4mm 3mm;
                         box-sizing: border-box;
                     }
                     @media print {
-                        body { width: 80mm; padding: 0; }
+                        html, body { margin: 0; padding: 0; width: 80mm; }
                         .no-print { display: none; }
                     }
                 </style>
@@ -1232,3 +1237,23 @@
     console.log('printInvoice function registered globally');
 </script>
 </div>
+<script>
+    // Enforce uniform product and cart image sizes after DOM loads
+    document.addEventListener('DOMContentLoaded', function() {
+        // Product grid images inside the aspect container: fill and crop
+        document.querySelectorAll('.aspect-[4/3] img').forEach(function(img) {
+            img.style.width = '100%';
+            img.style.height = '100%';
+            img.style.objectFit = 'cover';
+            img.style.objectPosition = 'center';
+        });
+
+        // Cart thumbnails: fixed square size
+        document.querySelectorAll('table tbody img').forEach(function(img) {
+            img.style.width = '32px';
+            img.style.height = '32px';
+            img.style.objectFit = 'cover';
+            img.style.objectPosition = 'center';
+        });
+    });
+</script>

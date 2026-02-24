@@ -18,13 +18,13 @@
         }
 
         @page {
-            size: 4in 6in;
+            size: 6in 4in;
             margin: 0;
         }
 
         body {
-            width: 4in;
-            height: 6in;
+            width: 6in;
+            height: 4in;
             font-family: "Bree Serif", serif;
             color: #000;
             overflow: hidden;
@@ -33,12 +33,8 @@
         }
 
         .label-wrapper {
-            position: absolute;
-            width: 5.6in;
-            height: 3in;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) rotate(-90deg);
+            width: 6in;
+            height: 4in;
         }
 
         .label-border {
@@ -60,18 +56,18 @@
 
         .company-name {
             flex: 1;
-            font-size: 24px;
+            font-size: 30px;
             font-weight: 900;
             line-height: 1.1;
             text-align: center;
         }
 
         .company-name span {
-            font-size: 14px;
+            font-size: 16px;
             font-weight: 600;
             display: block;
             text-align: center;
-            letter-spacing: 3px;
+            letter-spacing: 4px;
         }
 
         .meta {
@@ -82,7 +78,7 @@
         }
 
         .meta .method {
-            font-size: 20px;
+            font-size: 18px;
         }
 
         .meta .date {
@@ -96,6 +92,10 @@
             width: 100%;
         }
 
+        .row-grow {
+            flex: 1;
+        }
+
         .customer-section {
             flex: 2;
             padding: 8px 10px;
@@ -104,17 +104,17 @@
         }
 
         .to-label {
-            font-size: 18px;
+            font-size: 14px;
             font-weight: bold;
-            margin-bottom: 2px;
+            margin-bottom: 0px;
         }
 
         .customer-line {
-            font-size: 14px;
+            font-size: 17px;
             font-weight: 500;
-            line-height: 1.5;
+            line-height: 1.6;
             display: block;
-            margin-left: 20px;
+            margin-left: 28px;
         }
 
         .barcode-section {
@@ -129,12 +129,11 @@
 
         .barcode-section svg {
             width: 100%;
-            height: 45px;
+            height: 70px;
         }
 
         .barcode-text {
             font-size: 12px;
-            font-weight: 700;
             margin-top: 3px;
         }
 
@@ -151,7 +150,7 @@
 
         .price-row {
             background: #d1d1d1;
-            font-size: 34px;
+            font-size: 42px;
             font-weight: 900;
         }
 
@@ -167,8 +166,8 @@
         }
 
         .icon-box {
-            width: 30px;
-            height: 30px;
+            width: 40px;
+            height: 40px;
             border: 2px solid #000;
             display: flex;
             align-items: center;
@@ -177,12 +176,12 @@
 
         /* COD black label style */
         .cod-box {
-            width: 58px;
-            height: 38px;
+            width: 70px;
+            height: 48px;
             background: #000;
             color: #fff;
             font-weight: 900;
-            font-size: 16px;
+            font-size: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -190,8 +189,8 @@
 
         /* FOOTER */
         .footer {
-            padding: 2px 6px;
-            font-size: 14px;
+            padding: 4px 10px;
+            font-size: 16px;
             font-weight: 700;
             text-align: center;
             display: flex;
@@ -222,23 +221,23 @@
             </div>
 
             <!-- CUSTOMER + BARCODE -->
-            <div class="row">
+            <div class="row row-grow">
                 <div class="customer-section">
                     <div class="to-label">TO :</div>
                     @php
-                        $details = $sale->deliverySale->customer_details ?? $sale->customer->address ?? '';
-                        // Try to split by common delimiters: pipe, comma, period+space, or newlines
-                        $parts = preg_split('/\s*[\|]\s*|\n|\r\n/', $details);
-                        // If only one part, try splitting by period followed by space and digits (phone after name)
-                        if (count($parts) <= 1) {
-                            $parts = preg_split('/(?<=\D)[\.\,]\s*(?=\d)/', $details);
+                    $details = $sale->deliverySale->customer_details ?? $sale->customer->address ?? '';
+                    // Try to split by common delimiters: pipe, comma, period+space, or newlines
+                    $parts = preg_split('/\s*[\|]\s*|\n|\r\n/', $details);
+                    // If only one part, try splitting by period followed by space and digits (phone after name)
+                    if (count($parts) <= 1) {
+                        $parts=preg_split('/(?<=\D)[\.\,]\s*(?=\d)/', $details);
                         }
-                    @endphp
-                    @foreach($parts as $part)
+                        @endphp
+                        @foreach($parts as $part)
                         @if(trim($part))
-                            <span class="customer-line">{{ trim($part) }}</span>
+                        <span class="customer-line">{{ trim($part) }}</span>
                         @endif
-                    @endforeach
+                        @endforeach
                 </div>
 
                 <div class="barcode-section">
@@ -331,8 +330,10 @@
 
             <!-- FOOTER -->
             <div class="footer">
-                <div>076 1919 650 | 077 5287 556</div>
                 <div>NO: 237 KKS ROAD, JAFFNA | NO: 37 NEW MARKET JAFFNA</div>
+                <div>076 1919 650 | 077 5287 556</div>
+                <div>Return will be accepted within 3 days</div>
+                <div>Thank you for your purchase!</div>
             </div>
 
         </div>
@@ -342,7 +343,7 @@
         JsBarcode("#barcode", "{{ $sale->deliverySale->delivery_barcode ?? 'N/A' }}", {
             format: "CODE128",
             width: 2,
-            height: 50,
+            height: 70,
             displayValue: false,
             margin: 0
         });
