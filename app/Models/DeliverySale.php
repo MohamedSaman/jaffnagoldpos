@@ -13,6 +13,7 @@ class DeliverySale extends Model
         'sale_id',
         'delivery_method',
         'payment_method',
+        'delivery_charge',
         'status',
         'delivery_barcode',
         'customer_details',

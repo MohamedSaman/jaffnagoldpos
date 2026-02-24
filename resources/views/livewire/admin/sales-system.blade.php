@@ -23,10 +23,10 @@
                     <div class="header-icon">
                         <i class="bi bi-gem"></i>
                     </div>
-                    <h6 class="mb-0 fw-bold text-gold" style="letter-spacing: 0.05em; text-transform: uppercase;">Billing System</h6>
+                    <h6 class="mb-0 fw-bold " style="letter-spacing: 0.05em; text-transform: uppercase;color:white;">Billing System</h6>
                 </div>
                 <div class="d-block d-md-flex align-items-center gap-3">
-                    <span class="badge text-gold border border-gold px-3 py-2 rounded-pill">
+                    <span class="badge border border-gold px-3 py-2 rounded-pill">
                         <i class="bi bi-calendar3 me-1"></i> {{ date('D, M d Y') }}
                     </span>
                 </div>
@@ -189,41 +189,70 @@
                         </table>
                     </div>
                     
-                    <div class="bg-white p-3 d-flex justify-content-between align-items-center border-top">
-                        <div class="d-flex align-items-center gap-4">
-                            <label class="fw-bold text-dark text-uppercase mb-0" style="font-size: 0.75rem; letter-spacing: 0.5px;">Additional Discount:</label>
-                            <div class="special-discount-input d-flex align-items-center bg-white border rounded-pill p-1 pe-3">
-                                <input type="number"
-                                    class="form-control form-control-sm border-0 bg-transparent text-center fw-bold"
-                                    style="width: 80px; box-shadow: none;"
-                                    wire:model.live="additionalDiscount"
-                                    min="0"
-                                    step="{{ $additionalDiscountType === 'percentage' ? '1' : '0.01' }}"
-                                    @if($additionalDiscountType === 'percentage') max="100" @endif>
-                                <button type="button" class="btn rounded-pill px-2 py-0 ms-2 fw-bold border-0" style="height: 24px; font-size: 0.65rem; min-width: 32px;
-                                    {{ $additionalDiscountType === 'percentage' ? 'background: #D4AF37; color: #000;' : 'background: #000; color: #fff;' }}"
-                                    wire:click="toggleDiscountType">
-                                    {{ $additionalDiscountType === 'percentage' ? '%' : 'Rs' }}
-                                </button>
-                                <button type="button" class="btn p-0 ms-2 border-0 text-muted" wire:click="toggleDiscountType" title="Switch between Rs and %">
-                                    <i class="bi bi-arrow-repeat" style="font-size: 1rem;"></i>
-                                </button>
+                    <div class="bg-white p-3 border-top">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                            {{-- Left: Discount + Delivery Charge --}}
+                            <div class="d-flex align-items-center gap-4 flex-wrap">
+                                {{-- Additional Discount --}}
+                                <div class="d-flex align-items-center gap-2">
+                                    <label class="fw-bold text-dark text-uppercase mb-0" style="font-size: 0.7rem; letter-spacing: 0.5px;">Discount:</label>
+                                    <div class="special-discount-input d-flex align-items-center bg-white border rounded-pill p-1 pe-3">
+                                        <input type="number"
+                                            class="form-control form-control-sm border-0 bg-transparent text-center fw-bold"
+                                            style="width: 80px; box-shadow: none;"
+                                            wire:model.live="additionalDiscount"
+                                            min="0"
+                                            step="{{ $additionalDiscountType === 'percentage' ? '1' : '0.01' }}"
+                                            @if($additionalDiscountType === 'percentage') max="100" @endif>
+                                        <button type="button" class="btn rounded-pill px-2 py-0 ms-2 fw-bold border-0" style="height: 24px; font-size: 0.65rem; min-width: 32px;
+                                            {{ $additionalDiscountType === 'percentage' ? 'background: var(--primary-blue); color: #fff;' : 'background: #000; color: #fff;' }}"
+                                            wire:click="toggleDiscountType">
+                                            {{ $additionalDiscountType === 'percentage' ? '%' : 'Rs' }}
+                                        </button>
+                                        <button type="button" class="btn p-0 ms-2 border-0 text-muted" wire:click="toggleDiscountType" title="Switch between Rs and %">
+                                            <i class="bi bi-arrow-repeat" style="font-size: 1rem;"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {{-- Delivery Charge --}}
+                                <div class="d-flex align-items-center gap-2">
+                                    <label class="fw-bold text-dark text-uppercase mb-0" style="font-size: 0.7rem; letter-spacing: 0.5px;">
+                                        <i class="bi bi-truck me-1 text-gold"></i>Delivery:
+                                    </label>
+                                    <div class="delivery-charge-input">
+                                        <span class="currency-label">Rs</span>
+                                        <input type="number" 
+                                            class="delivery-charge-field"
+                                            wire:model.live="deliveryCharge"
+                                            min="0" 
+                                            step="1"
+                                            placeholder="450">
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="text-end">
-                            <div>
-                                <span class="fw-bold text-dark fs-5">Subtotal:</span>
-                                <span class="fw-black fs-5 ms-1 text-muted">Rs.</span>
-                                <span class="fw-black fs-5">{{ number_format($subtotal, 2) }}</span>
-                            </div>
-                            @if($additionalDiscountAmount > 0)
-                            <div class="text-danger fw-bold" style="font-size: 0.85rem;">
-                                Discount: -Rs.{{ number_format($additionalDiscountAmount, 2) }}
-                                @if($additionalDiscountType === 'percentage')
-                                <span class="text-muted">({{ $additionalDiscount }}%)</span>
+
+                            {{-- Right: Subtotal --}}
+                            <div class="text-end">
+                                <div>
+                                    <span class="fw-bold text-dark fs-5">Subtotal:</span>
+                                    <span class="fw-black fs-5 ms-1 text-muted">Rs.</span>
+                                    <span class="fw-black fs-5">{{ number_format($subtotal, 2) }}</span>
+                                </div>
+                                @if($additionalDiscountAmount > 0)
+                                <div class="text-danger fw-bold" style="font-size: 0.85rem;">
+                                    Discount: -Rs.{{ number_format($additionalDiscountAmount, 2) }}
+                                    @if($additionalDiscountType === 'percentage')
+                                    <span class="text-muted">({{ $additionalDiscount }}%)</span>
+                                    @endif
+                                </div>
+                                @endif
+                                @if($deliveryCharge > 0)
+                                <div class="text-success fw-bold" style="font-size: 0.85rem;">
+                                    Delivery: +Rs.{{ number_format($deliveryCharge, 2) }}
+                                </div>
                                 @endif
                             </div>
-                            @endif
                         </div>
                     </div>
                 </div>
@@ -279,6 +308,7 @@
                                 </div>
                             </div>
                         </div>
+
                     </div>
                 </div>
 
@@ -286,10 +316,16 @@
                 <div class="col-md-3">
                     <div class="bg-black p-4 rounded-4 h-100 d-flex flex-column justify-content-center border border-gold border-opacity-25 shadow-lg">
                         <div class="text-center mb-3">
-                            <div class="text-gold opacity-50 fw-bold mb-1" style="font-size: 0.7rem; letter-spacing: 2px;">TOTAL PAYABLE</div>
-                            <div class="h3 fw-black text-gold mb-0" style="letter-spacing: -1px;">Rs.{{ number_format($grandTotal, 2) }}</div>
+                            @if($deliveryCharge > 0)
+                            <div class="d-flex justify-content-between px-2 mb-1" style="font-size: 0.65rem;">
+                                <span class="text-white opacity-80 fw-bold">Delivery</span>
+                                <span class="text-white opacity-90 fw-bold">+Rs.{{ number_format($deliveryCharge, 0) }}</span>
+                            </div>
+                            @endif
+                            <div class=" opacity-50 fw-bold mb-1" style="font-size: 0.7rem; letter-spacing: 2px;color:white;">TOTAL PAYABLE</div>
+                            <div class="h3 mb-0" style="letter-spacing: -1px;color:white;">Rs.{{ number_format($grandTotal, 2) }}</div>
                         </div>
-                        <button class="btn btn-gold-premium w-100 py-2 rounded-3 fw-black d-flex align-items-center justify-content-center gap-2"
+                        <button class="btn btn-gold-premium w-100 py-2 rounded-3 text-white d-flex align-items-center justify-content-center gap-2"
                             style="font-size: 0.85rem;"
                             wire:click="createSale"
                             {{ count($cart) == 0 ? 'disabled' : '' }}>
@@ -319,7 +355,7 @@
                                 <p class="mb-0 text-muted small text-uppercase fw-bold" style="letter-spacing: 3px; font-size: 0.65rem;">Gold Shop</p>
                             </div>
                             <div class="col-3 text-end">
-                                <div class="badge bg-gold text-dark p-2 px-3 rounded-pill fw-bold" style="font-size: 0.7rem;">SALE CONFIRMED</div>
+                                <div class="badge bg-gold text-white p-2 px-3 rounded-pill fw-bold" style="font-size: 0.7rem;">SALE CONFIRMED</div>
                             </div>
                         </div>
                     </div>
@@ -398,7 +434,7 @@
                     </div>
                 </div>
                 
-                <div class="modal-footer bg-black border-top-0 p-3 px-4 gap-3">
+                <div class="modal-footer border-top-0 p-3 px-4 gap-3">
                     <button type="button" class="btn btn-outline-gold rounded-pill px-4 py-2 border-2 d-flex align-items-center gap-2" 
                         onclick="openDeliveryPrintWindow({{ $createdSale->id }})" style="font-size: 0.8rem;">
                         <i class="bi bi-printer-fill"></i> PRINT LABEL
@@ -417,21 +453,22 @@
 @push('styles')
 <style>
     :root {
-        --primary-gold: #D4AF37;
-        --secondary-gold: #B8860B;
+        --primary-blue: #161b97;
+        --deep-blue: #12167d;
+        --light-blue: #f0f2ff;
+        --jg-red: #f30b1f;
         --dark-bg: #000000;
-        --light-gold: #fffcf0;
     }
 
-    .text-gold { color: var(--primary-gold) !important; }
-    .bg-gold { background-color: var(--primary-gold) !important; }
-    .bg-light-gold { background-color: var(--light-gold) !important; }
-    .border-gold { border-color: var(--primary-gold) !important; }
+    .text-gold { color: var(--primary-blue) !important; }
+    .bg-gold { background-color: var(--primary-blue) !important; }
+    .bg-light-gold { background-color: var(--light-blue) !important; }
+    .border-gold { border-color: var(--primary-blue) !important; }
 
     .premium-card {
         background: #fff;
         border-radius: 12px;
-        border: 1px solid rgba(212, 175, 55, 0.2);
+        border: 1px solid rgba(22, 27, 151, 0.1);
         box-shadow: 0 5px 20px rgba(0,0,0,0.05);
         overflow: hidden;
     }
@@ -446,8 +483,8 @@
     }
 
     .premium-textarea:focus {
-        border-color: var(--primary-gold);
-        box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.1);
+        border-color: var(--primary-blue);
+        box-shadow: 0 0 0 4px rgba(22, 27, 151, 0.1);
         background: #fff;
     }
 
@@ -460,7 +497,7 @@
         left: 15px;
         top: 50%;
         transform: translateY(-50%);
-        color: var(--primary-gold);
+        color: var(--primary-blue);
         font-size: 1rem;
     }
 
@@ -474,8 +511,8 @@
     }
 
     .premium-search-input:focus {
-        border-color: var(--primary-gold);
-        box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.1);
+        border-color: var(--primary-blue);
+        box-shadow: 0 0 0 4px rgba(22, 27, 151, 0.1);
         background: #fff;
     }
 
@@ -574,15 +611,65 @@
     }
 
     .selection-item.active {
-        background: #000;
-        color: var(--primary-gold);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        background: var(--primary-blue);
+        color: #fff;
+        box-shadow: 0 4px 12px rgba(22, 27, 151, 0.2);
         transform: translateY(-1px);
     }
 
+    /* Delivery Charge */
+    .delivery-charge-bar {
+        background: #f8f8f8;
+        border: 1px solid #e0e0e0;
+        border-radius: 10px;
+        padding: 8px 15px;
+    }
+
+    .delivery-charge-input {
+        display: flex;
+        align-items: center;
+        background: #fff;
+        border: 1.5px solid #ddd;
+        border-radius: 8px;
+        overflow: hidden;
+        transition: border-color 0.3s;
+    }
+
+    .delivery-charge-input:focus-within {
+        border-color: var(--primary-blue);
+        box-shadow: 0 0 0 3px rgba(22, 27, 151, 0.1);
+    }
+
+    .delivery-charge-input .currency-label {
+        padding: 5px 10px;
+        font-weight: 800;
+        font-size: 0.75rem;
+        color: #999;
+        background: #f4f4f4;
+        border-right: 1px solid #eee;
+    }
+
+    .delivery-charge-field {
+        border: none;
+        outline: none;
+        width: 90px;
+        padding: 5px 10px;
+        font-weight: 800;
+        font-size: 0.85rem;
+        text-align: right;
+        color: #222;
+        background: transparent;
+    }
+
+    .delivery-charge-field::-webkit-inner-spin-button,
+    .delivery-charge-field::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
     .btn-gold-premium {
-        background: linear-gradient(135deg, var(--primary-gold) 0%, var(--secondary-gold) 100%);
-        color: #000;
+        background: linear-gradient(135deg, var(--primary-blue) 0%, var(--deep-blue) 100%);
+        color: #fff;
         font-weight: 800;
         border: none;
         letter-spacing: 0.1em;
@@ -591,19 +678,19 @@
 
     .btn-gold-premium:hover:not(:disabled) {
         transform: translateY(-2px);
-        box-shadow: 0 5px 20px rgba(212, 175, 55, 0.5);
+        box-shadow: 0 5px 20px rgba(22, 27, 151, 0.4);
     }
 
     .btn-outline-gold {
-        border: 2px solid var(--primary-gold);
-        color: var(--primary-gold);
+        border: 2px solid var(--primary-blue);
+        color: var(--primary-blue);
         background: transparent;
         font-weight: 700;
     }
 
     .btn-outline-gold:hover {
-        background: var(--primary-gold);
-        color: #000;
+        background: var(--primary-blue);
+        color: #fff;
     }
 
     .btn-black {
@@ -613,12 +700,12 @@
 
     .btn-black:hover {
         background: #222;
-        color: var(--primary-gold);
+        color: var(--primary-blue);
     }
 
     .modal-content {
         border-radius: 20px;
-        border: 2px solid var(--primary-gold);
+        border: 2px solid var(--primary-blue);
     }
 
     .premium-alert {
@@ -646,7 +733,7 @@
     }
 
     .row-num {
-        color: var(--primary-gold);
+        color: var(--primary-blue);
         font-weight: 800;
         font-size: 0.8rem;
     }
@@ -654,8 +741,8 @@
     .header-icon {
         width: 32px;
         height: 32px;
-        background: var(--primary-gold);
-        color: #000;
+        background: var(--primary-blue);
+        color: #fff;
         display: flex;
         align-items: center;
         justify-content: center;

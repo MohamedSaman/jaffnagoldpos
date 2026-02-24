@@ -57,6 +57,7 @@ class SalesSystem extends Component
     // Delivery Properties
     public $deliveryMethod = 'Post';
     public $paymentMethod = 'Cash on Delivery';
+    public $deliveryCharge = 450;
 
     // Discount Properties
     public $additionalDiscount = 0;
@@ -138,7 +139,7 @@ class SalesSystem extends Component
 
     public function getGrandTotalProperty()
     {
-        return $this->subtotalAfterItemDiscounts - $this->additionalDiscountAmount;
+        return $this->subtotalAfterItemDiscounts - $this->additionalDiscountAmount + ($this->deliveryCharge ?? 0);
     }
 
     // When customer is selected from dropdown
@@ -573,6 +574,7 @@ class SalesSystem extends Component
                 'sale_id' => $sale->id,
                 'delivery_method' => $this->deliveryMethod,
                 'payment_method' => $this->paymentMethod,
+                'delivery_charge' => $this->deliveryCharge ?? 450,
                 'status' => 'Processing',
                 'customer_details' => $this->customerInfo,
             ]);

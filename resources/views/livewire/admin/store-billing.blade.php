@@ -381,7 +381,7 @@
                                     <option value="{{ $customer->id }}">{{ $customer->business_name ?? $customer->name }} ({{ $customer->phone }})</option>
                                     @endforeach
                                 </select>
-                                <button class="absolute right-8 top-1/2 -translate-y-1/2 text-[#161b97] p-1.5 hover:bg-yellow-50 rounded-full transition-all" wire:click="openCustomerModal" title="Add Customer">
+                                <button class="absolute right-8 top-1/2 -translate-y-1/2 text-[#161b97] p-1.5 hover:bg-blue-50 rounded-full transition-all" wire:click="openCustomerModal" title="Add Customer">
                                     <span class="material-symbols-outlined text-lg">person_add</span>
                                 </button>
                                 <span class="material-symbols-outlined absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-300 text-lg pointer-events-none">expand_more</span>
@@ -432,7 +432,7 @@
                         $isLow = ($product['stock'] ?? 0) <= 5 && ($product['stock'] ?? 0)> 0;
                             $isOut = ($product['stock'] ?? 0) <= 0;
                                 @endphp
-                                <div class="group bg-white border border-slate-200 rounded-lg shadow-sm hover:border-[#e67e22]/60 hover:shadow-md transition-all cursor-pointer relative flex flex-col h-full overflow-hidden"
+                                <div class="group bg-white border border-slate-200 rounded-lg shadow-sm hover:border-[#161b97]/60 hover:shadow-md transition-all cursor-pointer relative flex flex-col h-full overflow-hidden"
                                 wire:click="addToCart({{ json_encode($product) }})">
 
                                 {{-- Batch Status --}}
@@ -494,7 +494,7 @@
 <div class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[2000] transition-opacity duration-300 {{ $showCategoryPanel ? 'opacity-100' : 'opacity-0 pointer-events-none' }}" wire:click.self="$set('showCategoryPanel', false)"></div>
 <aside class="fixed right-0 top-0 bottom-0 w-1/2 bg-white z-[2001] shadow-2xl transition-transform duration-300 transform {{ $showCategoryPanel ? 'translate-x-0' : 'translate-x-full' }} flex flex-col">
     <div class="p-4 flex justify-between items-center border-b border-slate-100 bg-slate-50">
-        <h6 class="mb-0 font-black text-xs text-slate-800 tracking-widest"><i class="material-symbols-outlined align-middle mr-2 text-[#e67e22]">grid_view</i>ALL CATEGORIES</h6>
+        <h6 class="mb-0 font-black text-xs text-slate-800 tracking-widest"><i class="material-symbols-outlined align-middle mr-2 text-[#161b97]">grid_view</i>ALL CATEGORIES</h6>
         <button class="text-slate-400 hover:text-slate-600 transition-colors" wire:click="$set('showCategoryPanel', false)">
             <span class="material-symbols-outlined">close</span>
         </button>
@@ -506,7 +506,7 @@
             <span class="text-[10px] font-bold opacity-70">{{ count($products) }}</span>
         </button>
         @foreach($categories as $category)
-        <button class=" mb-1 text-center p-3 rounded-lg transition-all border border-slate-100 {{ $selectedCategory == $category->id ? 'bg-[#161b97] text-white shadow-lg shadow-yellow-500/30' : 'hover:bg-slate-100 text-slate-600' }}"
+        <button class=" mb-1 text-center p-3 rounded-lg transition-all border border-slate-100 {{ $selectedCategory == $category->id ? 'bg-[#161b97] text-white shadow-lg shadow-blue-500/30' : 'hover:bg-slate-100 text-slate-600' }}"
             wire:click="selectCategory({{ $category->id }})">
             <span class="font-black text-xs tracking-tight">{{ $category->category_name }}</span>
             <span class="text-[10px] font-bold opacity-70">{{ $category->products_count }}</span>
@@ -519,19 +519,19 @@
 <div class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[2000] transition-opacity duration-300 {{ $showBrandPanel ? 'opacity-100' : 'opacity-0 pointer-events-none' }}" wire:click.self="$set('showBrandPanel', false)"></div>
 <aside class="fixed right-0 top-0 bottom-0 w-1/2 bg-white z-[2001] shadow-2xl transition-transform duration-300 transform {{ $showBrandPanel ? 'translate-x-0' : 'translate-x-full' }} flex flex-col">
     <div class="p-4 flex justify-between items-center border-b border-slate-100 bg-slate-50">
-        <h6 class="mb-0 font-black text-xs text-slate-800 tracking-widest"><i class="material-symbols-outlined align-middle mr-2 text-[#e67e22]">local_offer</i>ALL BRANDS</h6>
+        <h6 class="mb-0 font-black text-xs text-slate-800 tracking-widest"><i class="material-symbols-outlined align-middle mr-2 text-[#161b97]">local_offer</i>ALL BRANDS</h6>
         <button class="text-slate-400 hover:text-slate-600 transition-colors" wire:click="$set('showBrandPanel', false)">
             <span class="material-symbols-outlined">close</span>
         </button>
     </div>
     <div class="p-2 overflow-y-auto flex-1 custom-scrollbar">
-        <button class=" mb-1 text-center  p-3 rounded-lg transition-all border border-slate-100 {{ !$selectedBrand ? 'bg-[#e67e22] text-white shadow-lg shadow-orange-500/30' : 'hover:bg-slate-100 text-slate-600' }}"
+        <button class=" mb-1 text-center  p-3 rounded-lg transition-all border border-slate-100 {{ !$selectedBrand ? 'bg-[#161b97] text-white shadow-lg shadow-blue-500/30' : 'hover:bg-slate-100 text-slate-600' }}"
             wire:click="showAllBrands">
             <span class="font-black text-xs tracking-tight">Show All Brands</span>
             <span class="text-[10px] font-bold opacity-70">{{ count($products) }}</span>
         </button>
         @foreach($brands as $brand)
-        <button class=" mb-1 text-center p-3 rounded-lg transition-all border border-slate-100 {{ $selectedBrand == $brand['id'] ? 'bg-[#e67e22] text-white shadow-lg shadow-orange-500/30' : 'hover:bg-slate-100 text-slate-600' }}"
+        <button class=" mb-1 text-center p-3 rounded-lg transition-all border border-slate-100 {{ $selectedBrand == $brand['id'] ? 'bg-[#161b97] text-white shadow-lg shadow-blue-500/30' : 'hover:bg-slate-100 text-slate-600' }}"
             wire:click="selectBrand({{ $brand['id'] }})">
             <span class="font-black text-xs tracking-tight">{{ $brand['brand_name'] }}</span>
             <span class="text-[10px] font-bold opacity-70">{{ $brand['products_count'] }}</span>
@@ -586,7 +586,7 @@
                 wire:click="skipWalkingCustomerDetails">
                 Skip
             </button>
-            <button class="px-8 py-2.5 bg-[#161b97] hover:bg-yellow-600 text-white rounded-xl text-[10px] font-black uppercase shadow-lg shadow-yellow-500/20 transition-colors"
+            <button class="px-8 py-2.5 bg-[#161b97] hover:bg-blue-600 text-white rounded-xl text-[10px] font-black uppercase shadow-lg shadow-blue-500/20 transition-colors"
                 wire:click="saveWalkingCustomerDetails">
                 Continue to Payment
             </button>
@@ -598,7 +598,7 @@
     @if($showCustomerModal)
     <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden relative transform transition-all">
         <div class="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-            <h3 class="font-black text-xs uppercase tracking-widest text-[#e67e22]"><i class="material-symbols-outlined align-middle mr-2">person_add</i>ADD NEW CUSTOMER</h3>
+            <h3 class="font-black text-xs uppercase tracking-widest text-[#161b97]"><i class="material-symbols-outlined align-middle mr-2">person_add</i>ADD NEW CUSTOMER</h3>
             <button class="text-slate-400 hover:text-slate-600" wire:click="closeCustomerModal"><span class="material-symbols-outlined">close</span></button>
         </div>
         <div class="p-6 grid grid-cols-2 gap-4">
@@ -669,7 +669,7 @@
         </div>
         <div class="p-4 border-t border-slate-100 bg-slate-50 flex justify-end gap-3">
             <button class="px-6 py-2.5 text-[10px] font-black uppercase text-slate-400" wire:click="closeCustomerModal">Discard</button>
-            <button class="px-8 py-2.5 bg-[#e67e22] text-white rounded-lg text-[10px] font-black uppercase shadow-lg shadow-orange-500/20" wire:click="createCustomer">Save Customer</button>
+            <button class="px-8 py-2.5 bg-[#161b97] text-white rounded-lg text-[10px] font-black uppercase shadow-lg shadow-blue-500/20" wire:click="createCustomer">Save Customer</button>
         </div>
     </div>
     @endif
@@ -682,9 +682,9 @@
         </div>
         <div class="p-6 space-y-4">
             <div class="flex gap-2 p-1 bg-slate-100 rounded-xl">
-                <button class="flex-1 py-2 text-[10px] font-black uppercase rounded-lg transition-all {{ $saleDiscountType == 'fixed' ? 'bg-white text-[#e67e22] shadow-sm' : 'text-slate-400' }}"
+                <button class="flex-1 py-2 text-[10px] font-black uppercase rounded-lg transition-all {{ $saleDiscountType == 'fixed' ? 'bg-white text-[#161b97] shadow-sm' : 'text-slate-400' }}"
                     wire:click="$set('saleDiscountType', 'fixed')">Fixed Amount</button>
-                <button class="flex-1 py-2 text-[10px] font-black uppercase rounded-lg transition-all {{ $saleDiscountType == 'percentage' ? 'bg-white text-[#e67e22] shadow-sm' : 'text-slate-400' }}"
+                <button class="flex-1 py-2 text-[10px] font-black uppercase rounded-lg transition-all {{ $saleDiscountType == 'percentage' ? 'bg-white text-[#161b97] shadow-sm' : 'text-slate-400' }}"
                     wire:click="$set('saleDiscountType', 'percentage')">Percentage (%)</button>
             </div>
             <div class="space-y-2">
@@ -694,23 +694,23 @@
                         step="0.01"
                         min="0"
                         max="{{ $saleDiscountType == 'percentage' ? '100' : '' }}"
-                        class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xl font-black text-slate-700 outline-none focus:border-[#e67e22]"
+                        class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xl font-black text-slate-700 outline-none focus:border-[#161b97]"
                         wire:model.live="saleDiscountValue"
                         placeholder="0">
                 </div>
                 {{-- Validation Helper Text --}}
                 <div class="text-[9px] font-bold text-slate-500 px-1">
                     @if($saleDiscountType == 'percentage')
-                    Max: <span class="text-[#e67e22]">100%</span>
+                    Max: <span class="text-[#161b97]">100%</span>
                     @else
-                    Max: <span class="text-[#e67e22]">Rs. {{ number_format($subtotalAfterItemDiscounts, 2) }}</span> (Sale Total)
+                    Max: <span class="text-[#161b97]">Rs. {{ number_format($subtotalAfterItemDiscounts, 2) }}</span> (Sale Total)
                     @endif
                 </div>
             </div>
         </div>
         <div class="p-4 bg-slate-50 flex gap-2">
             <button class="flex-1 py-3 text-[10px] font-black uppercase text-slate-400" wire:click="$set('showSaleDiscountModal', false)">Cancel</button>
-            <button class="flex-1 py-3 bg-[#e67e22] text-white rounded-xl text-[10px] font-black uppercase shadow-lg shadow-orange-500/10"
+            <button class="flex-1 py-3 bg-[#161b97] text-white rounded-xl text-[10px] font-black uppercase shadow-lg shadow-blue-500/10"
                 wire:click="applySaleDiscount">Apply Discount</button>
         </div>
     </div>
