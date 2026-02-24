@@ -1192,7 +1192,7 @@
                             </div>
                             @endif
                         </div>
-                        
+
                         @else
                         <div class="text-center py-5">
                             <i class="bi bi-exclamation-circle text-muted" style="font-size: 4rem;"></i>
