@@ -563,14 +563,15 @@
                                     <thead class="table-light">
                                         <tr>
                                             <th class="ps-4">No</th>
-                                            <th>Barcode</th>
+                                            <th>Image</th>
                                             <th>Product Name</th>
-                                            @if ($isStaff)
+                                            <th>Cost</th>
+                                            <th>Retail Price</th>
                                             <th>Wholesale Price</th>
-                                            @endif
                                             <th>Stock</th>
                                             <th>Status</th>
-
+                                            <th>Barcode</th>
+                                            <th>QR Code</th>
                                             @if (!$isStaff)
                                             <th class="text-end pe-5">Actions</th>
                                             @endif
@@ -584,20 +585,28 @@
                                                 <span class="fw-medium text-dark">{{ $loop->iteration }}</span>
                                             </td>
                                             <td wire:click="viewProductDetails({{ $product->id }})">
-                                                @if($product->barcode)
-                                                <svg class="product-barcode" data-barcode="{{ $product->barcode }}"></svg>
+                                                @if ($product->image)
+                                                <img src="{{ asset($product->image) }}" alt="{{ $product->product_name }}"
+                                                    class="img-thumbnail" style="width: 50px; height: 50px;">
                                                 @else
-                                                <span class="text-muted">—</span>
+                                                <div class="bg-light d-flex align-items-center justify-content-center"
+                                                    style="width: 50px; height: 50px;">
+                                                    <i class="bi bi-image text-muted"></i>
+                                                </div>  
                                                 @endif
                                             </td>
                                             <td wire:click="viewProductDetails({{ $product->id }})">
                                                 <span class="fw-medium text-dark">{{ $product->product_name }}</span>
                                             </td>
-                                            @if ($isStaff)
+                                            <td wire:click="viewProductDetails({{ $product->id }})">
+                                                <span class="fw-medium text-primary">Rs.{{ number_format($product->supplier_price ?? 0, 2) }}</span>
+                                            </td>
+                                            <td wire:click="viewProductDetails({{ $product->id }})">
+                                                <span class="fw-medium text-primary">Rs.{{ number_format($product->retail_price ?? 0, 2) }}</span>
+                                            </td>
                                             <td wire:click="viewProductDetails({{ $product->id }})">
                                                 <span class="fw-medium text-primary">Rs.{{ number_format($product->wholesale_price ?? 0, 2) }}</span>
                                             </td>
-                                            @endif
                                             <td wire:click="viewProductDetails({{ $product->id }})">
                                                 @php
                                                 $availableStock = $product->available_stock ?? 0;
@@ -617,6 +626,20 @@
                                                 @else
                                                 <span class="badge bg-danger">Inactive</span>
                                                 @endif
+                                            </td>
+
+                                            <td wire:click="viewProductDetails({{ $product->id }})">
+                                                @if($product->barcode)
+                                                <svg class="product-barcode" data-barcode="{{ $product->barcode }}"></svg>
+                                                @else
+                                                <span class="text-muted">—</span>
+                                                @endif
+                                            </td>
+
+                                            <td>
+                                                <div class="qr-code-cell" data-product-id="{{ $product->id }}" data-url="{{ url('/product-image/' . $product->id) }}" style="cursor: pointer;" title="Click to enlarge QR code">
+                                                    <div class="product-qrcode" id="qr-{{ $product->id }}" data-url="{{ url('/product-image/' . $product->id) }}"></div>
+                                                </div>
                                             </td>
 
                                             @if (!$isStaff)
@@ -2337,6 +2360,7 @@
 
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
     function renderBarcodes() {
         document.querySelectorAll('svg.product-barcode[data-barcode]').forEach(function(svg) {
@@ -2370,8 +2394,78 @@
     if (typeof Livewire !== 'undefined') {
         Livewire.hook('morph.updated', () => {
             setTimeout(renderBarcodes, 50);
+            setTimeout(renderQRCodes, 100);
         });
     }
+
+    // ── QR Code Generation ──
+    function renderQRCodes() {
+        document.querySelectorAll('.product-qrcode').forEach(function(el) {
+            if (el.dataset.rendered === 'true') return;
+            if (el.querySelector('canvas') || el.querySelector('img')) return;
+            const url = el.dataset.url;
+            if (!url) return;
+
+            try {
+                new QRCode(el, {
+                    text: url,
+                    width: 56,
+                    height: 56,
+                    colorDark: '#161b97',
+                    colorLight: '#ffffff',
+                    correctLevel: QRCode.CorrectLevel.M
+                });
+                el.dataset.rendered = 'true';
+            } catch (e) {
+                console.error('QR render failed:', e);
+            }
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(renderQRCodes, 200);
+    });
+
+    document.addEventListener('livewire:navigated', function() {
+        setTimeout(renderQRCodes, 200);
+    });
+
+    // Click to enlarge QR code in a modal
+    document.addEventListener('click', function(e) {
+        const qrCell = e.target.closest('.qr-code-cell');
+        if (!qrCell) return;
+
+        const productId = qrCell.dataset.productId;
+        const url = qrCell.dataset.url;
+
+        // Create modal overlay
+        const overlay = document.createElement('div');
+        overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:9999;display:flex;align-items:center;justify-content:center;';
+        overlay.innerHTML = `
+            <div style="background:white;border-radius:16px;padding:30px;text-align:center;max-width:340px;width:90%;box-shadow:0 20px 40px rgba(0,0,0,0.3);">
+                <h5 style="font-weight:800;color:#161b97;margin-bottom:4px;font-size:1rem;">Scan to Upload Image</h5>
+                <p style="color:#64748b;font-size:0.75rem;margin-bottom:16px;">Product #${productId}</p>
+                <div id="qr-modal-container" style="display:inline-block;margin:0 auto;"></div>
+                <p style="color:#94a3b8;font-size:0.65rem;margin-top:12px;word-break:break-all;">${url}</p>
+                <button onclick="this.closest('div').parentElement.remove()" style="margin-top:16px;background:#161b97;color:white;border:none;padding:10px 30px;border-radius:10px;font-weight:700;font-size:0.8rem;cursor:pointer;">Close</button>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+        overlay.addEventListener('click', function(ev) {
+            if (ev.target === overlay) overlay.remove();
+        });
+
+        // Render large QR in modal
+        const modalContainer = document.getElementById('qr-modal-container');
+        new QRCode(modalContainer, {
+            text: url,
+            width: 200,
+            height: 200,
+            colorDark: '#161b97',
+            colorLight: '#ffffff',
+            correctLevel: QRCode.CorrectLevel.M
+        });
+    });
 
     document.addEventListener('DOMContentLoaded', function() {
         const tabs = document.querySelectorAll('.content-tab');

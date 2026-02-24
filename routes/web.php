@@ -110,8 +110,14 @@ use App\Livewire\ShopStaff\ShopStaffProductList;
 |
 */
 
+use App\Http\Controllers\ProductImageController;
+
 // Public routes
 Route::get('/', CustomLogin::class)->name('welcome')->middleware('guest');
+
+// Product Image Upload (public - accessible from phone via QR code scan)
+Route::get('/product-image/{identifier}', [ProductImageController::class, 'show'])->name('product-image.show');
+Route::post('/product-image/{identifier}/upload', [ProductImageController::class, 'upload'])->name('product-image.upload');
 
 // Custom logout route
 Route::post('/logout', function (Request $request) {
