@@ -572,15 +572,35 @@
         <div class="alert alert-error">
             <i class="bi bi-exclamation-triangle-fill"></i>
             <div>
-                <strong>Error!</strong><br>
+                <strong>⚠️ Upload Error!</strong><br>
                 {{ session('error') }}
-                @if(strpos(session('error'), 'Directory permissions') !== false || strpos(session('error'), 'Unable to write') !== false)
-                <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(220, 53, 69, 0.3);">
-                    <small>
-                        <strong>💡 Fix:</strong> Administrator should run in terminal:<br>
-                        <code style="background: rgba(0,0,0,0.2); padding: 4px 8px; border-radius: 4px; display: inline-block; margin-top: 4px;">
-                            php artisan images:fix-permissions
-                        </code>
+                @php
+                    $error = session('error');
+                    $isPermissionError = strpos($error, 'directory') !== false || 
+                                        strpos($error, 'writable') !== false ||
+                                        strpos($error, 'Unable to write') !== false;
+                @endphp
+                @if($isPermissionError)
+                <div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid rgba(220, 53, 69, 0.3);">
+                    <small style="display: block; margin-bottom: 8px;">
+                        <strong>🔧 To fix this, administrator should run ONE of these commands:</strong>
+                    </small>
+                    <div style="background: rgba(0,0,0,0.15); padding: 8px; border-radius: 6px; font-family: 'Courier New', monospace; font-size: 0.75rem; overflow-x: auto; margin-bottom: 8px;">
+                        <div style="margin-bottom: 6px;">
+                            <strong>Option 1 (Recommended):</strong><br>
+                            <code style="color: #10b981;">php artisan images:setup</code>
+                        </div>
+                        <div style="margin-bottom: 6px; border-top: 1px solid rgba(220, 53, 69, 0.2); padding-top: 6px;">
+                            <strong>Option 2:</strong><br>
+                            <code style="color: #10b981;">php artisan storage:link</code>
+                        </div>
+                        <div style="border-top: 1px solid rgba(220, 53, 69, 0.2); padding-top: 6px;">
+                            <strong>Option 3 (Manual SSH):</strong><br>
+                            <code style="color: #10b981;">chmod -R 777 public/images/</code>
+                        </div>
+                    </div>
+                    <small style="color: #ef4444; display: block;">
+                        💡 System will automatically try fallback methods. If error persists after running above commands, clear the browser cache and try again.
                     </small>
                 </div>
                 @endif

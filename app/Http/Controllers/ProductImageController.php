@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
 
 class ProductImageController extends Controller
 {
@@ -126,37 +128,50 @@ class ProductImageController extends Controller
 
             // Create the directory if it doesn't exist and ensure it's writable
             $uploadPath = public_path('images');
+            $useStorageFallback = false;
 
             // Step 1: Create directory if doesn't exist
             if (!is_dir($uploadPath)) {
                 try {
-                    if (!@mkdir($uploadPath, 0777, true)) {
-                        throw new \Exception('mkdir() failed');
-                    }
+                    @mkdir($uploadPath, 0777, true);
                     Log::info('Created upload directory', ['path' => $uploadPath]);
                 } catch (\Exception $e) {
-                    throw new \Exception("Failed to create upload directory: {$e->getMessage()}");
+                    Log::warning('Failed to create public images directory', ['error' => $e->getMessage()]);
                 }
             }
 
-            // Step 2: Ensure directory is writable
-            if (!is_writable($uploadPath)) {
-                // Try to fix permissions
-                try {
-                    @chmod($uploadPath, 0777);
-                    Log::info('Fixed directory permissions', ['path' => $uploadPath]);
-                } catch (\Exception $e) {
-                    Log::warning(
-                        'Could not fix directory permissions',
-                        ['path' => $uploadPath, 'error' => $e->getMessage()]
-                    );
-                }
+            // Step 2: Try different permission levels to make directory writable
+            $permissionAttempts = [0777, 0775, 0755];
+            $isWritable = false;
 
-                // Check again if writable
-                if (!is_writable($uploadPath)) {
-                    $perms = substr(sprintf('%o', fileperms($uploadPath)), -4);
-                    throw new \Exception("Directory not writable at: {$uploadPath} (permissions: {$perms})");
+            foreach ($permissionAttempts as $perm) {
+                if (@chmod($uploadPath, $perm)) {
+                    if (is_writable($uploadPath)) {
+                        $isWritable = true;
+                        Log::info('Directory is now writable', ['permissions' => decoct($perm)]);
+                        break;
+                    }
                 }
+            }
+
+            // Step 3: If still not writable, use Storage facade as fallback
+            if (!$isWritable) {
+                Log::warning('Could not make public images directory writable. Switching to storage fallback.', [
+                    'path' => $uploadPath,
+                    'current_perms' => decoct(fileperms($uploadPath) & 0777)
+                ]);
+                $useStorageFallback = true;
+                
+                // Create storage/app/public/images directory
+                $storageDir = storage_path('app/public/images');
+                if (!is_dir($storageDir)) {
+                    try {
+                        @mkdir($storageDir, 0777, true);
+                    } catch (\Exception $e) {
+                        Log::error('Failed to create storage images directory', ['error' => $e->getMessage()]);
+                    }
+                }
+                $uploadPath = $storageDir;
             }
 
             // Delete old image if it exists (not the default or empty)
@@ -245,7 +260,15 @@ class ProductImageController extends Controller
             @chmod($fullPath, 0666);
 
             // Save the relative path to the database
-            $imagePath = 'images/' . $filename;
+            // If using public path: 'images/filename'
+            // If using storage fallback: 'storage/images/filename' (via symlink)
+            if ($useStorageFallback) {
+                $imagePath = 'storage/images/' . $filename;
+                Log::info('Using storage fallback path', ['path' => $imagePath]);
+            } else {
+                $imagePath = 'images/' . $filename;
+            }
+
             $updated = DB::table('product_details')
                 ->where('id', $product->id)
                 ->update(['image' => $imagePath]);
@@ -262,6 +285,7 @@ class ProductImageController extends Controller
                 'identifier' => $identifier,
                 'image_path' => $imagePath,
                 'filename' => $filename,
+                'method' => $useStorageFallback ? 'storage_fallback' : 'public_direct',
             ]);
 
             $successMessage = 'Image uploaded successfully!';
@@ -283,11 +307,13 @@ class ProductImageController extends Controller
             // Build helpful error message based on the issue
             if (
                 strpos($baseError, 'directory not writable') !== false ||
-                strpos($baseError, 'Unable to write') !== false
+                strpos($baseError, 'Unable to write') !== false ||
+                strpos($baseError, 'Failed to save') !== false
             ) {
-                $errorMessage = 'Directory permissions issue. ';
-                $errorMessage .= 'Please ask your administrator to run: ';
-                $errorMessage .= 'php artisan images:fix-permissions';
+                $errorMessage = 'Upload directory issue detected. ';
+                $errorMessage .= 'System will try to use storage fallback. ';
+                $errorMessage .= 'If this persists, ask your administrator to run: ';
+                $errorMessage .= 'php artisan storage:link';
             } else {
                 $errorMessage = 'Failed to upload image: ' . $baseError;
             }
@@ -306,7 +332,7 @@ class ProductImageController extends Controller
                     'success' => false,
                     'message' => $errorMessage,
                     'error' => $baseError,
-                    'troubleshooting' => 'Run: php artisan images:fix-permissions'
+                    'troubleshooting' => 'Run: php artisan storage:link'
                 ], 500);
             }
 
