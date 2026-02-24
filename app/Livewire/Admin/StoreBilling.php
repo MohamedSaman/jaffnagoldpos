@@ -3236,8 +3236,8 @@ class StoreBilling extends Component
             str_contains($imagePath, 'placeholder') ||
             str_contains($imagePath, 'no-image')
         ) {
-            // Return a default image URL instead of SVG
-            return 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSrn_80I-lMAa0pVBNmFmQ7VI6l4rr74JW-eQ&s';
+            // Return default product image
+            return asset('images/product.jpg');
         }
 
         // Cache the processed image URL to prevent recalculation
@@ -3254,7 +3254,31 @@ class StoreBilling extends Component
             return $imagePath;
         }
 
-        // Otherwise, treat it as a local asset path
+        // Extract filename from storage paths (storage/images/ or storage/app/public/images/)
+        $filename = basename($imagePath);
+
+        // Check if file exists in storage/images/ (direct storage path)
+        if (file_exists(storage_path('images/' . $filename))) {
+            $url = url('/product-image-serve/' . $filename);
+            $imageCache[$cacheKey] = $url;
+            return $url;
+        }
+
+        // Check if file exists in storage/app/public/images/
+        if (file_exists(storage_path('app/public/images/' . $filename))) {
+            $url = url('/product-image-serve/' . $filename);
+            $imageCache[$cacheKey] = $url;
+            return $url;
+        }
+
+        // Check if file exists in public/images/
+        if (file_exists(public_path('images/' . $filename))) {
+            $url = asset('images/' . $filename);
+            $imageCache[$cacheKey] = $url;
+            return $url;
+        }
+
+        // Fallback: treat as asset path
         $assetUrl = asset($imagePath);
         $imageCache[$cacheKey] = $assetUrl;
         return $assetUrl;

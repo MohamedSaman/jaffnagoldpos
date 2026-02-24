@@ -533,17 +533,7 @@
 </head>
 
 <body>
-    <!-- Debug Console (fixed at bottom-right) -->
-    <div id="debugConsole" style="position: fixed; bottom: 0; right: 0; width: 100%; max-width: 450px; max-height: 280px; background: #0f172a; color: #10b981; border: 2px solid #10b981; border-radius: 8px 8px 0 0; padding: 12px; overflow-y: auto; z-index: 10000; font-family: 'Courier New', monospace; font-size: 11px; line-height: 1.5; display: none; box-shadow: 0 -4px 12px rgba(0,0,0,0.3);">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px solid #10b981; padding-bottom: 8px; font-weight: bold;">
-            <span>🔧 Upload Debug Console</span>
-            <button onclick="toggleDebugConsole()" style="background: none; border: none; color: #10b981; cursor: pointer; font-size: 16px; padding: 0;">✕</button>
-        </div>
-        <div id="debugOutput" style="max-height: 240px; overflow-y: auto; font-size: 10px;"></div>
-    </div>
 
-    <!-- Debug Toggle Button -->
-    <button id="debugToggle" onclick="toggleDebugConsole()" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; background: #161b97; color: #fff; border: none; width: 50px; height: 50px; border-radius: 50%; font-size: 20px; cursor: pointer; display: none; box-shadow: 0 4px 12px rgba(22, 27, 151, 0.3); transition: all 0.3s;" title="Toggle debug console">🔧</button>
 
     <!-- Header -->
     <div class="page-header">
@@ -657,7 +647,17 @@
                 @php
                 $rawImage = $product->getRawOriginal('image');
                 $isDefaultImage = !$rawImage || $rawImage === '' || $rawImage === 'images/product.jpg' || $rawImage === 'images/products/product.jpg';
-                $displayImage = $isDefaultImage ? 'images/product.jpg' : $rawImage;
+                if ($isDefaultImage) {
+                    $displayImageUrl = asset('images/product.jpg');
+                } else {
+                    // Handle storage/images/ paths via serve route
+                    if (strpos($rawImage, 'storage/images/') === 0) {
+                        $imgFilename = substr($rawImage, strlen('storage/images/'));
+                        $displayImageUrl = url('/product-image-serve/' . $imgFilename);
+                    } else {
+                        $displayImageUrl = asset($rawImage);
+                    }
+                }
                 @endphp
                 <div class="current-image-label">
                     Current Image
@@ -672,7 +672,7 @@
                     @endif
                 </div>
                 <div class="current-image-wrap" style="{{ $isDefaultImage ? 'border-color: #fbbf24; background: #fef3c7;' : 'border-color: #10b981; background: #f0fdf4;' }}">
-                    <img src="{{ asset($displayImage) }}?t={{ time() }}"
+                    <img src="{{ $displayImageUrl }}?t={{ time() }}"
                         alt="{{ $product->name }}"
                         onerror="this.onerror=null; this.src='{{ asset('images/product.jpg') }}';">
                     @if($isDefaultImage)
@@ -772,72 +772,6 @@
     </div>
 
     <script>
-        // ========== Debug Console ==========
-        const debugMode = true; // Set to false to disable debug console
-
-        function addLogEntry(message, data = null, type = 'log') {
-            const console_el = document.getElementById('debugConsole');
-            const output_el = document.getElementById('debugOutput');
-
-            if (!debugMode) return;
-
-            // Show debug console and toggle button
-            if (console_el) console_el.style.display = 'block';
-            const toggle = document.getElementById('debugToggle');
-            if (toggle) toggle.style.display = 'block';
-
-            let logText = message;
-            if (data) {
-                logText += ' ' + JSON.stringify(data).substring(0, 200);
-            }
-
-            const timeStr = new Date().toLocaleTimeString();
-            const entry = document.createElement('div');
-            entry.style.marginBottom = '4px';
-            entry.style.paddingBottom = '4px';
-            entry.style.borderBottom = '1px solid rgba(16, 185, 129, 0.2)';
-
-            const color = type === 'error' ? '#ef4444' : type === 'warn' ? '#f59e0b' : '#10b981';
-            entry.innerHTML = `<span style="color: #64748b;">[${timeStr}]</span> <span style="color: ${color};">${message}</span>`;
-
-            output_el.appendChild(entry);
-            output_el.scrollTop = output_el.scrollHeight;
-        }
-
-        function toggleDebugConsole() {
-            const console_el = document.getElementById('debugConsole');
-            if (console_el) {
-                console_el.style.display = console_el.style.display === 'none' ? 'block' : 'none';
-            }
-        }
-
-        // Override console methods to capture logs
-        const originalLog = console.log;
-        const originalError = console.error;
-        const originalWarn = console.warn;
-
-        console.log = function(...args) {
-            originalLog.apply(console, args);
-            const message = args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' ');
-            addLogEntry(message, null, 'log');
-        };
-
-        console.error = function(...args) {
-            originalError.apply(console, args);
-            const message = args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' ');
-            addLogEntry(message, null, 'error');
-        };
-
-        console.warn = function(...args) {
-            originalWarn.apply(console, args);
-            const message = args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' ');
-            addLogEntry(message, null, 'warn');
-        };
-
-        // Initial log
-        addLogEntry('✅ Upload page loaded');
-        // ========== End Debug Console ==========
-
         // Store the compressed file for form submission
         let compressedFile = null;
 

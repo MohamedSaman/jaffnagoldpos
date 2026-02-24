@@ -349,14 +349,15 @@ class ProductImageController extends Controller
         // Sanitize filename to prevent directory traversal
         $filename = basename($filename);
 
-        // Look in storage/app/public/images first
-        $storagePath = storage_path('app/public/images/' . $filename);
-
-        // Also check public/images as fallback
-        $publicPath = public_path('images/' . $filename);
+        // Check all possible storage locations
+        $storagePath        = storage_path('app/public/images/' . $filename); // storage/app/public/images/
+        $storageDirectPath  = storage_path('images/' . $filename);            // storage/images/
+        $publicPath         = public_path('images/' . $filename);              // public/images/
 
         if (file_exists($storagePath)) {
             $path = $storagePath;
+        } elseif (file_exists($storageDirectPath)) {
+            $path = $storageDirectPath;
         } elseif (file_exists($publicPath)) {
             $path = $publicPath;
         } else {
