@@ -46,26 +46,26 @@
             </div>
         </div>
 
-        <!-- Cash Late Payments Card - Pink -->
+        <!-- Cash Late Payments Card - Blue -->
         <div class=" col-xl-3 col-md-6 mb-2">
-                                    <div class="card gradient-card" style="background: linear-gradient(135deg, #d81b60 0%, #ec407a 100%);">
-                                        <div class="card-body text-white">
-                                            <div class="d-flex justify-content-between align-items-start mb-2">
-                                                <h6 class="text-white-50 mb-0" style="font-size: 0.85rem; font-weight: 500; letter-spacing: 1px;">⏰ CHEQUE PAYMENTS</h6>
-                                            </div>
-                                            <h2 class="fw-bold mb-0" ">Rs. {{ number_format($chequeIncome, 2) }}</h2>
+            <div class="card gradient-card" style="background: linear-gradient(135deg, #161b97 0%, #12167d 100%);">
+                <div class="card-body text-white">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h6 class="text-white-50 mb-0" style="font-size: 0.85rem; font-weight: 500; letter-spacing: 1px;">⏰ CHEQUE PAYMENTS</h6>
+                    </div>
+                    <h2 class="fw-bold mb-0">Rs. {{ number_format($chequeIncome, 2) }}</h2>
                 </div>
             </div>
         </div>
 
-        <!-- Cash Late Payments Card - Cyan -->
+        <!-- Cash Late Payments Card - Blue -->
         <div class=" col-xl-3 col-md-6 mb-2">
-                                                <div class="card gradient-card" style="background: linear-gradient(135deg, #00acc1 0%, #26c6da 100%);">
-                                                    <div class="card-body text-white">
-                                                        <div class="d-flex justify-content-between align-items-start mb-2">
-                                                            <h6 class="text-white-50 mb-0" style="font-size: 0.85rem; font-weight: 500; letter-spacing: 1px;">💰 CASH LATE PAYMENT</h6>
-                                                        </div>
-                                                        <h2 class="fw-bold mb-0" ">Rs. {{ number_format($cashLatePayments, 2) }}</h2>
+            <div class="card gradient-card" style="background: linear-gradient(135deg, #161b97 0%, #12167d 100%);">
+                <div class="card-body text-white">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h6 class="text-white-50 mb-0" style="font-size: 0.85rem; font-weight: 500; letter-spacing: 1px;">💰 CASH LATE PAYMENT</h6>
+                    </div>
+                    <h2 class="fw-bold mb-0">Rs. {{ number_format($cashLatePayments, 2) }}</h2>
                 </div>
             </div>
         </div>
@@ -73,41 +73,41 @@
 
     <!-- Second Row -->
     <div class=" row mb-0">
-                                                            <!-- Today's Deposits Card - Dark Purple -->
-                                                            <div class="col-xl-3 col-md-6 mb-2">
-                                                                <div class="card gradient-card" style="background: linear-gradient(135deg, #7b1fa2 0%, #9c27b0 100%);">
-                                                                    <div class="card-body text-white">
-                                                                        <div class="d-flex justify-content-between align-items-start mb-2">
-                                                                            <h6 class="text-white-50 mb-0" style="font-size: 0.85rem; font-weight: 500; letter-spacing: 1px;">� TODAY DEPOSITS</h6>
-                                                                        </div>
-                                                                        <h2 class="fw-bold mb-0">Rs. {{ number_format($todayDeposits, 2) }}</h2>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
+        <!-- Today's Deposits Card - Blue -->
+        <div class="col-xl-3 col-md-6 mb-2">
+            <div class="card gradient-card" style="background: linear-gradient(135deg, #161b97 0%, #12167d 100%);">
+                <div class="card-body text-white">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h6 class="text-white-50 mb-0" style="font-size: 0.85rem; font-weight: 500; letter-spacing: 1px;">📥 TODAY DEPOSITS</h6>
+                    </div>
+                    <h2 class="fw-bold mb-0">Rs. {{ number_format($todayDeposits, 2) }}</h2>
+                </div>
+            </div>
+        </div>
 
-                                                            <!-- Expenses Card - Orange -->
-                                                            <div class="col-xl-3 col-md-6 mb-2">
-                                                                <div class="card gradient-card" style="background: linear-gradient(135deg, #f57c00 0%, #ff9800 100%);">
-                                                                    <div class="card-body text-white">
-                                                                        <div class="d-flex justify-content-between align-items-start mb-2">
-                                                                            <h6 class="text-white-50 mb-0" style="font-size: 0.85rem; font-weight: 500; letter-spacing: 1px;">� EXPENSES</h6>
-                                                                        </div>
-                                                                        <h2 class="fw-bold mb-0">Rs. {{ number_format($todayExpenses, 2) }}</h2>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
+        <!-- Expenses Card - Red -->
+        <div class="col-xl-3 col-md-6 mb-2">
+            <div class="card gradient-card" style="background: linear-gradient(135deg, #f30b1f 0%, #d00000 100%);">
+                <div class="card-body text-white">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h6 class="text-white-50 mb-0" style="font-size: 0.85rem; font-weight: 500; letter-spacing: 1px;">🏮 EXPENSES</h6>
+                    </div>
+                    <h2 class="fw-bold mb-0">Rs. {{ number_format($todayExpenses, 2) }}</h2>
+                </div>
+            </div>
+        </div>
 
-                                                            <!-- Return Amount Card - Red -->
-                                                            <div class="col-xl-3 col-md-6 mb-2">
-                                                                <div class="card gradient-card" style="background: linear-gradient(135deg, #c62828 0%, #e53935 100%);">
-                                                                    <div class="card-body text-white">
-                                                                        <div class="d-flex justify-content-between align-items-start mb-2">
-                                                                            <h6 class="text-white-50 mb-0" style="font-size: 0.85rem; font-weight: 500; letter-spacing: 1px;">↩️ RETURN AMOUNT</h6>
-                                                                        </div>
-                                                                        <h2 class="fw-bold mb-0">Rs. {{ number_format($todayReturns, 2) }}</h2>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
+        <!-- Return Amount Card - Red -->
+        <div class="col-xl-3 col-md-6 mb-2">
+            <div class="card gradient-card" style="background: linear-gradient(135deg, #f30b1f 0%, #d00000 100%);">
+                <div class="card-body text-white">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h6 class="text-white-50 mb-0" style="font-size: 0.85rem; font-weight: 500; letter-spacing: 1px;">↩️ RETURN AMOUNT</h6>
+                    </div>
+                    <h2 class="fw-bold mb-0">Rs. {{ number_format($todayReturns, 2) }}</h2>
+                </div>
+            </div>
+        </div>
 
                                                             <!-- Current Total Cash Card - Dark Gray -->
                                                             <div class="col-xl-3 col-md-6 mb-2">
@@ -154,7 +154,7 @@
                                                                             <td>{{ $payment->sale->invoice_date ?? '-' }}</td>
                                                                             <td>{{ \Carbon\Carbon::parse($payment->payment_date)->format('Y-m-d H:i') }}</td>
                                                                             <td class="text-end pe-4">
-                                                                                <span class="fw-bold text-success">Rs. {{ number_format($payment->amount, 2) }}</span>
+                                                                                <span class="fw-bold text-jg-blue">Rs. {{ number_format($payment->amount, 2) }}</span>
                                                                             </td>
                                                                         </tr>
                                                                         @empty

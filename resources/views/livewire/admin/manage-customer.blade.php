@@ -20,10 +20,10 @@
                 </div>
             </div>
             <div class="d-flex gap-2">
-                <button class="btn" style="background-color: #17a2b8; color: white; border-radius: 8px; padding: 0.6rem 1.2rem; font-weight: 500;" wire:click="openImportModal">
+                <button class="btn btn-jg-primary" style="background-color: var(--primary) !important;" wire:click="openImportModal">
                     <i class="bi bi-download me-2"></i> Import Excel
                 </button>
-                <button class="btn btn-primary" wire:click="createCustomer" style="background-color: #ff8c42; border-color: #ff8c42; border-radius: 8px; padding: 0.6rem 1.2rem; font-weight: 500;">
+                <button class="btn btn-jg-primary" wire:click="createCustomer">
                     <i class="bi bi-plus-lg me-2"></i> Add Customer
                 </button>
             </div>
@@ -299,10 +299,7 @@
                     @endif
 
                     <div class="d-grid mt-3">
-                        <button type="submit" class="btn" style="background: linear-gradient(135deg, #ff8c42 0%, #ff6b6b 100%); color: white; border: none; border-radius: 8px; padding: 0.75rem; font-weight: 600; font-size: 1.05rem; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);" 
-                                onmouseover="this.style.boxShadow='0 6px 20px rgba(255, 107, 107, 0.5)'; this.style.transform='translateY(-2px)';" 
-                                onmouseout="this.style.boxShadow='0 4px 12px rgba(255, 107, 107, 0.3)'; this.style.transform='translateY(0)';" 
-                                wire:loading.attr="disabled">
+                        <button type="submit" class="btn btn-jg-primary py-3">
                             <i class="bi bi-check2-circle me-2"></i>
                             <span wire:loading.remove>Save Customer</span>
                             <span wire:loading>
@@ -423,10 +420,7 @@
                         @endif
 
                         <div class="d-grid mt-3">
-                            <button type="submit" class="btn" style="background: linear-gradient(135deg, #ff8c42 0%, #ff6b6b 100%); color: white; border: none; border-radius: 8px; padding: 0.75rem; font-weight: 600; font-size: 1.05rem; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);" 
-                                    onmouseover="this.style.boxShadow='0 6px 20px rgba(255, 107, 107, 0.5)'; this.style.transform='translateY(-2px)';" 
-                                    onmouseout="this.style.boxShadow='0 4px 12px rgba(255, 107, 107, 0.3)'; this.style.transform='translateY(0)';" 
-                                    wire:loading.attr="disabled">
+                            <button type="submit" class="btn btn-jg-primary py-3" wire:loading.attr="disabled">
                                 <i class="bi bi-check2-circle me-2"></i>
                                 <span wire:loading.remove>Update Customer</span>
                                 <span wire:loading>
@@ -446,7 +440,7 @@
     <div class="modal fade show d-block" tabindex="-1" aria-labelledby="viewDetailsModalLabel" aria-hidden="false" style="background-color: rgba(0,0,0,0.5);">
         <div class="modal-dialog modal-dialog-centered" style="max-width: 1100px;">
             <div class="modal-content">
-                <div class="modal-header" style="background: linear-gradient(135deg, #4361ee 0%, #3f37c9 100%); border-radius: 12px 12px 0 0;">
+                <div class="modal-header">
                     <div class="d-flex align-items-center">
                         <div class="bg-white bg-opacity-25 rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 45px; height: 45px;">
                             <i class="bi bi-person-fill text-white fs-5"></i>
@@ -1074,8 +1068,8 @@
 
     .form-control:focus,
     .form-select:focus {
-        box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
-        border-color: #4361ee;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        border: 1px solid var(--primary);
     }
 
     .btn {
@@ -1086,13 +1080,13 @@
     }
 
     .btn-primary {
-        background-color: #4361ee;
-        border-color: #4361ee;
+        background-color: var(--primary);
+        border-color: var(--primary);
     }
 
     .btn-primary:hover {
-        background-color: #3f37c9;
-        border-color: #3f37c9;
+        background-color: #12167d;
+        border-color: #12167d;
         transform: translateY(-2px);
     }
 
@@ -1133,7 +1127,7 @@
     }
 
     .bg-primary {
-        background-color: #4361ee !important;
+        background-color: var(--primary) !important;
     }
 
     .border-bottom {
@@ -1161,14 +1155,14 @@
     }
 
     .customer-tab:hover {
-        color: #4361ee;
-        background: rgba(67, 97, 238, 0.08);
+        color: var(--primary);
+        background: rgba(22, 27, 151, 0.08);
     }
 
     .customer-tab.active {
-        color: #4361ee !important;
+        color: var(--primary) !important;
         background: white !important;
-        border-bottom: 3px solid #4361ee !important;
+        border-bottom: 3px solid var(--primary) !important;
         font-weight: 600;
     }
 
