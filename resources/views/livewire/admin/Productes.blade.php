@@ -922,6 +922,7 @@
                                         }
                                         } else {
                                         $modalImageUrl = $modalDefaultImage;
+                                        }
                                         @endphp
                                         <img src="{{ $modalImageUrl }}"
                                             alt="Product Image" class="img-fluid rounded-3 shadow-sm product-image"
