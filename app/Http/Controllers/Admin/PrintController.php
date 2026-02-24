@@ -12,13 +12,22 @@ class PrintController extends Controller
 {
     public function printSale($id)
     {
-        // Load sale with all necessary relationships including returns
-        $sale = Sale::with(['customer', 'items.product', 'payments', 'returns' => function ($q) {
+        // Load sale with all necessary relationships including returns and deliverySale
+        $sale = Sale::with(['customer', 'items.product', 'payments', 'deliverySale', 'returns' => function ($q) {
             $q->with('product');
         }])->findOrFail($id);
 
         // Return the print view
         return view('components.sale-receipt-print', compact('sale'));
+    }
+
+    public function printDeliveryLabel($id)
+    {
+        // Load sale with delivery details
+        $sale = Sale::with(['customer', 'deliverySale'])->findOrFail($id);
+
+        // Return the delivery label view
+        return view('admin.sales.delivery-label', compact('sale'));
     }
 
     public function downloadSale($id)

@@ -190,6 +190,7 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
         Route::get('/admin/staff/{staffId}/reentry', \App\Livewire\Admin\StockReentry::class)->name('staff.reentry');
         Route::get('/store-billing', StoreBilling::class)->name('store-billing');
         Route::get('/print/sale/{id}', [PrintController::class, 'printSale'])->name('print.sale');
+        Route::get('/print/delivery-label/{id}', [PrintController::class, 'printDeliveryLabel'])->name('print.delivery-label');
         Route::get('/print/sale/{id}/download', [PrintController::class, 'downloadSale'])->name('print.sale.download');
         Route::get('/print/quotation/{id}', [PrintController::class, 'printQuotation'])->name('quotation.print');
         Route::get('/due-payments', AdminDuePayments::class)->name('due-payments');
@@ -265,6 +266,7 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
         Route::get('/sales-list', \App\Livewire\Staff\StaffSalesList::class)->name('sales-list');
         Route::get('/store-billing', StoreBilling::class)->name('store-billing');
         Route::get('/print/sale/{id}', [PrintController::class, 'printSale'])->name('print.sale');
+        Route::get('/print/delivery-label/{id}', [PrintController::class, 'printDeliveryLabel'])->name('print.delivery-label');
         Route::get('/print/sale/{id}/download', [PrintController::class, 'downloadSale'])->name('print.sale.download');
 
         // Customers
