@@ -648,15 +648,15 @@
                 $rawImage = $product->getRawOriginal('image');
                 $isDefaultImage = !$rawImage || $rawImage === '' || $rawImage === 'images/product.jpg' || $rawImage === 'images/products/product.jpg';
                 if ($isDefaultImage) {
-                    $displayImageUrl = asset('images/product.jpg');
+                $displayImageUrl = asset('images/product.jpg');
                 } else {
-                    // Handle storage/images/ paths via serve route
-                    if (strpos($rawImage, 'storage/images/') === 0) {
-                        $imgFilename = substr($rawImage, strlen('storage/images/'));
-                        $displayImageUrl = url('/product-image-serve/' . $imgFilename);
-                    } else {
-                        $displayImageUrl = asset($rawImage);
-                    }
+                // Handle storage/images/ paths via serve route
+                if (strpos($rawImage, 'storage/images/') === 0) {
+                $imgFilename = substr($rawImage, strlen('storage/images/'));
+                $displayImageUrl = url('/product-image-serve/' . $imgFilename);
+                } else {
+                $displayImageUrl = asset($rawImage);
+                }
                 }
                 @endphp
                 <div class="current-image-label">
