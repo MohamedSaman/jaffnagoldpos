@@ -574,6 +574,16 @@
             <div>
                 <strong>Error!</strong><br>
                 {{ session('error') }}
+                @if(strpos(session('error'), 'Directory permissions') !== false || strpos(session('error'), 'Unable to write') !== false)
+                    <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(220, 53, 69, 0.3);">
+                        <small>
+                            <strong>💡 Fix:</strong> Administrator should run in terminal:<br>
+                            <code style="background: rgba(0,0,0,0.2); padding: 4px 8px; border-radius: 4px; display: inline-block; margin-top: 4px;">
+                                php artisan images:fix-permissions
+                            </code>
+                        </small>
+                    </div>
+                @endif
             </div>
         </div>
         @endif
