@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Delivery Label - {{ $sale->deliverySale->delivery_barcode ?? 'N/A' }}</title>
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bree+Serif&family=Fjalla+One&display=swap" rel="stylesheet">
 
     <style>
         * {
@@ -22,7 +25,7 @@
         body {
             width: 4in;
             height: 6in;
-            font-family: sans-serif;
+            font-family: "Bree Serif", serif;
             color: #000;
             overflow: hidden;
             -webkit-print-color-adjust: exact;
@@ -50,33 +53,40 @@
         .header {
             display: flex;
             justify-content: space-between;
+            align-items: center;
             padding: 6px 10px;
             border-bottom: 2px solid #000;
         }
 
         .company-name {
-            font-size: 18px;
+            flex: 1;
+            font-size: 24px;
             font-weight: 900;
             line-height: 1.1;
+            text-align: center;
         }
 
         .company-name span {
-            font-size: 12px;
+            font-size: 14px;
             font-weight: 600;
+            display: block;
             text-align: center;
+            letter-spacing: 3px;
         }
 
         .meta {
             text-align: right;
             font-weight: 800;
+            position: absolute;
+            right: 10px;
         }
 
         .meta .method {
-            font-size: 16px;
+            font-size: 20px;
         }
 
         .meta .date {
-            font-size: 12px;
+            font-size: 14px;
             margin-top: 2px;
         }
 
@@ -94,15 +104,17 @@
         }
 
         .to-label {
-            font-size: 15px;
+            font-size: 18px;
             font-weight: bold;
-            margin-bottom: 4px;
+            margin-bottom: 2px;
         }
 
-        .address {
+        .customer-line {
             font-size: 14px;
-            line-height: 1.3;
-            white-space: pre-wrap;
+            font-weight: 500;
+            line-height: 1.5;
+            display: block;
+            margin-left: 20px;
         }
 
         .barcode-section {
@@ -121,7 +133,7 @@
         }
 
         .barcode-text {
-            font-size: 10px;
+            font-size: 12px;
             font-weight: 700;
             margin-top: 3px;
         }
@@ -139,7 +151,7 @@
 
         .price-row {
             background: #d1d1d1;
-            font-size: 24px;
+            font-size: 34px;
             font-weight: 900;
         }
 
@@ -165,12 +177,12 @@
 
         /* COD black label style */
         .cod-box {
-            width: 45px;
-            height: 30px;
+            width: 58px;
+            height: 38px;
             background: #000;
             color: #fff;
             font-weight: 900;
-            font-size: 12px;
+            font-size: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -178,13 +190,14 @@
 
         /* FOOTER */
         .footer {
-            padding: 6px;
-            font-size: 10px;
-            font-weight: 600;
+            padding: 2px 6px;
+            font-size: 14px;
+            font-weight: 700;
             text-align: center;
             display: flex;
             flex-direction: column;
             justify-content: center;
+            line-height: 1.4;
         }
     </style>
 </head>
@@ -211,13 +224,21 @@
             <!-- CUSTOMER + BARCODE -->
             <div class="row">
                 <div class="customer-section">
-                    <div class="to-label">
-                        TO : {{ $sale->deliverySale->customer_details ?? $sale->customer->address ?? '' }}
-
-                    </div>
-                    <div class="address">
-
-                    </div>
+                    <div class="to-label">TO :</div>
+                    @php
+                        $details = $sale->deliverySale->customer_details ?? $sale->customer->address ?? '';
+                        // Try to split by common delimiters: pipe, comma, period+space, or newlines
+                        $parts = preg_split('/\s*[\|]\s*|\n|\r\n/', $details);
+                        // If only one part, try splitting by period followed by space and digits (phone after name)
+                        if (count($parts) <= 1) {
+                            $parts = preg_split('/(?<=\D)[\.\,]\s*(?=\d)/', $details);
+                        }
+                    @endphp
+                    @foreach($parts as $part)
+                        @if(trim($part))
+                            <span class="customer-line">{{ trim($part) }}</span>
+                        @endif
+                    @endforeach
                 </div>
 
                 <div class="barcode-section">

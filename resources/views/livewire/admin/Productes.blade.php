@@ -478,6 +478,17 @@
                 border-right: none;
             }
         }
+        /* Barcode styles */
+        .product-barcode {
+            max-width: 140px;
+            height: auto;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .product-barcode:hover {
+            transform: scale(1.05);
+        }
     </style>
     @endpush
 
@@ -552,11 +563,8 @@
                                     <thead class="table-light">
                                         <tr>
                                             <th class="ps-4">No</th>
-                                            <th>Code</th>
+                                            <th>Barcode</th>
                                             <th>Product Name</th>
-
-                                            <th>Brand</th>
-                                            <th>Model</th>
                                             @if ($isStaff)
                                             <th>Wholesale Price</th>
                                             @endif
@@ -576,17 +584,14 @@
                                                 <span class="fw-medium text-dark">{{ $loop->iteration }}</span>
                                             </td>
                                             <td wire:click="viewProductDetails({{ $product->id }})">
-                                                <span class="fw-medium text-dark">{{ $product->code }}</span>
+                                                @if($product->barcode)
+                                                <svg class="product-barcode" data-barcode="{{ $product->barcode }}"></svg>
+                                                @else
+                                                <span class="text-muted">—</span>
+                                                @endif
                                             </td>
                                             <td wire:click="viewProductDetails({{ $product->id }})">
                                                 <span class="fw-medium text-dark">{{ $product->product_name }}</span>
-                                            </td>
-
-                                            <td wire:click="viewProductDetails({{ $product->id }})">
-                                                <span class="fw-medium text-dark">{{ $product->brand }}</span>
-                                            </td>
-                                            <td wire:click="viewProductDetails({{ $product->id }})">
-                                                <span class="fw-medium text-dark">{{ $product->model }}</span>
                                             </td>
                                             @if ($isStaff)
                                             <td wire:click="viewProductDetails({{ $product->id }})">
@@ -2331,7 +2336,43 @@
 </div>
 
 @push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
 <script>
+    function renderBarcodes() {
+        document.querySelectorAll('svg.product-barcode[data-barcode]').forEach(function(svg) {
+            if (svg.childNodes.length === 0) {
+                try {
+                    JsBarcode(svg, svg.dataset.barcode, {
+                        format: 'CODE128',
+                        width: 1.2,
+                        height: 35,
+                        displayValue: true,
+                        fontSize: 12,
+                        margin: 2,
+                        background: 'transparent',
+                        lineColor: '#1a1a2e'
+                    });
+                } catch (e) {
+                    svg.innerHTML = '<text x="0" y="15" font-size="12" fill="#666">' + svg.dataset.barcode + '</text>';
+                }
+            }
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        renderBarcodes();
+    });
+
+    document.addEventListener('livewire:navigated', function() {
+        renderBarcodes();
+    });
+
+    if (typeof Livewire !== 'undefined') {
+        Livewire.hook('morph.updated', () => {
+            setTimeout(renderBarcodes, 50);
+        });
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         const tabs = document.querySelectorAll('.content-tab');
         tabs.forEach(tab => {

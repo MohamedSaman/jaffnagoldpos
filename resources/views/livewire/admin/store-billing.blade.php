@@ -923,7 +923,7 @@
                 <div style="border-bottom: 1px dashed #000; margin: 8px 0;"></div>
 
                 <!-- Receipt Meta -->
-                <div style="font-size: 11px;">
+                <div style="font-size: 11px; font-weight: bold;">
                     <div style="display: flex; margin-bottom: 2px;">
                         <span style="width: 85px;">Receipt No</span>
                         <span>: {{ $createdSale->invoice_number }}</span>
@@ -940,15 +940,6 @@
                         <span style="width: 85px;">Cashier</span>
                         <span>: {{ $createdSale->user->name ?? 'Admin' }}</span>
                     </div>
-                    <div><strong>Type:</strong> {{ ucfirst($createdSale->customer_type) }}</div>
-                    @else
-                    <div><strong>Name:</strong> Walk-in Customer</div>
-                    @endif
-                </div>
-                <div style="font-size:11px; text-align:right; line-height:1.7;">
-                    <div><strong>Invoice:</strong> {{ $createdSale->invoice_number }}</div>
-                    <div><strong>Date:</strong> {{ $createdSale->created_at->format('d/m/Y h:i A') }}</div>
-                    <div><strong>Status:</strong> <span style="color:#161b97; font-weight:800;">{{ ucfirst($createdSale->payment_status ?? 'Paid') }}</span></div>
                 </div>
 
                 <div style="border-bottom: 1px dashed #000; margin: 8px 0;"></div>
@@ -966,33 +957,10 @@
                     @foreach($createdSale->items as $item)
                     <div style="display: flex; margin-bottom: 4px;">
                         <span style="flex: 2;">{{ $item->product_name }}</span>
-                        <span style="flex: 0.5; text-align: center;">{{ $item->quantity }}</span>
-                        <span style="flex: 1; text-align: right;">{{ number_format($item->unit_price, 0) }}</span>
+                        <span style="flex: 0.5; text-align: center; font-weight: bold;">{{ $item->quantity }}</span>
+                        <span style="flex: 1; text-align: right; font-weight: bold;">{{ number_format($item->unit_price, 0) }}</span>
                     </div>
                     @endforeach
-                </tbody>
-            </table>
-
-            {{-- Payment Info + Order Summary --}}
-            @php
-                $originalSubtotal = $createdSale->items->sum(fn($i) => $i->unit_price * $i->quantity);
-                $totalDiscountRs = $originalSubtotal - $createdSale->total_amount;
-                $discountPercentage = $originalSubtotal > 0 ? ($totalDiscountRs / $originalSubtotal) * 100 : 0;
-            @endphp
-            <div style="display:flex; gap:16px; border-top:2px solid #1e293b; padding-top:10px;">
-                {{-- Payment Info --}}
-                <div style="flex:1; font-size:11px;">
-                    <div style="font-size:9px; font-weight:900; text-transform:uppercase; letter-spacing:2px; color:#94a3b8; margin-bottom:6px;">Payment Information</div>
-                    @if($createdSale->payments && $createdSale->payments->count() > 0)
-                        @foreach($createdSale->payments as $payment)
-                        <div style="padding:6px 8px; border-left:3px solid {{ $payment->is_completed ? '#161b97' : '#fbbf24' }}; background:#f8fafc; margin-bottom:4px; border-radius:0 4px 4px 0;">
-                            <div><strong>{{ $payment->is_completed ? 'Paid' : 'Scheduled' }}:</strong> Rs.{{ number_format($payment->amount, 2) }}</div>
-                            <div style="color:#64748b;">{{ ucfirst(str_replace('_', ' ', $payment->payment_method)) }}</div>
-                        </div>
-                        @endforeach
-                    @else
-                        <div style="color:#94a3b8;">No payment info available</div>
-                    @endif
                 </div>
 
                 <div style="border-bottom: 1px dashed #000; margin: 8px 0;"></div>
@@ -1003,12 +971,12 @@
                         $originalSubtotal = $createdSale->items->sum(fn($i) => $i->unit_price * $i->quantity);
                         $totalDiscountRs = $createdSale->discount_amount;
                     @endphp
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 2px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 2px; font-weight: bold;">
                         <span>Sub Total</span>
                         <span>{{ number_format($originalSubtotal, 0) }}</span>
                     </div>
                     @if($totalDiscountRs > 0)
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 2px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 2px; font-weight: bold;">
                         <span>Discount</span>
                         <span>-{{ number_format($totalDiscountRs, 0) }}</span>
                     </div>
@@ -1026,16 +994,25 @@
 
                 <!-- Payment Method -->
                 <div style="font-size: 11px; margin-bottom: 5px;">
-                    @if($createdSale->payment_type == 'full')
-                    <div style="display: flex;">
-                        <span style="width: 110px;">Payment Method</span>
-                        <span>: CASH</span>
-                    </div>
+                    @if($createdSale->payments && $createdSale->payments->count() > 0)
+                        @foreach($createdSale->payments as $payment)
+                        <div style="display: flex; margin-bottom: 2px;">
+                            <span style="width: 110px;font-weight: bold;">Payment Method</span>
+                            <span>: {{ strtoupper(str_replace('_', ' ', $payment->payment_method)) }}</span>
+                        </div>
+                        @endforeach
                     @else
-                    <div style="display: flex;">
-                        <span style="width: 110px;">Payment Method</span>
-                        <span>: ONLINE TRANSFER</span>
-                    </div>
+                        @if($createdSale->payment_type == 'full')
+                        <div style="display: flex;">
+                            <span style="width: 110px;font-weight: bold;">Payment Method</span>
+                            <span>: CASH</span>
+                        </div>
+                        @else
+                        <div style="display: flex;">
+                            <span style="width: 110px;font-weight: bold;">Payment Method</span>
+                            <span>: ONLINE TRANSFER</span>
+                        </div>
+                        @endif
                     @endif
                     <div style="border-bottom: 1px dashed #000; margin: 8px 0;"></div>
                 </div>
@@ -1215,6 +1192,7 @@
                         font-family: 'Courier New', Courier, monospace; 
                         font-size: 11px;
                         color: #000;
+                        font-weight: bold;
                         padding: 0;
                     }
                     .receipt-container {
