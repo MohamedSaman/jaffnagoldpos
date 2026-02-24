@@ -220,6 +220,15 @@
             display: none;
         }
 
+        .sidebar.collapsed .sidebar-header {
+            justify-content: center !important;
+            padding: 15px 10px;
+        }
+
+        .sidebar.collapsed .logo-img {
+            margin-right: 0 !important;
+        }
+
         .sidebar.collapsed .nav-link.dropdown-toggle::after {
             display: flex !important;
             margin-left: 0;
@@ -242,15 +251,20 @@
         }
 
         .sidebar-header {
-            padding: 15px 15px 0;
-            margin-bottom: 2px;
+            padding: 12px 15px;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
         }
 
         .sidebar-title {
-            font-weight: 600;
-            font-size: 1.2rem;
-            color: #1e293b;
-            letter-spacing: -0.02em;
+            font-weight: 800;
+            font-size: 1.25rem;
+            color: var(--danger);
+            letter-spacing: -0.03em;
+            white-space: nowrap;
+            margin-bottom: 0;
+            text-transform: uppercase;
         }
 
         /* Navigation styles */
@@ -535,9 +549,10 @@
     <div class="d-flex">
         <!-- Sidebar -->
         <div class="sidebar">
-            <div class="sidebar-header d-flex justify-content-center">
+            <div class="sidebar-header">
+                <img src="{{ asset('images/jg.png') }}" alt="Logo" width="60" class="logo-img me-3">
                 <div class="sidebar-title">
-                    <img src="{{ asset('images/jg.png') }}" alt="Logo" width="120">
+                    Jaffna Gold
                 </div>
             </div>
             <div class="sidebar-separator"></div>
