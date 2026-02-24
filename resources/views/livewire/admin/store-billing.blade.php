@@ -906,32 +906,36 @@
         </div>
 
         {{-- Invoice Content --}}
-        <div class="p-5 bg-white" id="printableInvoice">
-            {{-- Company Header --}}
-            <div style="text-align:center; border-bottom:2px solid #1e293b; padding-bottom:10px; margin-bottom:10px;">
-                <div style="font-size:20px; font-weight:900; letter-spacing:2px; color:#1e293b;">JaffnaGold (PVT) LTD</div>
-                <div style="font-size:10px; color:#94a3b8; font-weight:700; letter-spacing:3px; text-transform:uppercase;">Gold Shop</div>
-                <div style="font-size:11px; font-weight:700; color:#334155; margin-top:3px;">421/2, Doolmala, Thihariya, Kalagedihena.</div>
-                <div style="font-size:11px; color:#334155;"><strong>TEL:</strong> (077) 9752950 &nbsp;&bull;&nbsp; <strong>EMAIL:</strong> JaffnaGoldlanka@gmail.com</div>
-            </div>
-
-            {{-- Customer / Invoice Meta --}}
-            <div style="display:flex; justify-content:space-between; margin-bottom:10px; gap:12px;">
-                <div style="font-size:11px; line-height:1.7;">
-                    @if($createdSale->customer)
-                    <div><strong>Name:</strong>
-                        @if($createdSale->customer->name === 'Walking Customer' && $createdSale->walking_customer_name)
-                            {{ $createdSale->walking_customer_name }}
-                        @else
-                            {{ $createdSale->customer->name }}
-                        @endif
+        <div class="p-2 bg-white flex justify-center" id="printableInvoice">
+            <div class="receipt-container" style="width: 72mm; padding: 0 4mm; background: white; color: #000; font-family: 'Courier New', Courier, monospace; line-height: 1.2; font-size: 12px; box-sizing: border-box;">
+                <!-- Thermal Receipt Header -->
+                <div style="text-align:center; font-weight:bold;">
+                    <div style="border-top: 2px solid #000; border-bottom: 2px solid #000; padding: 5px 0; margin-bottom: 5px; font-size: 16px; text-transform: uppercase;">
+                        JAFFNA GOLD COVERING
                     </div>
-                    <div><strong>Phone:</strong>
-                        @if($createdSale->customer->name === 'Walking Customer' && $createdSale->walking_customer_phone)
-                            {{ $createdSale->walking_customer_phone }}
-                        @else
-                            {{ $createdSale->customer->phone ?? '—' }}
-                        @endif
+                    <div style="font-size: 11px;">237 KKS ROAD, JAFFNA</div>
+                    <div style="font-size: 11px;">Tel: 0761919650</div>
+                </div>
+
+                <div style="border-bottom: 1px dashed #000; margin: 8px 0;"></div>
+
+                <!-- Receipt Meta -->
+                <div style="font-size: 11px;">
+                    <div style="display: flex; margin-bottom: 2px;">
+                        <span style="width: 85px;">Receipt No</span>
+                        <span>: {{ $createdSale->invoice_number }}</span>
+                    </div>
+                    <div style="display: flex; margin-bottom: 2px;">
+                        <span style="width: 85px;">Date</span>
+                        <span>: {{ $createdSale->created_at->format('d-m-Y') }}</span>
+                    </div>
+                    <div style="display: flex; margin-bottom: 2px;">
+                        <span style="width: 85px;">Time</span>
+                        <span>: {{ $createdSale->created_at->format('h:i A') }}</span>
+                    </div>
+                    <div style="display: flex; margin-bottom: 2px;">
+                        <span style="width: 85px;">Cashier</span>
+                        <span>: {{ $createdSale->user->name ?? 'Admin' }}</span>
                     </div>
                     <div><strong>Type:</strong> {{ ucfirst($createdSale->customer_type) }}</div>
                     @else
@@ -943,41 +947,25 @@
                     <div><strong>Date:</strong> {{ $createdSale->created_at->format('d/m/Y h:i A') }}</div>
                     <div><strong>Status:</strong> <span style="color:#161b97; font-weight:800;">{{ ucfirst($createdSale->payment_status ?? 'Paid') }}</span></div>
                 </div>
-            </div>
 
-            {{-- Items Table --}}
-            <table style="width:100%; border-collapse:collapse; font-size:11px; margin-bottom:12px;">
-                <thead>
-                    <tr style="border-bottom:2px solid #1e293b; border-top:1px solid #e2e8f0;">
-                        <th style="padding:5px 4px; text-align:left; font-weight:900; color:#1e293b;">#</th>
-                        <th style="padding:5px 4px; text-align:left; font-weight:900; color:#1e293b;">Code</th>
-                        <th style="padding:5px 4px; text-align:left; font-weight:900; color:#1e293b;">Item</th>
-                        <th style="padding:5px 4px; text-align:right; font-weight:900; color:#1e293b;">Price</th>
-                        <th style="padding:5px 4px; text-align:center; font-weight:900; color:#1e293b;">Qty</th>
-                        <th style="padding:5px 4px; text-align:right; font-weight:900; color:#1e293b;">Discount</th>
-                        <th style="padding:5px 4px; text-align:right; font-weight:900; color:#1e293b;">Total</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($createdSale->items as $index => $item)
-                    <tr style="border-bottom:1px solid #f1f5f9;">
-                        <td style="padding:4px 4px; color:#64748b;">{{ $index + 1 }}</td>
-                        <td style="padding:4px 4px; color:#64748b;">{{ $item->product_code ?? '' }}</td>
-                        <td style="padding:4px 4px; font-weight:700; color:#1e293b;">{{ $item->product_name }}</td>
-                        <td style="padding:4px 4px; text-align:right;">Rs.{{ number_format($item->unit_price, 2) }}</td>
-                        <td style="padding:4px 4px; text-align:center;">{{ $item->quantity }}</td>
-                        <td style="padding:4px 4px; text-align:right; color:#64748b;">
-                            @php $discountAmount = $item->discount_per_unit ?? 0; @endphp
-                            @if($item->discount_type === 'percentage' && $item->discount_percentage > 0)
-                                {{ number_format($item->discount_percentage, 0) }}%
-                            @elseif($discountAmount > 0)
-                                Rs.{{ number_format($discountAmount * $item->quantity, 2) }}
-                            @else
-                                —
-                            @endif
-                        </td>
-                        <td style="padding:4px 4px; text-align:right; font-weight:700;">Rs.{{ number_format($item->total, 2) }}</td>
-                    </tr>
+                <div style="border-bottom: 1px dashed #000; margin: 8px 0;"></div>
+
+                <!-- Table Header -->
+                <div style="display: flex; font-weight: bold; font-size: 12px; margin-bottom: 2px;">
+                    <span style="flex: 2;">Item</span>
+                    <span style="flex: 0.5; text-align: center;">Qty</span>
+                    <span style="flex: 1; text-align: right;">Price</span>
+                </div>
+                <div style="border-bottom: 1px dotted #000; margin-bottom: 5px;"></div>
+
+                <!-- Items -->
+                <div style="font-size: 11px;">
+                    @foreach($createdSale->items as $item)
+                    <div style="display: flex; margin-bottom: 4px;">
+                        <span style="flex: 2;">{{ $item->product_name }}</span>
+                        <span style="flex: 0.5; text-align: center;">{{ $item->quantity }}</span>
+                        <span style="flex: 1; text-align: right;">{{ number_format($item->unit_price, 0) }}</span>
+                    </div>
                     @endforeach
                 </tbody>
             </table>
@@ -1003,22 +991,59 @@
                         <div style="color:#94a3b8;">No payment info available</div>
                     @endif
                 </div>
-                {{-- Order Summary --}}
-                <div style="flex:1; font-size:11px;">
-                    <div style="font-size:9px; font-weight:900; text-transform:uppercase; letter-spacing:2px; color:#94a3b8; margin-bottom:6px; border-bottom:1px solid #e2e8f0; padding-bottom:4px;">Order Summary</div>
-                    <div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span>Subtotal</span><span>Rs.{{ number_format($originalSubtotal, 2) }}</span></div>
-                    @if($totalDiscountRs > 0)
-                    <div style="display:flex; justify-content:space-between; margin-bottom:4px; color:#64748b;"><span>Discount ({{ number_format($discountPercentage, 1) }}%)</span><span>- Rs.{{ number_format($totalDiscountRs, 2) }}</span></div>
-                    @endif
-                    <div style="display:flex; justify-content:space-between; font-weight:900; font-size:13px; border-top:1px solid #1e293b; padding-top:5px; margin-top:5px; color:#1e293b;">
-                        <span>Grand Total</span><span>Rs.{{ number_format($createdSale->total_amount, 2) }}</span>
-                    </div>
-                </div>
-            </div>
 
-            {{-- Thank You --}}
-            <div style="text-align:center; margin-top:10px; padding-top:8px; border-top:1px dashed #cbd5e1; font-size:10px; color:#94a3b8; font-weight:700; letter-spacing:1px; text-transform:uppercase;">
-                Thank you for your business &mdash; www.JaffnaGold.lk
+                <div style="border-bottom: 1px dashed #000; margin: 8px 0;"></div>
+
+                <!-- Totals -->
+                <div style="font-size: 11px;">
+                    @php
+                        $originalSubtotal = $createdSale->items->sum(fn($i) => $i->unit_price * $i->quantity);
+                        $totalDiscountRs = $createdSale->discount_amount;
+                    @endphp
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 2px;">
+                        <span>Sub Total</span>
+                        <span>{{ number_format($originalSubtotal, 0) }}</span>
+                    </div>
+                    @if($totalDiscountRs > 0)
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 2px;">
+                        <span>Discount</span>
+                        <span>-{{ number_format($totalDiscountRs, 0) }}</span>
+                    </div>
+                    @endif
+                    
+                    <div style="border-bottom: 1px dashed #000; margin: 5px 0;"></div>
+                    
+                    <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 14px;">
+                        <span>TOTAL</span>
+                        <span>{{ number_format($createdSale->total_amount, 0) }}</span>
+                    </div>
+                    
+                    <div style="border-bottom: 1px dashed #000; margin: 5px 0;"></div>
+                </div>
+
+                <!-- Payment Method -->
+                <div style="font-size: 11px; margin-bottom: 5px;">
+                    @if($createdSale->payment_type == 'full')
+                    <div style="display: flex;">
+                        <span style="width: 110px;">Payment Method</span>
+                        <span>: CASH</span>
+                    </div>
+                    @else
+                    <div style="display: flex;">
+                        <span style="width: 110px;">Payment Method</span>
+                        <span>: ONLINE TRANSFER</span>
+                    </div>
+                    @endif
+                    <div style="border-bottom: 1px dashed #000; margin: 8px 0;"></div>
+                </div>
+
+                <!-- Footer -->
+                <div style="text-align: center; font-size: 11px; margin-top: 10px;">
+                    <div style="font-weight: bold;">Thank You for Your Visit!</div>
+                    <div style="font-weight: bold;">Visit Us Again</div>
+                    <div style="border-top: 1px solid #000; margin-top: 8px; padding-top: 2px;"></div>
+                    <div style="border-top: 1px solid #000; margin-top: 2px;"></div>
+                </div>
             </div>
         </div>
 
@@ -1123,7 +1148,7 @@
         });
     });
 
-    // Print Invoice Function - Make it globally available
+    // Print Invoice Function - Optimized for 80mm Thermal Printer
     function printInvoice() {
         console.log('=== Print Invoice Function Called ===');
 
@@ -1131,200 +1156,83 @@
         if (!printEl) {
             console.error('ERROR: Printable invoice element not found');
             setTimeout(function() {
-                console.log('Retrying print after 1 second...');
                 const retryEl = document.getElementById('printableInvoice');
                 if (retryEl) {
                     printInvoice();
                 } else {
-                    alert('Invoice not ready for printing. Please use the Print Invoice button.');
+                    alert('Invoice not ready for printing.');
                 }
             }, 1000);
             return;
         }
 
-        console.log('Print element found:', printEl);
-
-        // Get the actual receipt container
+        // Get the receipt container
         const receiptContainer = printEl.querySelector('.receipt-container');
         if (!receiptContainer) {
-            console.error('ERROR: Receipt container not found inside printableInvoice');
+            console.error('ERROR: Receipt container not found');
             alert('Invoice content not ready. Please try again.');
             return;
         }
 
-        console.log('Receipt container found, preparing content...');
-
-        // Clone the content to avoid modifying the original
+        // Clone the content
         let content = receiptContainer.cloneNode(true);
-
-        // Remove any buttons or interactive elements from print
-        content.querySelectorAll('button, .no-print').forEach(el => el.remove());
-
-        // Ensure footer is anchored to bottom: add a class and inline style to footer block
-        const footerEl = content.querySelector('div[style*="border-top:2px solid #000"]') || content.querySelector('div:last-child');
-        if (footerEl) {
-            footerEl.classList.add('receipt-footer');
-            // Use auto margin so it pushes to bottom inside the flex layout
-            footerEl.style.marginTop = 'auto';
-        }
-
-        // Get the HTML string
         let htmlContent = content.outerHTML;
 
-        console.log('Content prepared, opening print window...');
-
-        // Open a new window
-        const printWindow = window.open('', '_blank', 'width=800,height=600');
+        // Open a new window with minimal size for thermal receipt
+        const printWindow = window.open('', '_blank', 'width=350,height=600');
 
         if (!printWindow) {
-            console.error('ERROR: Print window blocked by popup blocker');
-            alert('Popup blocked. Please allow pop-ups for this site or use the Print Invoice button below.');
+            alert('Popup blocked. Please allow pop-ups for this site.');
             return;
         }
 
-        console.log('Print window opened successfully');
-
-        // Complete HTML document with styles
+        // Complete HTML document with styles optimized for 80mm thermal printer
         const fullHtml = `
             <!DOCTYPE html>
             <html>
             <head>
                 <meta charset="utf-8">
-                <title>Invoice - JaffnaGold (PVT) LTD</title>
+                <title>Receipt - Jaffna Gold</title>
                 <style>
                     @page { 
-                        size: letter portrait; 
-                        margin: 6mm; 
+                        size: 80mm auto; 
+                        margin: 0; 
                     }
-
-                    html, body { height: 100%; }
-
-                    * {
+                    html, body {
                         margin: 0;
                         padding: 0;
+                        width: 80mm;
+                        background: #fff;
+                    }
+                    * {
+                        box-sizing: border-box;
+                        -webkit-print-color-adjust: exact;
+                    }
+                    body { 
+                        font-family: 'Courier New', Courier, monospace; 
+                        font-size: 11px;
+                        color: #000;
+                        padding: 0;
+                    }
+                    .receipt-container {
+                        width: 80mm;
+                        margin: 0;
+                        padding: 2mm 4mm;
                         box-sizing: border-box;
                     }
-
-                    body { 
-                        font-family: sans-serif; 
-                        color: #000; 
-                        background: #fff; 
-                        padding: 10mm;
-                        font-size: 12px;
-                        line-height: 1.4;
-                    }
-
-                    .receipt-container { 
-                        max-width: 800px; 
-                        margin: 0 auto;
-                        padding: 20px;
-                        background: white;
-                        display: flex;
-                        flex-direction: column;
-                        min-height: 100vh;
-                        page-break-inside: avoid;
-                    }
-
-                    .receipt-footer { 
-                        margin-top: auto !important; 
-                        page-break-inside: avoid;
-                    }
-                    
-                    .receipt-header { 
-                        border-bottom: 3px solid #000; 
-                        padding-bottom: 12px; 
-                        margin-bottom: 12px; 
-                    }
-                    
-                    .receipt-row { 
-                        display: flex; 
-                        align-items: center; 
-                        justify-content: space-between; 
-                    }
-                    
-                    .receipt-center { 
-                        flex: 1; 
-                        text-align: center; 
-                    }
-                    
-                    .receipt-center h2 { 
-                        margin: 0 0 4px 0; 
-                        font-size: 2rem; 
-                        letter-spacing: 2px;
-                        font-weight: bold;
-                    }
-                    
-                    table.receipt-table { 
-                        width: 100%; 
-                        border-collapse: collapse; 
-                        margin-top: 12px; 
-                    }
-                    
-                    table.receipt-table th {
-                        border-bottom: 1px solid #000; 
-                        padding: 8px; 
-                        text-align: left;
-                        font-weight: bold;
-                        background: none;
-                    }
-                    
-                    table.receipt-table td { 
-                        padding: 2px; 
-                        text-align: left;
-                        border: none;
-                    }
-                    
-                    .text-end { 
-                        text-align: right; 
-                    }
-                    
-                    .text-muted {
-                        color: #000000;
-                    }
-                    
-                    p {
-                        margin: 4px 0;
-                    }
-                    
-                    strong {
-                        font-weight: bold;
-                    }
-                    
-                    hr {
-                        border: none;
-                        border-top: 1px solid #000;
-                        margin: 8px 0;
-                    }
-                    
                     @media print {
-                        body {
-                            padding: 0;
-                        }
-                        
-                        .receipt-container {
-                            box-shadow: none !important;
-                        }
-                        
-                        .receipt-container {
-                            page-break-inside: avoid;
-                        }
+                        body { width: 80mm; padding: 0; }
+                        .no-print { display: none; }
                     }
                 </style>
             </head>
             <body>
                 ${htmlContent}
                 <script>
-                    console.log('Print window document loaded');
                     window.onload = function() {
-                        console.log('Print window fully loaded, triggering print dialog...');
                         setTimeout(function() {
-                            try {
-                                window.print();
-                                console.log('Print dialog triggered');
-                            } catch(e) {
-                                console.error('Print failed:', e);
-                                alert('Print failed: ' + e.message);
-                            }
+                            window.print();
+                            window.onafterprint = function() { window.close(); };
                         }, 500);
                     };
                 <\/script>
@@ -1332,18 +1240,9 @@
             </html>
         `;
 
-        // Write the content
-        try {
-            printWindow.document.open();
-            printWindow.document.write(fullHtml);
-            printWindow.document.close();
-            console.log('=== Content written to print window successfully ===');
-        } catch (e) {
-            console.error('ERROR writing to print window:', e);
-            alert('Failed to prepare print: ' + e.message);
-        }
-
-        // Focus the print window
+        printWindow.document.open();
+        printWindow.document.write(fullHtml);
+        printWindow.document.close();
         printWindow.focus();
     }
 
