@@ -126,7 +126,7 @@ class ProductImageController extends Controller
 
             // Create the directory if it doesn't exist and ensure it's writable
             $uploadPath = public_path('images');
-            
+
             // Step 1: Create directory if doesn't exist
             if (!is_dir($uploadPath)) {
                 try {
@@ -138,7 +138,7 @@ class ProductImageController extends Controller
                     throw new \Exception("Failed to create upload directory: {$e->getMessage()}");
                 }
             }
-            
+
             // Step 2: Ensure directory is writable
             if (!is_writable($uploadPath)) {
                 // Try to fix permissions
@@ -146,10 +146,12 @@ class ProductImageController extends Controller
                     @chmod($uploadPath, 0777);
                     Log::info('Fixed directory permissions', ['path' => $uploadPath]);
                 } catch (\Exception $e) {
-                    Log::warning('Could not fix directory permissions', 
-                        ['path' => $uploadPath, 'error' => $e->getMessage()]);
+                    Log::warning(
+                        'Could not fix directory permissions',
+                        ['path' => $uploadPath, 'error' => $e->getMessage()]
+                    );
                 }
-                
+
                 // Check again if writable
                 if (!is_writable($uploadPath)) {
                     $perms = substr(sprintf('%o', fileperms($uploadPath)), -4);
@@ -180,10 +182,10 @@ class ProductImageController extends Controller
             // Store the image in public/images with fallback methods
             $file = $request->file('image');
             $fullPath = $uploadPath . DIRECTORY_SEPARATOR . $filename;
-            
+
             $fileMoved = false;
             $moveError = '';
-            
+
             // Method 1: Try standard move() method
             try {
                 if ($file->move($uploadPath, $filename)) {
@@ -197,7 +199,7 @@ class ProductImageController extends Controller
                 $moveError = $e->getMessage();
                 Log::warning('Method 1 (move) failed', ['error' => $moveError]);
             }
-            
+
             // Method 2: If move failed, try copy() method
             if (!$fileMoved) {
                 try {
@@ -213,7 +215,7 @@ class ProductImageController extends Controller
                     Log::warning('Method 2 (copy) failed', ['error' => $e->getMessage()]);
                 }
             }
-            
+
             // Method 3: If copy failed, try file_put_contents()
             if (!$fileMoved) {
                 try {
@@ -229,7 +231,7 @@ class ProductImageController extends Controller
                     Log::warning('Method 3 (file_put_contents) failed', ['error' => $e->getMessage()]);
                 }
             }
-            
+
             // If all methods failed, throw error
             if (!$fileMoved) {
                 $errorMsg = 'Failed to save uploaded file. ';
@@ -238,7 +240,7 @@ class ProductImageController extends Controller
                 $errorMsg .= 'Last error: ' . ($moveError ?: 'unknown');
                 throw new \Exception($errorMsg);
             }
-            
+
             // Ensure file has correct permissions
             @chmod($fullPath, 0666);
 
@@ -277,10 +279,12 @@ class ProductImageController extends Controller
             return back()->with('success', $successMessage);
         } catch (\Exception $e) {
             $baseError = $e->getMessage();
-            
+
             // Build helpful error message based on the issue
-            if (strpos($baseError, 'directory not writable') !== false || 
-                strpos($baseError, 'Unable to write') !== false) {
+            if (
+                strpos($baseError, 'directory not writable') !== false ||
+                strpos($baseError, 'Unable to write') !== false
+            ) {
                 $errorMessage = 'Directory permissions issue. ';
                 $errorMessage .= 'Please ask your administrator to run: ';
                 $errorMessage .= 'php artisan images:fix-permissions';
