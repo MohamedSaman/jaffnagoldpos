@@ -590,10 +590,10 @@
                                                 @php
                                                 $imagePath = $product->image;
                                                 if (strpos($imagePath, 'storage/images/') === 0) {
-                                                    $imgFilename = substr($imagePath, strlen('storage/images/'));
-                                                    $imageUrl = url('/product-image-serve/' . $imgFilename);
+                                                $imgFilename = substr($imagePath, strlen('storage/images/'));
+                                                $imageUrl = url('/product-image-serve/' . $imgFilename);
                                                 } else {
-                                                    $imageUrl = asset($imagePath);
+                                                $imageUrl = asset($imagePath);
                                                 }
                                                 $defaultImage = asset('images/product.jpg');
                                                 @endphp
@@ -788,16 +788,16 @@
                                     <!-- Product Image and Status -->
                                     <div class="text-center mb-4">
                                         @php
-                                            $staffDefaultImage = asset('images/product.jpg');
-                                            if ($viewProduct->image) {
-                                                if (strpos($viewProduct->image, 'storage/images/') === 0) {
-                                                    $staffFilename = substr($viewProduct->image, strlen('storage/images/'));
-                                                    $staffImageUrl = url('/product-image-serve/' . $staffFilename);
-                                                } else {
-                                                    $staffImageUrl = asset($viewProduct->image);
-                                                }
-                                            } else {
-                                                $staffImageUrl = $staffDefaultImage;
+                                        $staffDefaultImage = asset('images/product.jpg');
+                                        if ($viewProduct->image) {
+                                        if (strpos($viewProduct->image, 'storage/images/') === 0) {
+                                        $staffFilename = substr($viewProduct->image, strlen('storage/images/'));
+                                        $staffImageUrl = url('/product-image-serve/' . $staffFilename);
+                                        } else {
+                                        $staffImageUrl = asset($viewProduct->image);
+                                        }
+                                        } else {
+                                        $staffImageUrl = $staffDefaultImage;
                                         @endphp
                                         <img src="{{ $staffImageUrl }}"
                                             alt="Product Image" class="img-fluid rounded-3 shadow-sm"
@@ -911,17 +911,17 @@
                                 <div class="p-4 text-center">
                                     <div class="product-image-container mb-4 position-relative">
                                         @php
-                                            $modalDefaultImage = asset('images/product.jpg');
-                                            if ($viewProduct->image) {
-                                                // Handle both storage/images and images paths
-                                                if (strpos($viewProduct->image, 'storage/images/') === 0) {
-                                                    $modalFilename = substr($viewProduct->image, strlen('storage/images/'));
-                                                    $modalImageUrl = url('/product-image-serve/' . $modalFilename);
-                                                } else {
-                                                    $modalImageUrl = asset($viewProduct->image);
-                                                }
-                                            } else {
-                                                $modalImageUrl = $modalDefaultImage;
+                                        $modalDefaultImage = asset('images/product.jpg');
+                                        if ($viewProduct->image) {
+                                        // Handle both storage/images and images paths
+                                        if (strpos($viewProduct->image, 'storage/images/') === 0) {
+                                        $modalFilename = substr($viewProduct->image, strlen('storage/images/'));
+                                        $modalImageUrl = url('/product-image-serve/' . $modalFilename);
+                                        } else {
+                                        $modalImageUrl = asset($viewProduct->image);
+                                        }
+                                        } else {
+                                        $modalImageUrl = $modalDefaultImage;
                                         @endphp
                                         <img src="{{ $modalImageUrl }}"
                                             alt="Product Image" class="img-fluid rounded-3 shadow-sm product-image"
