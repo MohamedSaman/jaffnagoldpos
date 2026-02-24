@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -155,6 +156,14 @@
             max-height: 200px;
             border-radius: 8px;
             object-fit: contain;
+            display: block;
+            margin: 0 auto;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .current-image-wrap img[src*="product.jpg"] {
+            opacity: 0.7;
+            filter: grayscale(20%);
         }
 
         .no-image-text {
@@ -390,31 +399,57 @@
 
         /* Alert Messages */
         .alert {
-            padding: 14px 16px;
+            padding: 16px 18px;
             border-radius: 12px;
-            font-size: 0.8rem;
-            font-weight: 700;
+            font-size: 0.85rem;
+            font-weight: 600;
             margin-bottom: 16px;
             display: flex;
-            align-items: center;
-            gap: 10px;
+            align-items: start;
+            gap: 12px;
+            animation: slideInDown 0.4s ease;
+        }
+
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .alert i {
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .alert div {
+            flex: 1;
+        }
+
+        .alert strong {
+            display: block;
+            font-weight: 800;
+            margin-bottom: 2px;
         }
 
         .alert-success {
             background: #f0fdf4;
             color: #166534;
-            border: 1px solid #bbf7d0;
+            border: 2px solid #86efac;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
         }
 
         .alert-error {
             background: #fef2f2;
             color: #991b1b;
-            border: 1px solid #fecaca;
+            border: 2px solid #fecaca;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
         }
 
         /* Error Card */
@@ -482,7 +517,9 @@
         }
 
         @keyframes spin {
-            to { transform: rotate(360deg); }
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         .submit-btn.loading .spinner {
@@ -494,6 +531,7 @@
         }
     </style>
 </head>
+
 <body>
     <!-- Header -->
     <div class="page-header">
@@ -503,146 +541,191 @@
 
     <div class="main-content">
         @if(session('success'))
-            <div class="alert alert-success">
-                <i class="bi bi-check-circle-fill"></i>
+        <div class="alert alert-success">
+            <i class="bi bi-check-circle-fill"></i>
+            <div>
+                <strong>Success!</strong><br>
                 {{ session('success') }}
             </div>
+        </div>
+        <script>
+            // Auto-reload to show new image after 2 seconds
+            setTimeout(function() {
+                window.location.reload();
+            }, 2000);
+        </script>
         @endif
 
         @if(session('error'))
-            <div class="alert alert-error">
-                <i class="bi bi-exclamation-triangle-fill"></i>
+        <div class="alert alert-error">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <div>
+                <strong>Error!</strong><br>
                 {{ session('error') }}
             </div>
+        </div>
         @endif
 
         @if($error)
-            <!-- Product Not Found -->
-            <div class="error-card">
-                <div class="error-icon">
-                    <i class="bi bi-box-seam"></i>
-                </div>
-                <h2>Product Not Found</h2>
-                <p>{{ $error }}</p>
-                <p style="margin-top: 8px; font-size: 0.75rem; color: #94a3b8;">
-                    Please check the barcode and try scanning again.
-                </p>
+        <!-- Product Not Found -->
+        <div class="error-card">
+            <div class="error-icon">
+                <i class="bi bi-box-seam"></i>
             </div>
+            <h2>Product Not Found</h2>
+            <p>{{ $error }}</p>
+            <p style="margin-top: 8px; font-size: 0.75rem; color: #94a3b8;">
+                Please check the barcode and try scanning again.
+            </p>
+        </div>
         @elseif($product)
-            <!-- Product Info -->
-            <div class="product-card">
-                <div class="product-info">
-                    <div class="product-badge">
-                        <i class="bi bi-qr-code"></i> #{{ $product->id }} — {{ $product->code }}
-                    </div>
-                    <h2 class="product-name">{{ $product->name }}</h2>
-                    <div class="product-code">{{ $product->code }}</div>
-
-                    <div class="product-meta">
-                        @if($product->brand)
-                        <div class="meta-item">
-                            <span class="meta-label">Brand</span>
-                            <span class="meta-value">{{ $product->brand->brand_name ?? '—' }}</span>
-                        </div>
-                        @endif
-                        @if($product->category)
-                        <div class="meta-item">
-                            <span class="meta-label">Category</span>
-                            <span class="meta-value">{{ $product->category->category_name ?? '—' }}</span>
-                        </div>
-                        @endif
-                        <div class="meta-item">
-                            <span class="meta-label">Status</span>
-                            <span class="meta-value" style="color: {{ $product->status === 'active' ? '#10b981' : '#ef4444' }};">
-                                {{ ucfirst($product->status) }}
-                            </span>
-                        </div>
-                    </div>
+        <!-- Product Info -->
+        <div class="product-card">
+            <div class="product-info">
+                <div class="product-badge">
+                    <i class="bi bi-qr-code"></i> #{{ $product->id }} — {{ $product->code }}
                 </div>
+                <h2 class="product-name">{{ $product->name }}</h2>
+                <div class="product-code">{{ $product->code }}</div>
 
-                <!-- Current Image -->
-                <div class="current-image-section">
-                    <div class="current-image-label">Current Image</div>
-                    <div class="current-image-wrap">
-                        @php
-                            $rawImage = $product->getRawOriginal('image');
-                            $hasImage = $rawImage && $rawImage !== '' && $rawImage !== 'images/product.jpg' && $rawImage !== 'images/products/product.jpg';
-                        @endphp
-                        @if($hasImage)
-                            <img src="{{ asset($rawImage) }}?t={{ time() }}" alt="{{ $product->name }}">
-                        @else
-                            <div class="no-image-text">
-                                <i class="bi bi-image"></i>
-                                No image uploaded yet
-                            </div>
-                        @endif
+                <div class="product-meta">
+                    @if($product->brand)
+                    <div class="meta-item">
+                        <span class="meta-label">Brand</span>
+                        <span class="meta-value">{{ $product->brand->brand_name ?? '—' }}</span>
                     </div>
-                </div>
-            </div>
-
-            <!-- Upload Form -->
-            <div class="upload-card">
-                <div class="upload-title">
-                    <i class="bi bi-cloud-arrow-up-fill"></i>
-                    Upload New Image
-                </div>
-
-                <form action="{{ url('/product-image/' . $product->id . '/upload') }}" method="POST" enctype="multipart/form-data" id="uploadForm">
-                    @csrf
-
-                    <!-- Drop Zone for gallery pick -->
-                    <div class="drop-zone" id="dropZone" onclick="document.getElementById('galleryInput').click()">
-                        <div class="drop-zone-icon">
-                            <i class="bi bi-cloud-arrow-up"></i>
-                        </div>
-                        <div class="drop-zone-text">Tap to choose image</div>
-                        <div class="drop-zone-hint">JPG, PNG, GIF, WebP • Max 10MB</div>
-                        <input type="file" name="image" id="galleryInput" accept="image/*" onchange="previewImage(this)">
+                    @endif
+                    @if($product->category)
+                    <div class="meta-item">
+                        <span class="meta-label">Category</span>
+                        <span class="meta-value">{{ $product->category->category_name ?? '—' }}</span>
                     </div>
-
-                    <!-- Camera Button (mobile) -->
-                    <label class="camera-btn" for="cameraInput">
-                        <i class="bi bi-camera-fill"></i>
-                        Take Photo with Camera
-                    </label>
-                    <input type="file" name="image" id="cameraInput" accept="image/*" capture="environment" style="display:none;" onchange="previewImage(this)">
-
-                    <!-- Preview -->
-                    <div class="image-preview" id="imagePreview">
-                        <div class="preview-header">
-                            <span class="preview-label"><i class="bi bi-check-circle-fill"></i> Selected Image</span>
-                            <button type="button" class="preview-clear" onclick="clearPreview()">
-                                <i class="bi bi-x-circle"></i> Remove
-                            </button>
-                        </div>
-                        <div class="preview-img-wrap">
-                            <img id="previewImg" src="" alt="Preview">
-                        </div>
-                        <div class="file-info" id="fileInfo">
-                            <i class="bi bi-file-earmark-image"></i>
-                            <span id="fileName">image.jpg</span>
-                            <span>•</span>
-                            <span id="fileSize">0 KB</span>
-                        </div>
-                    </div>
-
-                    @error('image')
-                        <div class="alert alert-error" style="margin-top: 12px;">
-                            <i class="bi bi-exclamation-triangle-fill"></i>
-                            {{ $message }}
-                        </div>
-                    @enderror
-
-                    <!-- Submit -->
-                    <button type="submit" class="submit-btn" id="submitBtn" disabled>
-                        <div class="spinner"></div>
-                        <span class="btn-text">
-                            <i class="bi bi-cloud-check-fill"></i>
-                            Upload Image
+                    @endif
+                    <div class="meta-item">
+                        <span class="meta-label">Status</span>
+                        <span class="meta-value" style="color: {{ $product->status === 'active' ? '#10b981' : '#ef4444' }};">
+                            {{ ucfirst($product->status) }}
                         </span>
-                    </button>
-                </form>
+                    </div>
+                </div>
             </div>
+
+            <!-- Current Image -->
+            <div class="current-image-section">
+                @php
+                $rawImage = $product->getRawOriginal('image');
+                $isDefaultImage = !$rawImage || $rawImage === '' || $rawImage === 'images/product.jpg' || $rawImage === 'images/products/product.jpg';
+                $displayImage = $isDefaultImage ? 'images/product.jpg' : $rawImage;
+                @endphp
+                <div class="current-image-label">
+                    Current Image
+                    @if($isDefaultImage)
+                    <span style="color: #f59e0b; font-weight: 600; margin-left: 8px;">
+                        <i class="bi bi-info-circle"></i> Default
+                    </span>
+                    @else
+                    <span style="color: #10b981; font-weight: 600; margin-left: 8px;">
+                        <i class="bi bi-check-circle-fill"></i> Custom
+                    </span>
+                    @endif
+                </div>
+                <div class="current-image-wrap" style="{{ $isDefaultImage ? 'border-color: #fbbf24; background: #fef3c7;' : 'border-color: #10b981; background: #f0fdf4;' }}">
+                    <img src="{{ asset($displayImage) }}?t={{ time() }}"
+                        alt="{{ $product->name }}"
+                        onerror="this.onerror=null; this.src='{{ asset('images/product.jpg') }}';">
+                    @if($isDefaultImage)
+                    <div style="margin-top: 10px; color: #92400e; font-size: 0.75rem; font-weight: 600;">
+                        <i class="bi bi-arrow-down-circle"></i> Upload a new image below to replace default
+                    </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+
+        <!-- Upload Form -->
+        <div class="upload-card">
+            <div class="upload-title">
+                <i class="bi bi-cloud-arrow-up-fill"></i>
+                Upload New Image
+            </div>
+
+            <form action="{{ url('/product-image/' . $product->id . '/upload') }}" method="POST" enctype="multipart/form-data" id="uploadForm">
+                @csrf
+
+                <!-- Drop Zone for gallery pick -->
+                <div class="drop-zone" id="dropZone" onclick="document.getElementById('galleryInput').click()">
+                    <div class="drop-zone-icon">
+                        <i class="bi bi-cloud-arrow-up"></i>
+                    </div>
+                    <div class="drop-zone-text">Tap to choose image</div>
+                    <div class="drop-zone-hint">JPG, PNG, GIF, WebP • Max 10MB</div>
+                    <input type="file" name="image" id="galleryInput" accept="image/*" onchange="previewImage(this)">
+                </div>
+
+                <!-- Camera Button (mobile) -->
+                <label class="camera-btn" for="cameraInput">
+                    <i class="bi bi-camera-fill"></i>
+                    Take Photo with Camera
+                </label>
+                <input type="file" name="image" id="cameraInput" accept="image/*" capture="environment" style="display:none;" onchange="previewImage(this)">
+
+                <!-- Preview -->
+                <div class="image-preview" id="imagePreview">
+                    <div class="preview-header">
+                        <span class="preview-label"><i class="bi bi-check-circle-fill"></i> Selected Image</span>
+                        <button type="button" class="preview-clear" onclick="clearPreview()">
+                            <i class="bi bi-x-circle"></i> Remove
+                        </button>
+                    </div>
+                    <div class="preview-img-wrap">
+                        <img id="previewImg" src="" alt="Preview">
+                    </div>
+                    <div class="file-info" id="fileInfo">
+                        <i class="bi bi-file-earmark-image"></i>
+                        <span id="fileName">image.jpg</span>
+                        <span>•</span>
+                        <span id="fileSize">0 KB</span>
+                    </div>
+                </div>
+
+                @error('image')
+                <div class="alert alert-error" style="margin-top: 12px;">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    {{ $message }}
+                </div>
+                @enderror
+
+                <!-- Submit -->
+                <button type="submit" class="submit-btn" id="submitBtn" disabled>
+                    <div class="spinner"></div>
+                    <span class="btn-text">
+                        <i class="bi bi-cloud-check-fill"></i>
+                        Upload Image
+                    </span>
+                </button>
+            </form>
+        </div>
+
+        <!-- Help Section -->
+        <div style="background: #fff; border-radius: 16px; padding: 16px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06); margin-top: 16px;">
+            <div style="font-size: 0.7rem; font-weight: 800; color: #161b97; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 10px;">
+                <i class="bi bi-info-circle-fill"></i> Quick Guide
+            </div>
+            <div style="font-size: 0.8rem; color: #475569; line-height: 1.6;">
+                <div style="margin-bottom: 8px; display: flex; align-items: start; gap: 8px;">
+                    <i class="bi bi-1-circle-fill" style="color: #161b97; margin-top: 2px;"></i>
+                    <span><strong>Select or capture</strong> a product image</span>
+                </div>
+                <div style="margin-bottom: 8px; display: flex; align-items: start; gap: 8px;">
+                    <i class="bi bi-2-circle-fill" style="color: #161b97; margin-top: 2px;"></i>
+                    <span>Image will be <strong>automatically compressed</strong> for optimal storage</span>
+                </div>
+                <div style="display: flex; align-items: start; gap: 8px;">
+                    <i class="bi bi-3-circle-fill" style="color: #161b97; margin-top: 2px;"></i>
+                    <span>Click <strong>Upload Image</strong> to save to the server</span>
+                </div>
+            </div>
+        </div>
         @endif
     </div>
 
@@ -665,9 +748,9 @@
                 document.getElementById('fileName').textContent = file.name;
                 const sizeKB = (file.size / 1024).toFixed(1);
                 const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
-                document.getElementById('fileSize').textContent = file.size > 1024 * 1024
-                    ? sizeMB + ' MB (compressing...)'
-                    : sizeKB + ' KB';
+                document.getElementById('fileSize').textContent = file.size > 1024 * 1024 ?
+                    sizeMB + ' MB (compressing...)' :
+                    sizeKB + ' KB';
 
                 // Compress the image
                 compressImage(file, function(compFile) {
@@ -675,9 +758,9 @@
                     // Update file size display with compressed size
                     const compSizeKB = (compFile.size / 1024).toFixed(1);
                     const compSizeMB = (compFile.size / (1024 * 1024)).toFixed(2);
-                    let sizeText = compFile.size > 1024 * 1024
-                        ? compSizeMB + ' MB'
-                        : compSizeKB + ' KB';
+                    let sizeText = compFile.size > 1024 * 1024 ?
+                        compSizeMB + ' MB' :
+                        compSizeKB + ' KB';
 
                     if (compFile.size < file.size) {
                         const saved = (((file.size - compFile.size) / file.size) * 100).toFixed(0);
@@ -785,28 +868,29 @@
 
             // Submit via fetch
             fetch(form.action, {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'Accept': 'text/html',
-                }
-            })
-            .then(response => {
-                if (response.redirected) {
-                    window.location.href = response.url;
-                } else {
-                    // Reload the page to show success/error message
-                    window.location.reload();
-                }
-            })
-            .catch(error => {
-                console.error('Upload error:', error);
-                btn.classList.remove('loading');
-                btn.disabled = false;
-                alert('Upload failed. Please try again.');
-            });
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'text/html',
+                    }
+                })
+                .then(response => {
+                    if (response.redirected) {
+                        window.location.href = response.url;
+                    } else {
+                        // Reload the page to show success/error message
+                        window.location.reload();
+                    }
+                })
+                .catch(error => {
+                    console.error('Upload error:', error);
+                    btn.classList.remove('loading');
+                    btn.disabled = false;
+                    alert('Upload failed. Please try again.');
+                });
         });
     </script>
 </body>
+
 </html>

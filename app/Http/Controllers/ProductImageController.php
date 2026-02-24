@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\ProductDetail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class ProductImageController extends Controller
@@ -18,7 +19,7 @@ class ProductImageController extends Controller
     {
         // Try finding by ID first (for QR code scans), then by barcode
         $product = ProductDetail::find($identifier);
-        
+
         if (!$product) {
             $product = ProductDetail::where('barcode', $identifier)->first();
         }
@@ -30,6 +31,9 @@ class ProductImageController extends Controller
                 'error' => 'No product found with identifier: ' . $identifier,
             ]);
         }
+
+        // Load relationships for display
+        $product->load(['brand', 'category', 'supplier']);
 
         return view('product-image-upload', [
             'product' => $product,
@@ -68,10 +72,12 @@ class ProductImageController extends Controller
                 mkdir($uploadPath, 0755, true);
             }
 
-            // Delete old image if it exists (not the default)
+            // Delete old image if it exists (not the default or empty)
             $oldImage = $product->getRawOriginal('image');
-            if ($oldImage && $oldImage !== 'images/product.jpg' && file_exists(public_path($oldImage))) {
+            $defaultImages = ['images/product.jpg', 'images/products/product.jpg', '', null];
+            if ($oldImage && !in_array($oldImage, $defaultImages) && file_exists(public_path($oldImage))) {
                 @unlink(public_path($oldImage));
+                Log::info('Old product image deleted', ['old_image' => $oldImage]);
             }
 
             // Store the image in public/images
@@ -79,7 +85,7 @@ class ProductImageController extends Controller
 
             // Save the relative path directly to the database (bypass accessor)
             $imagePath = 'images/' . $filename;
-            \DB::table('product_details')
+            DB::table('product_details')
                 ->where('id', $product->id)
                 ->update(['image' => $imagePath]);
 
