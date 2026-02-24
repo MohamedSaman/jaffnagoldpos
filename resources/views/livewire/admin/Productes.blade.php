@@ -478,6 +478,7 @@
                 border-right: none;
             }
         }
+
         /* Barcode styles */
         .product-barcode {
             max-width: 140px;
@@ -586,13 +587,24 @@
                                             </td>
                                             <td wire:click="viewProductDetails({{ $product->id }})">
                                                 @if ($product->image)
-                                                <img src="{{ asset($product->image) }}" alt="{{ $product->product_name }}"
-                                                    class="img-thumbnail" style="width: 50px; height: 50px;">
+                                                @php
+                                                $imagePath = $product->image;
+                                                // Handle storage/images path
+                                                if (strpos($imagePath, 'storage/images/') === 0) {
+                                                $imageUrl = asset($imagePath);
+                                                } else {
+                                                $imageUrl = asset($imagePath);
+                                                }
+                                                $defaultImage = asset('images/product.jpg');
+                                                @endphp
+                                                <img src="{{ $imageUrl }}" alt="{{ $product->product_name }}"
+                                                    class="img-thumbnail" style="width: 50px; height: 50px; object-fit: cover;"
+                                                    onerror="this.src='{{ $defaultImage }}'">
                                                 @else
                                                 <div class="bg-light d-flex align-items-center justify-content-center"
                                                     style="width: 50px; height: 50px;">
                                                     <i class="bi bi-image text-muted"></i>
-                                                </div>  
+                                                </div>
                                                 @endif
                                             </td>
                                             <td wire:click="viewProductDetails({{ $product->id }})">
@@ -775,9 +787,23 @@
                                 <div class="p-4">
                                     <!-- Product Image and Status -->
                                     <div class="text-center mb-4">
-                                        <img src="{{ $viewProduct->image ? asset( $viewProduct->image) : asset('images/product.jpg') }}"
+                                        @php
+                                        if ($viewProduct->image) {
+                                        if (strpos($viewProduct->image, 'storage/images/') === 0) {
+                                        $staffImageUrl = asset($viewProduct->image);
+                                        } else {
+                                        $staffImageUrl = asset($viewProduct->image);
+                                        }
+                                        $staffDefaultImage = asset('images/product.jpg');
+                                        } else {
+                                        $staffImageUrl = asset('images/product.jpg');
+                                        $staffDefaultImage = asset('images/product.jpg');
+                                        }
+                                        @endphp
+                                        <img src="{{ $staffImageUrl }}"
                                             alt="Product Image" class="img-fluid rounded-3 shadow-sm"
-                                            style="width: 100%; max-width: 250px; height: 250px; object-fit: cover; border: 3px solid #f0f0f0;">
+                                            style="width: 100%; max-width: 250px; height: 250px; object-fit: cover; border: 3px solid #f0f0f0;"
+                                            onerror="this.src='{{ $staffDefaultImage }}';">
 
                                         @if($viewProduct->status == 'active')
                                         <div class="mt-3">
@@ -885,9 +911,24 @@
                             <div class="col-lg-4 bg-light border-end">
                                 <div class="p-4 text-center">
                                     <div class="product-image-container mb-4 position-relative">
-                                        <img src="{{ $viewProduct->image ? asset( $viewProduct->image) : asset('images/product.jpg') }}"
+                                        @php
+                                        if ($viewProduct->image) {
+                                        // Handle both storage/images and images paths
+                                        if (strpos($viewProduct->image, 'storage/images/') === 0) {
+                                        $modalImageUrl = asset($viewProduct->image);
+                                        } else {
+                                        $modalImageUrl = asset($viewProduct->image);
+                                        }
+                                        $modalDefaultImage = asset('images/product.jpg');
+                                        } else {
+                                        $modalImageUrl = asset('images/product.jpg');
+                                        $modalDefaultImage = asset('images/product.jpg');
+                                        }
+                                        @endphp
+                                        <img src="{{ $modalImageUrl }}"
                                             alt="Product Image" class="img-fluid rounded-3 shadow-sm product-image"
-                                            style="width: 100%; max-width: 280px; height: 280px; object-fit: cover; border: 3px solid #fff;">
+                                            style="width: 100%; max-width: 280px; height: 280px; object-fit: cover; border: 3px solid #fff;"
+                                            onerror="this.src='{{ $modalDefaultImage }}';">
 
                                         <div class="position-absolute top-0 end-0 m-3">
                                             @if($viewProduct->status == 'active')
