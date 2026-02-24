@@ -339,4 +339,40 @@ class ProductImageController extends Controller
             return back()->with('error', $errorMessage);
         }
     }
+
+    /**
+     * Serve a product image directly from storage (no symlink required).
+     * URL: /product-image-serve/{filename}
+     */
+    public function serveImage($filename)
+    {
+        // Sanitize filename to prevent directory traversal
+        $filename = basename($filename);
+
+        // Look in storage/app/public/images first
+        $storagePath = storage_path('app/public/images/' . $filename);
+
+        // Also check public/images as fallback
+        $publicPath = public_path('images/' . $filename);
+
+        if (file_exists($storagePath)) {
+            $path = $storagePath;
+        } elseif (file_exists($publicPath)) {
+            $path = $publicPath;
+        } else {
+            // Return default image
+            $defaultPath = public_path('images/product.jpg');
+            if (file_exists($defaultPath)) {
+                return response()->file($defaultPath, ['Content-Type' => 'image/jpeg']);
+            }
+            abort(404);
+        }
+
+        $mimeType = mime_content_type($path) ?: 'image/jpeg';
+
+        return response()->file($path, [
+            'Content-Type' => $mimeType,
+            'Cache-Control' => 'public, max-age=86400',
+        ]);
+    }
 }
