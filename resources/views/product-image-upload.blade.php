@@ -533,6 +533,18 @@
 </head>
 
 <body>
+    <!-- Debug Console (fixed at bottom-right) -->
+    <div id="debugConsole" style="position: fixed; bottom: 0; right: 0; width: 100%; max-width: 450px; max-height: 280px; background: #0f172a; color: #10b981; border: 2px solid #10b981; border-radius: 8px 8px 0 0; padding: 12px; overflow-y: auto; z-index: 10000; font-family: 'Courier New', monospace; font-size: 11px; line-height: 1.5; display: none; box-shadow: 0 -4px 12px rgba(0,0,0,0.3);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px solid #10b981; padding-bottom: 8px; font-weight: bold;">
+            <span>🔧 Upload Debug Console</span>
+            <button onclick="toggleDebugConsole()" style="background: none; border: none; color: #10b981; cursor: pointer; font-size: 16px; padding: 0;">✕</button>
+        </div>
+        <div id="debugOutput" style="max-height: 240px; overflow-y: auto; font-size: 10px;"></div>
+    </div>
+    
+    <!-- Debug Toggle Button -->
+    <button id="debugToggle" onclick="toggleDebugConsole()" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; background: #161b97; color: #fff; border: none; width: 50px; height: 50px; border-radius: 50%; font-size: 20px; cursor: pointer; display: none; box-shadow: 0 4px 12px rgba(22, 27, 151, 0.3); transition: all 0.3s;" title="Toggle debug console">🔧</button>
+
     <!-- Header -->
     <div class="page-header">
         <h1><i class="bi bi-camera"></i> Product Image Upload</h1>
@@ -730,6 +742,72 @@
     </div>
 
     <script>
+        // ========== Debug Console ==========
+        const debugMode = true; // Set to false to disable debug console
+        
+        function addLogEntry(message, data = null, type = 'log') {
+            const console_el = document.getElementById('debugConsole');
+            const output_el = document.getElementById('debugOutput');
+            
+            if (!debugMode) return;
+            
+            // Show debug console and toggle button
+            if (console_el) console_el.style.display = 'block';
+            const toggle = document.getElementById('debugToggle');
+            if (toggle) toggle.style.display = 'block';
+            
+            let logText = message;
+            if (data) {
+                logText += ' ' + JSON.stringify(data).substring(0, 200);
+            }
+            
+            const timeStr = new Date().toLocaleTimeString();
+            const entry = document.createElement('div');
+            entry.style.marginBottom = '4px';
+            entry.style.paddingBottom = '4px';
+            entry.style.borderBottom = '1px solid rgba(16, 185, 129, 0.2)';
+            
+            const color = type === 'error' ? '#ef4444' : type === 'warn' ? '#f59e0b' : '#10b981';
+            entry.innerHTML = `<span style="color: #64748b;">[${timeStr}]</span> <span style="color: ${color};">${message}</span>`;
+            
+            output_el.appendChild(entry);
+            output_el.scrollTop = output_el.scrollHeight;
+        }
+        
+        function toggleDebugConsole() {
+            const console_el = document.getElementById('debugConsole');
+            if (console_el) {
+                console_el.style.display = console_el.style.display === 'none' ? 'block' : 'none';
+            }
+        }
+        
+        // Override console methods to capture logs
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+        
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            const message = args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' ');
+            addLogEntry(message, null, 'log');
+        };
+        
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            const message = args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' ');
+            addLogEntry(message, null, 'error');
+        };
+        
+        console.warn = function(...args) {
+            originalWarn.apply(console, args);
+            const message = args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' ');
+            addLogEntry(message, null, 'warn');
+        };
+        
+        // Initial log
+        addLogEntry('✅ Upload page loaded');
+        // ========== End Debug Console ==========
+
         // Store the compressed file for form submission
         let compressedFile = null;
 
@@ -782,8 +860,16 @@
             const maxHeight = 1200;
             const quality = 0.8;
 
+            console.log('🖼️ Starting image compression', {
+                original_name: file.name,
+                original_size: file.size + ' bytes',
+                original_size_mb: (file.size / (1024 * 1024)).toFixed(2) + ' MB',
+                type: file.type
+            });
+
             // If file is already small (< 2MB), use as-is
             if (file.size < 2 * 1024 * 1024) {
+                console.log('✅ File < 2MB, using original');
                 callback(file);
                 return;
             }
@@ -792,15 +878,19 @@
             const reader = new FileReader();
 
             reader.onload = function(e) {
+                console.log('📖 FileReader loaded image data');
                 img.onload = function() {
                     let width = img.width;
                     let height = img.height;
+
+                    console.log('🎨 Image dimensions', { width, height });
 
                     // Calculate new dimensions
                     if (width > maxWidth || height > maxHeight) {
                         const ratio = Math.min(maxWidth / width, maxHeight / height);
                         width = Math.round(width * ratio);
                         height = Math.round(height * ratio);
+                        console.log('📐 Resized to', { width, height, ratio });
                     }
 
                     // Draw to canvas
@@ -810,6 +900,8 @@
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, width, height);
 
+                    console.log('🎬 Canvas created and image drawn');
+
                     // Convert to blob
                     canvas.toBlob(function(blob) {
                         if (blob) {
@@ -817,15 +909,23 @@
                                 type: 'image/jpeg',
                                 lastModified: Date.now()
                             });
+                            console.log('✅ Compression complete', {
+                                compressed_size: compressedFile.size + ' bytes',
+                                compressed_size_mb: (compressedFile.size / (1024 * 1024)).toFixed(2) + ' MB',
+                                original_size: file.size + ' bytes',
+                                compression_ratio: ((file.size - compressedFile.size) / file.size * 100).toFixed(1) + '%'
+                            });
                             callback(compressedFile);
                         } else {
+                            console.warn('⚠️ Blob creation failed, using original');
                             // Fallback to original
                             callback(file);
                         }
                     }, 'image/jpeg', quality);
                 };
 
-                img.onerror = function() {
+                img.onerror = function(error) {
+                    console.error('❌ Image load error:', error);
                     // If image can't be loaded, use original
                     callback(file);
                 };
@@ -833,7 +933,8 @@
                 img.src = e.target.result;
             };
 
-            reader.onerror = function() {
+            reader.onerror = function(error) {
+                console.error('❌ FileReader error:', error);
                 callback(file);
             };
 
@@ -866,28 +967,62 @@
                 formData.append('image', compressedFile, compressedFile.name);
             }
 
+            // Show loading state
+            console.log('🚀 Starting image upload...', {
+                form_action: form.action,
+                has_compressed_file: !!compressedFile,
+                form_data_size: formData.entries ? Array.from(formData.entries()).length : 'unknown'
+            });
+
             // Submit via fetch
             fetch(form.action, {
                     method: 'POST',
                     body: formData,
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest',
-                        'Accept': 'text/html',
                     }
                 })
                 .then(response => {
-                    if (response.redirected) {
-                        window.location.href = response.url;
+                    console.log('📨 Response received', {
+                        status: response.status,
+                        ok: response.ok,
+                        redirected: response.redirected,
+                        content_type: response.headers.get('content-type')
+                    });
+
+                    // Handle JSON response from controller
+                    const contentType = response.headers.get('content-type');
+                    if (contentType && contentType.includes('application/json')) {
+                        return response.json().then(data => {
+                            console.log('📋 JSON Response:', data);
+                            if (data.success) {
+                                console.log('✅ Upload successful');
+                                // Reload page after short delay to show success message
+                                setTimeout(() => window.location.reload(), 1500);
+                            } else {
+                                console.error('❌ Upload failed:', data.message);
+                                btn.classList.remove('loading');
+                                btn.disabled = false;
+                                alert(data.message || 'Upload failed. Please try again.');
+                            }
+                            return data;
+                        });
+                    } else if (response.ok) {
+                        console.log('✅ HTML Response - reloading page');
+                        // Reload page to show success/error message
+                        setTimeout(() => window.location.reload(), 1500);
                     } else {
-                        // Reload the page to show success/error message
-                        window.location.reload();
+                        return response.text().then(text => {
+                            console.error('❌ Server error:', response.status, text);
+                            throw new Error('Server responded with status ' + response.status);
+                        });
                     }
                 })
                 .catch(error => {
-                    console.error('Upload error:', error);
+                    console.error('🚨 Upload error:', error);
                     btn.classList.remove('loading');
                     btn.disabled = false;
-                    alert('Upload failed. Please try again.');
+                    alert('Upload failed: ' + (error.message || 'Unknown error. Please try again.'));
                 });
         });
     </script>
