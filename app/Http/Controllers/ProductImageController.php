@@ -58,7 +58,7 @@ class ProductImageController extends Controller
             'directory_exists' => $exists,
             'directory_writable' => $writable,
             'directory_permissions' => decoct($permissions & 0777),
-            'php_user' => function_exists('posix_getpwuid') ? 
+            'php_user' => function_exists('posix_getpwuid') ?
                 posix_getpwuid(posix_geteuid())['name'] : 'unknown',
             'can_create_file' => $this->canCreateTestFile($uploadPath),
             'disk_free_space' => disk_free_space($uploadPath) . ' bytes',
@@ -106,7 +106,7 @@ class ProductImageController extends Controller
                 Log::warning('Product upload attempt failed - product not found', [
                     'identifier' => $identifier
                 ]);
-                
+
                 // Return appropriate response based on request type
                 if ($request->wantsJson()) {
                     return response()->json(['error' => $message], 404);
@@ -185,7 +185,7 @@ class ProductImageController extends Controller
             ]);
 
             $successMessage = 'Image uploaded successfully!';
-            
+
             // Return appropriate response based on request type
             if ($request->wantsJson() || $request->header('X-Requested-With') === 'XMLHttpRequest') {
                 return response()->json([
@@ -195,11 +195,11 @@ class ProductImageController extends Controller
                     'redirect' => $request->getRequestUri()
                 ]);
             }
-            
+
             return back()->with('success', $successMessage);
         } catch (\Exception $e) {
             $errorMessage = 'Failed to upload image: ' . $e->getMessage();
-            
+
             Log::error('Product image upload failed', [
                 'identifier' => $identifier,
                 'error' => $e->getMessage(),
@@ -215,7 +215,7 @@ class ProductImageController extends Controller
                     'error' => $e->getMessage()
                 ], 500);
             }
-            
+
             return back()->with('error', $errorMessage);
         }
     }

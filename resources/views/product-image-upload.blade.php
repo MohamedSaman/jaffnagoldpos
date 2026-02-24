@@ -541,7 +541,7 @@
         </div>
         <div id="debugOutput" style="max-height: 240px; overflow-y: auto; font-size: 10px;"></div>
     </div>
-    
+
     <!-- Debug Toggle Button -->
     <button id="debugToggle" onclick="toggleDebugConsole()" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; background: #161b97; color: #fff; border: none; width: 50px; height: 50px; border-radius: 50%; font-size: 20px; cursor: pointer; display: none; box-shadow: 0 4px 12px rgba(22, 27, 151, 0.3); transition: all 0.3s;" title="Toggle debug console">🔧</button>
 
@@ -744,66 +744,66 @@
     <script>
         // ========== Debug Console ==========
         const debugMode = true; // Set to false to disable debug console
-        
+
         function addLogEntry(message, data = null, type = 'log') {
             const console_el = document.getElementById('debugConsole');
             const output_el = document.getElementById('debugOutput');
-            
+
             if (!debugMode) return;
-            
+
             // Show debug console and toggle button
             if (console_el) console_el.style.display = 'block';
             const toggle = document.getElementById('debugToggle');
             if (toggle) toggle.style.display = 'block';
-            
+
             let logText = message;
             if (data) {
                 logText += ' ' + JSON.stringify(data).substring(0, 200);
             }
-            
+
             const timeStr = new Date().toLocaleTimeString();
             const entry = document.createElement('div');
             entry.style.marginBottom = '4px';
             entry.style.paddingBottom = '4px';
             entry.style.borderBottom = '1px solid rgba(16, 185, 129, 0.2)';
-            
+
             const color = type === 'error' ? '#ef4444' : type === 'warn' ? '#f59e0b' : '#10b981';
             entry.innerHTML = `<span style="color: #64748b;">[${timeStr}]</span> <span style="color: ${color};">${message}</span>`;
-            
+
             output_el.appendChild(entry);
             output_el.scrollTop = output_el.scrollHeight;
         }
-        
+
         function toggleDebugConsole() {
             const console_el = document.getElementById('debugConsole');
             if (console_el) {
                 console_el.style.display = console_el.style.display === 'none' ? 'block' : 'none';
             }
         }
-        
+
         // Override console methods to capture logs
         const originalLog = console.log;
         const originalError = console.error;
         const originalWarn = console.warn;
-        
+
         console.log = function(...args) {
             originalLog.apply(console, args);
             const message = args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' ');
             addLogEntry(message, null, 'log');
         };
-        
+
         console.error = function(...args) {
             originalError.apply(console, args);
             const message = args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' ');
             addLogEntry(message, null, 'error');
         };
-        
+
         console.warn = function(...args) {
             originalWarn.apply(console, args);
             const message = args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' ');
             addLogEntry(message, null, 'warn');
         };
-        
+
         // Initial log
         addLogEntry('✅ Upload page loaded');
         // ========== End Debug Console ==========
@@ -883,14 +883,21 @@
                     let width = img.width;
                     let height = img.height;
 
-                    console.log('🎨 Image dimensions', { width, height });
+                    console.log('🎨 Image dimensions', {
+                        width,
+                        height
+                    });
 
                     // Calculate new dimensions
                     if (width > maxWidth || height > maxHeight) {
                         const ratio = Math.min(maxWidth / width, maxHeight / height);
                         width = Math.round(width * ratio);
                         height = Math.round(height * ratio);
-                        console.log('📐 Resized to', { width, height, ratio });
+                        console.log('📐 Resized to', {
+                            width,
+                            height,
+                            ratio
+                        });
                     }
 
                     // Draw to canvas
