@@ -46,7 +46,18 @@
     <div class="row g-3">
         @forelse($products as $product)
         @php
-            $imageUrl = $product['image'] ? asset('images/product.jpg') : null;
+            $imageUrl = null;
+            $defaultImage = asset('images/product.jpg');
+            
+            if (!empty($product['image'])) {
+                $imagePath = $product['image'];
+                if (strpos($imagePath, 'storage/images/') === 0) {
+                    $imgFilename = substr($imagePath, strlen('storage/images/'));
+                    $imageUrl = url('/product-image-serve/' . $imgFilename);
+                } else {
+                    $imageUrl = asset($imagePath);
+                }
+            }
         @endphp
         
         {{-- Product Card - 5 per row --}}
@@ -69,7 +80,7 @@
                 {{-- Product Image --}}
                 <div style="height: 180px; overflow: hidden; background-color: #f8f9fa;" class="position-relative">
                     @if($imageUrl)
-                        <img src="{{ $imageUrl }}" class="w-100 h-100" alt="{{ $product['name'] }}" style="object-fit: cover; object-position: center;">
+                        <img src="{{ $imageUrl }}" class="w-100 h-100" alt="{{ $product['name'] }}" style="object-fit: cover; object-position: center;" onerror="this.src='{{ $defaultImage }}'">
                     @else
                         <div class="w-100 h-100 d-flex align-items-center justify-content-center">
                             <i class="bi bi-box text-muted" style="font-size: 3rem;"></i>
