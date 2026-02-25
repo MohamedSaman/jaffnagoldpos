@@ -35,6 +35,32 @@
                 display: block;
             }
 
+          .action-btn.view {
+              color: var(--primary);
+              background-color: rgba(22, 27, 151, 0.1);
+          }
+
+          .action-btn.edit {
+              color: var(--primary);
+              background-color: rgba(22, 27, 151, 0.1);
+          }
+
+          .action-btn.delete {
+              color: var(--danger);
+              background-color: rgba(243, 11, 31, 0.1);
+          }
+
+          .action-btn:hover.view {
+              background-color: rgba(22, 27, 151, 0.2);
+          }
+
+          .action-btn:hover.edit {
+              background-color: rgba(22, 27, 151, 0.2);
+          }
+
+          .action-btn:hover.delete {
+              background-color: rgba(243, 11, 31, 0.2);
+          }
             /* Modern card styling */
             .card {
                 border: none;
@@ -104,33 +130,21 @@
             .action-btn:hover {
                 transform: scale(1.1);
             }
+        .btn-primary {
+            background-color: var(--primary) !important;
+            border-color: var(--primary) !important;
+        }
 
-            .action-btn.view {
-                color: #17a2b8;
-                background-color: rgba(23, 162, 184, 0.1);
-            }
+        .btn-success {
+            background-color: var(--primary) !important;
+            border-color: var(--primary) !important;
+        }
 
-            .action-btn.edit {
-                color: #4361ee;
-                background-color: rgba(67, 97, 238, 0.1);
-            }
-
-            .action-btn.delete {
-                color: #dc3545;
-                background-color: rgba(220, 53, 69, 0.1);
-            }
-
-            .action-btn:hover.view {
-                background-color: rgba(23, 162, 184, 0.2);
-            }
-
-            .action-btn:hover.edit {
-                background-color: rgba(67, 97, 238, 0.2);
-            }
-
-            .action-btn:hover.delete {
-                background-color: rgba(220, 53, 69, 0.2);
-            }
+        .btn-warning {
+            background-color: #f39c12 !important;
+            border-color: #f39c12 !important;
+            color: #fff !important;
+        }
 
             /* Modern modal styling */
             .modal-content {
@@ -499,7 +513,7 @@
             <div class="d-flex justify-content-between align-items-center mb-5">
                 <div>
                     <h3 class="fw-bold text-dark mb-2">
-                        <i class="bi bi-box-seam text-success me-2"></i> Product Inventory Management
+                        <i class="bi bi-box-seam text-jg-blue me-2"></i> Product Inventory Management
                     </h3>
                     <p class="text-muted mb-0">Manage your product catalog and inventory levels efficiently</p>
                 </div>
@@ -540,7 +554,7 @@
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <div>
                                 <h5 class="fw-bold text-dark mb-1">
-                                    <i class="bi bi-list-ul text-primary me-2"></i> Products List
+                                    <i class="bi bi-list-ul text-jg-blue me-2"></i> Products List
                                 </h5>
                                 <p class="text-muted small mb-0">View and manage all products in your inventory</p>
                             </div>

@@ -557,8 +557,8 @@
         {{-- Header --}}
         <div class="bg-gradient-to-r from-slate-900 to-slate-800 px-5 py-3.5 flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-lg bg-[#161b97]/20 border border-[#161b97]/30 flex items-center justify-center">
-                    <span class="material-symbols-outlined text-[#161b97] text-base">person</span>
+                <div class="w-8 h-8 rounded-lg bg-white/10 border border-white/20 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-white text-base">person</span>
                 </div>
                 <div>
                     <h3 class="font-black text-sm text-white uppercase tracking-widest leading-none">Customer Details</h3>
@@ -729,8 +729,8 @@
         {{-- Header --}}
         <div class="shrink-0 bg-gradient-to-r from-slate-900 to-slate-800 px-5 py-3.5 flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-lg bg-[#161b97]/20 border border-[#161b97]/30 flex items-center justify-center">
-                    <span class="material-symbols-outlined text-[#161b97] text-base">payments</span>
+                <div class="w-8 h-8 rounded-lg bg-white/10 border border-white/20 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-white text-base">payments</span>
                 </div>
                 <div>
                     <h3 class="font-black text-sm text-white uppercase tracking-widest leading-none">Secure Transaction</h3>
@@ -857,10 +857,7 @@
                 <div class="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl px-5 py-4 flex items-center justify-between">
                     <div>
                         <p class="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em]">Grand Total</p>
-                        <p class="text-3xl font-black text-[#161b97] tracking-tight mt-0.5">Rs. {{ number_format($grandTotal, 2) }}</p>
-                    </div>
-                    <div class="w-12 h-12 rounded-xl bg-[#161b97]/15 border border-[#161b97]/30 flex items-center justify-center">
-                        <span class="material-symbols-outlined text-[#161b97] text-xl">paid</span>
+                        <p class="text-3xl font-black text-white tracking-tight mt-0.5">Rs. {{ number_format($grandTotal, 2) }}</p>
                     </div>
                 </div>
 
@@ -899,8 +896,8 @@
         {{-- Header --}}
         <div class="bg-gradient-to-r from-slate-900 to-slate-800 px-5 py-3.5 flex items-center justify-between shrink-0">
             <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-lg bg-[#161b97]/20 border border-[#161b97]/30 flex items-center justify-center">
-                    <span class="material-symbols-outlined text-[#161b97] text-base">receipt_long</span>
+                <div class="w-8 h-8 rounded-lg bg-white/10 border border-white/20 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-white text-base">receipt_long</span>
                 </div>
                 <div>
                     <h3 class="font-black text-sm text-white uppercase tracking-widest leading-none">Transaction Finalized</h3>

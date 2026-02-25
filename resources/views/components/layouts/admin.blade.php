@@ -143,10 +143,89 @@
             margin-bottom: 0.25rem !important;
         }
 
-        .form-control,
-        .form-select {
+        .form-control:focus,
+        .form-select:focus {
             font-size: 12px !important;
             padding: 0.35rem 0.5rem !important;
+            border-color: var(--primary) !important;
+            box-shadow: 0 0 0 0.2rem rgba(22, 27, 151, 0.25) !important;
+        }
+
+        /* Standardized Color Palette Redefinition */
+        :root {
+            --primary: #161b97;
+            --primary-rgb: 22, 27, 151;
+            --danger: #f30b1f;
+            --danger-rgb: 243, 11, 31;
+            --success: #161b97; /* Standardizing success to JG Blue */
+            --info: #161b97;
+        }
+
+        .btn-primary, .btn-success, .btn-info, .btn-jg-primary {
+            background-color: var(--primary) !important;
+            border-color: var(--primary) !important;
+            color: #fff !important;
+            font-weight: 600 !important;
+        }
+
+        .btn-primary:hover, .btn-success:hover, .btn-info:hover, .btn-jg-primary:hover {
+            background-color: #12167d !important;
+            border-color: #12167d !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(22, 27, 151, 0.3);
+        }
+
+        .btn-danger, .btn-jg-danger {
+            background-color: var(--danger) !important;
+            border-color: var(--danger) !important;
+            color: #fff !important;
+            font-weight: 600 !important;
+        }
+
+        .btn-danger:hover, .btn-jg-danger:hover {
+            background-color: #d00000 !important;
+            border-color: #d00000 !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(243, 11, 31, 0.3);
+        }
+
+        .text-primary, .text-success, .text-info {
+            color: var(--primary) !important;
+        }
+
+        .text-danger {
+            color: var(--danger) !important;
+        }
+
+        .bg-primary, .bg-success, .bg-info {
+            background-color: var(--primary) !important;
+        }
+
+        .bg-danger {
+            background-color: var(--danger) !important;
+        }
+
+        /* Standardized Modal Styles */
+        .modal-header {
+            background: linear-gradient(135deg, #1a1a1a 0%, #000000 100%) !important;
+            color: #ffffff !important;
+            border-bottom: 2px solid var(--primary) !important;
+            padding: 1rem 1.5rem !important;
+        }
+
+        .modal-header .modal-title {
+            color: #ffffff !important;
+            font-weight: 700 !important;
+        }
+
+        .modal-header .btn-close {
+            filter: invert(1) grayscale(100%) brightness(200%) !important;
+        }
+
+        .modal-content {
+            border: none !important;
+            border-radius: 12px !important;
+            overflow: hidden !important;
         }
 
         .btn,
@@ -238,6 +317,15 @@
             display: none;
         }
 
+        .sidebar.collapsed .sidebar-header {
+            justify-content: center !important;
+            padding: 15px 10px;
+        }
+
+        .sidebar.collapsed .logo-img {
+            margin-right: 0 !important;
+        }
+
         .sidebar.collapsed .nav-link.dropdown-toggle::after {
             display: none !important;
         }
@@ -255,19 +343,21 @@
 
 
         .sidebar-header {
-            padding: 15px 15px 0;
-            margin-bottom: 2px;
+            padding: 12px 15px;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
         }
 
         .sidebar-title {
-            font-weight: 600;
-            font-size: 1.4rem;
-            color: #1e293b;
-            letter-spacing: -0.02em;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            
+            font-weight: 800;
+            font-size: 1.25rem;
+            color: var(--danger);
+            letter-spacing: -0.03em;
+            white-space: nowrap;
+            margin-bottom: 0;
+            text-transform: uppercase;
+            font-family: 'Inter', sans-serif;
         }
         
 
@@ -893,8 +983,12 @@
 
         .modal-header {
             background: linear-gradient(135deg, #1a1a1a 0%, #000000 100%);
-            color: var(--primary);
+            color: #ffffff !important;
             border-bottom: 2px solid var(--primary);
+        }
+
+        .modal-header .btn-close {
+            filter: invert(1) grayscale(100%) brightness(200%);
         }
 
 
@@ -954,7 +1048,8 @@
     <div class="d-flex">
         <!-- Sidebar -->
         <div class="sidebar">
-            <div class="sidebar-header d-flex justify-content-center">
+            <div class="sidebar-header">
+                <img src="{{ asset('images/jg.png') }}" alt="Logo" width="60" class="logo-img me-3">
                 <div class="sidebar-title">
 
                     <img src="{{ asset('images/jg.png') }}" alt="Logo" width="60">
@@ -1334,12 +1429,12 @@
                     00:00:00
                 </div>
                 
-                <div class="btn rounded-pill shadow-sm d-flex align-items-center gap-2 px-3 py-2"
+                <div class="btn rounded-pill shadow-sm d-flex align-items-center gap-2 px-3 py-2 btn-jg-primary"
                     onclick="handlePOSClick()"
                     role="button"
-                    style="background: #fff; color: var(--primary); border: 1px solid var(--primary);">
-                    <i class="bi bi-cart-plus-fill fs-5"></i>
-                    <span class="fw-bold">POS</span>
+                    style="border: none;">
+                    <i class="bi bi-cart-plus-fill fs-5 text-white"></i>
+                    <span class="fw-bold text-white">POS</span>
                 </div>
             </div>
 

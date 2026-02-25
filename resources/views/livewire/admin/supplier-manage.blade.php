@@ -3,12 +3,12 @@
     <div class="d-flex justify-content-between align-items-center mb-2">
         <div>
             <h3 class="fw-bold text-dark mb-2">
-                <i class="bi bi-people-fill text-success me-2"></i> Supplier Management
+                <i class="bi bi-people-fill text-jg-blue me-2"></i> Supplier Management
             </h3>
             <p class="text-muted mb-0">Manage your suppliers and business contacts efficiently</p>
         </div>
         <div>
-            <button class="btn btn-primary" wire:click="createSupplier">
+            <button class="btn btn-jg-primary" wire:click="createSupplier">
                 <i class="bi bi-plus-circle me-2"></i> Add Supplier
             </button>
         </div>
@@ -19,7 +19,7 @@
             <div class="card-header d-flex justify-content-between align-items-center">
                 <div>
                     <h5 class="fw-bold text-dark mb-1">
-                        <i class="bi bi-list-ul text-primary me-2"></i> Supplier List
+                        <i class="bi bi-list-ul text-jg-blue me-2"></i> Supplier List
                     </h5>
                     <p class="text-muted small mb-0">View and manage all registered suppliers</p>
                 </div>
@@ -212,7 +212,7 @@
                             @enderror
                         </div>
                         <div class="d-grid">
-                            <button type="submit" class="btn btn-primary">
+                            <button type="submit" class="btn btn-jg-primary py-3">
                                 <i class="bi bi-check2-circle me-1"></i> Save Supplier
                             </button>
                         </div>
@@ -367,7 +367,7 @@
                             @enderror
                         </div>
                         <div class="d-grid">
-                            <button type="submit" class="btn btn-primary">
+                            <button type="submit" class="btn btn-jg-primary py-3">
                                 <i class="bi bi-check2-circle me-1"></i> Update Supplier
                             </button>
                         </div>
@@ -429,8 +429,8 @@
 
     .form-control:focus,
     .form-select:focus {
-        box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
-        border-color: #4361ee;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        border: 1px solid var(--primary);
     }
 
     .btn {
@@ -441,13 +441,13 @@
     }
 
     .btn-primary {
-        background-color: #4361ee;
-        border-color: #4361ee;
+        background-color: var(--primary);
+        border-color: var(--primary);
     }
 
     .btn-primary:hover {
-        background-color: #3f37c9;
-        border-color: #3f37c9;
+        background-color: #12167d;
+        border-color: #12167d;
         transform: translateY(-2px);
     }
 

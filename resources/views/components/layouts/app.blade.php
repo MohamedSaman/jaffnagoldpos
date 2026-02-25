@@ -36,21 +36,22 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-image: url('../images/bgproduct.jpg');
+            background-image: url('../images/jgg.png');
             background-size: cover;
             background-position: center;
             z-index: 0;
         }
 
         .login-form-overlay {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
             border-radius: 10px;
             padding: 30px;
             width: 100%;
             max-width: 400px;
             z-index: 1;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .user-icon-container {

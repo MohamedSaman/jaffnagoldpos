@@ -1,11 +1,47 @@
     <div class="login-container">
         <style>
-            .login-form-overlay { background: rgba(0,0,0,0.45); padding:28px; border-radius:14px; backdrop-filter: blur(5px); }
-            .separator-line { height:1px; background:rgba(255,255,255,0.08); margin:10px 0; border-radius:2px; }
-            .connect-section { text-align:center; padding:15px 0 6px; }
-            .connect-title { color:#fff; font-weight:600; margin-bottom:12px; }
-            .connect-links { display:flex; gap:18px; justify-content:center; align-items:center; }
-            .connect-icon { width:40px; height:40px; display:inline-flex; align-items:center; justify-content:center; border-radius:50%; color:#fff; font-size:22px; box-shadow:0 8px 24px rgba(0,0,0,0.35); text-decoration:none; }
+            .login-form-overlay { 
+                background: linear-gradient(135deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.01)); 
+                padding: 22px 28px; 
+                border-radius: 20px; 
+                backdrop-filter: blur(10px); 
+                -webkit-backdrop-filter: blur(10px);
+                border: 1px solid rgba(255, 255, 255, 0.15); 
+                box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+                width: 100%;
+                max-width: 380px;
+                margin: 0 20px;
+            }
+            .login-btn {
+                background: linear-gradient(45deg, #161b97, #2b33c5) !important;
+                border: none !important;
+                border-radius: 12px !important;
+                padding: 12px !important;
+                font-weight: 700 !important;
+                text-transform: uppercase !important;
+                letter-spacing: 2px !important;
+                color: #fff !important;
+                box-shadow: 0 6px 20px rgba(22, 27, 151, 0.3) !important;
+                transition: all 0.3s ease !important;
+                margin-top: 10px !important;
+            }
+            .login-btn:hover {
+                background: linear-gradient(45deg, #1d23b3, #3b82f6) !important;
+                box-shadow: 0 10px 25px rgba(22, 27, 151, 0.4) !important;
+                transform: translateY(-2px) scale(1.02) !important;
+            }
+            .form-control {
+                background: rgba(255, 255, 255, 1) !important;
+                border: 1px solid rgba(255, 255, 255, 0.2) !important;
+                border-radius: 10px !important;
+                padding: 10px 18px !important;
+            }
+            .separator-line { height:1px; background:rgba(255,255,255,0.15); margin:15px 0; border-radius:2px; }
+            .connect-section { text-align:center; padding:5px 0 2px; }
+            .connect-title { color:#fff; font-weight:600; font-size: 0.85rem; margin-bottom:10px; opacity: 0.8; }
+            .connect-links { display:flex; gap:15px; justify-content:center; align-items:center; }
+            .connect-icon { width:38px; height:38px; display:inline-flex; align-items:center; justify-content:center; border-radius:50%; color:#fff; font-size:20px; box-shadow:0 8px 24px rgba(0,0,0,0.2); text-decoration:none; transition: transform 0.2s; }
+            .connect-icon:hover { transform: scale(1.1); }
             .connect-icon.email { background:#e84b3c; }
             .connect-icon.whatsapp { background:#25d366; }
             .connect-icon i { font-size:22px; }
@@ -84,6 +120,14 @@
                         </a>
                     </div>
                 </div>
+
             </form>
+        </div>
+
+        <!-- Developer Credit Outside -->
+        <div class="login-footer" style="position: absolute; bottom: 20px; left: 0; width: 100%; text-align: center; z-index: 2;">
+            <p style="font-size: 0.85rem; color: rgba(255,255,255,0.7); margin-bottom: 0; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">
+                Developed by <a href="https://webxkey.com/" target="_blank" style="color: #fff; text-decoration: none; font-weight: 600; opacity: 0.9; transition: opacity 0.2s;">webxkey</a>
+            </p>
         </div>
     </div>

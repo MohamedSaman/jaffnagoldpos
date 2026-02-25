@@ -35,51 +35,52 @@
                 left: 0;
                 width: 100%;
                 height: 100%;
-                background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('{{ asset('/images/bgproduct.jpg') }}');
+                background-image: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2)), url('{{ asset('/images/jgg.png') }}');
                 background-size: cover;
                 background-position: center;
                 z-index: 0;
             }
 
             .login-form-overlay {
-                background: rgba(255, 255, 255, 0.95);
+                background: linear-gradient(135deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.01));
                 backdrop-filter: blur(10px);
+                -webkit-backdrop-filter: blur(10px);
                 border-radius: 20px;
-                padding: 40px;
+                padding: 22px 30px;
                 width: 100%;
-                max-width: 450px;
+                max-width: 380px;
                 z-index: 1;
-                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-                border: 1px solid var(--primary);
+                box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+                border: 1px solid rgba(255, 255, 255, 0.15);
             }
 
             .user-icon-container {
                 display: flex;
                 justify-content: center;
-                margin-bottom: 30px;
+                margin-bottom: 15px;
             }
 
             .user-icon-container i {
-                font-size: 2.5rem;
-                color: var(--primary);
-                background: var(--black);
+                font-size: 3rem;
+                color: var(--white);
+                background: transparent;
                 border-radius: 50%;
-                width: 80px;
-                height: 80px;
+                width: 60px;
+                height: 60px;
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                border: 2px solid var(--primary);
-                box-shadow: 0 0 20px rgba(22, 27, 151, 0.3);
+                border: none;
+                box-shadow: none;
             }
 
             .form-group {
-                margin-bottom: 25px;
+                margin-bottom: 20px;
             }
 
             .form-control {
                 border-radius: 10px;
-                padding: 12px 20px;
+                padding: 10px 18px;
                 border: 1px solid #ddd;
                 transition: all 0.3s;
             }
@@ -91,22 +92,23 @@
 
             .login-btn {
                 width: 100%;
-                border-radius: 10px;
+                border-radius: 12px;
                 padding: 12px;
-                background-color: var(--primary);
+                background: linear-gradient(45deg, #161b97, #2b33c5);
                 color: #ffffff;
-                border: 1px solid var(--primary);
+                border: none;
                 font-weight: 700;
                 text-transform: uppercase;
-                letter-spacing: 1px;
-                transition: all 0.3s;
+                letter-spacing: 2px;
+                transition: all 0.3s ease;
+                box-shadow: 0 6px 20px rgba(22, 27, 151, 0.3);
             }
 
             .login-btn:hover {
-                background-color: var(--primary-dark);
+                background: linear-gradient(45deg, #1d23b3, #3b82f6);
                 color: #ffffff;
-                transform: translateY(-2px);
-                box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+                transform: translateY(-2px) scale(1.02);
+                box-shadow: 0 10px 25px rgba(22, 27, 151, 0.4);
             }
 
             .forgot-link {

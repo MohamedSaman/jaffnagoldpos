@@ -3,7 +3,7 @@
     <div class="d-flex justify-content-between align-items-center mb-5">
         <div>
             <h3 class="fw-bold text-dark mb-2">
-                <i class="bi bi-person-gear text-success me-2"></i> Manage Admins
+                <i class="bi bi-person-gear text-jg-blue me-2"></i> Manage Admins
             </h3>
             <p class="text-muted mb-0">Manage all admin accounts efficiently</p>
         </div>
@@ -33,7 +33,7 @@
         <div class="card-header d-flex justify-content-between align-items-center">
             <div>
                 <h5 class="fw-bold text-dark mb-1">
-                    <i class="bi bi-journal-text text-primary me-2"></i> Admin List
+                    <i class="bi bi-journal-text text-jg-blue me-2"></i> Admin List
                 </h5>
             </div>
             
@@ -65,7 +65,7 @@
                                     <span class="badge bg-success">Admin</span>
                                 </td>
                                 <td class="text-end pe-4">
-                                    <button class="btn btn-link text-primary p-0 me-2" 
+                                    <button class="btn btn-link text-jg-blue p-0 me-2" 
                                             wire:click="editAdmin({{ $admin->id }})" 
                                             wire:loading.attr="disabled">
                                         <i class="bi bi-pencil"></i>
@@ -162,7 +162,7 @@
                             </div>
                         </div>
                         <div class="d-grid">
-                            <button type="submit" class="btn btn-primary" wire:loading.attr="disabled">
+                            <button type="submit" class="btn btn-jg-primary py-3" wire:loading.attr="disabled">
                                 <i class="bi bi-check2-circle me-1"></i>
                                 <span wire:loading.remove>Save Admin</span>
                                 <span wire:loading>Saving...</span>
@@ -247,7 +247,7 @@
                         </div>
                         @endif
                         <div class="d-grid">
-                            <button type="submit" class="btn btn-primary" wire:loading.attr="disabled">
+                            <button type="submit" class="btn btn-jg-primary py-3" wire:loading.attr="disabled">
                                 <i class="bi bi-check2-circle me-1"></i>
                                 <span wire:loading.remove>Update Admin</span>
                                 <span wire:loading>Updating...</span>
@@ -361,25 +361,13 @@
     }
 
     .btn-primary {
-        background-color: #4361ee;
-        border-color: #4361ee;
-    }
-
-    .btn-primary:hover {
-        background-color: #3f37c9;
-        border-color: #3f37c9;
-        transform: translateY(-2px);
+        background-color: var(--primary) !important;
+        border-color: var(--primary) !important;
     }
 
     .btn-danger {
-        background-color: #e63946;
-        border-color: #e63946;
-    }
-
-    .btn-danger:hover {
-        background-color: #d00000;
-        border-color: #d00000;
-        transform: translateY(-2px);
+        background-color: var(--danger) !important;
+        border-color: var(--danger) !important;
     }
 
     .alert {

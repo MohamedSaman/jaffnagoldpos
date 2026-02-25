@@ -3,12 +3,12 @@
     <div class="d-flex justify-content-between align-items-center mb-5">
         <div>
             <h3 class="fw-bold text-dark mb-2">
-                <i class="bi bi-people-fill text-success me-2"></i> Manage Staff
+                <i class="bi bi-people-fill text-jg-blue me-2"></i> Manage Staff
             </h3>
             <p class="text-muted mb-0">Manage all staff information efficiently</p>
         </div>
         <div>
-                <button class="btn btn-primary" wire:click="createStaff">
+                <button class="btn btn-jg-primary" wire:click="createStaff">
                     <i class="bi bi-plus-lg me-2"></i> Create Staff
                 </button>
             </div>
@@ -33,7 +33,7 @@
         <div class="card-header d-flex justify-content-between align-items-center">
             <div>
                 <h5 class="fw-bold text-dark mb-1">
-                    <i class="bi bi-journal-text text-primary me-2"></i> Staff List
+                    <i class="bi bi-journal-text text-jg-blue me-2"></i> Staff List
                 </h5>
             </div>
             <div class="d-flex align-items-center gap-2">
@@ -370,7 +370,7 @@
                             </div>
                         </div>
                         <div class="d-grid mt-3">
-                            <button type="submit" class="btn btn-primary" wire:loading.attr="disabled">
+                            <button type="submit" class="btn btn-jg-primary py-3" wire:loading.attr="disabled">
                                 <i class="bi bi-check2-circle me-1"></i>
                                 <span wire:loading.remove>Save Staff</span>
                                 <span wire:loading>Saving...</span>
@@ -476,7 +476,7 @@
                     </div>
                     @endif
                     <div class="d-grid">
-                        <button type="submit" class="btn btn-primary" wire:loading.attr="disabled">
+                        <button type="submit" class="btn btn-jg-primary py-3" wire:loading.attr="disabled">
                             <i class="bi bi-check2-circle me-1"></i>
                             <span wire:loading.remove>Update Staff</span>
                             <span wire:loading>Updating...</span>
@@ -570,8 +570,8 @@
 
     .form-control:focus,
     .form-select:focus {
-        box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
-        border-color: #4361ee;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        border: 1px solid var(--primary);
     }
 
     .btn {
@@ -582,13 +582,13 @@
     }
 
     .btn-primary {
-        background-color: #4361ee;
-        border-color: #4361ee;
+        background-color: var(--primary);
+        border-color: var(--primary);
     }
 
     .btn-primary:hover {
-        background-color: #3f37c9;
-        border-color: #3f37c9;
+        background-color: #12167d;
+        border-color: #12167d;
         transform: translateY(-2px);
     }
 

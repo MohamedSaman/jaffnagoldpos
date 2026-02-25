@@ -3,7 +3,7 @@
     <div class="d-flex justify-content-between align-items-center mb-5">
         <div>
             <h3 class="fw-bold text-dark mb-2">
-                <i class="bi bi-pie-chart-fill text-success me-2"></i> Expense Management
+                <i class="bi bi-pie-chart-fill text-jg-blue me-2"></i> Expense Management
             </h3>
             <p class="text-muted mb-0">Track and manage your company expenses efficiently</p>
         </div>
@@ -24,8 +24,8 @@
             <div class="card summary-card today h-100">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
-                        <div class="icon-container bg-success bg-opacity-10 me-3">
-                            <i class="bi bi-calendar-day text-success fs-4"></i>
+                        <div class="icon-container bg-primary bg-opacity-10 me-3">
+                            <i class="bi bi-calendar-day text-primary fs-4"></i>
                         </div>
                         <div class="flex-grow-1">
                             <p class="text-muted mb-1">Today's Expenses</p>
@@ -41,8 +41,8 @@
             <div class="card summary-card month h-100">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
-                        <div class="icon-container bg-info bg-opacity-10 me-3">
-                            <i class="bi bi-calendar3 text-info fs-4"></i>
+                        <div class="icon-container bg-primary bg-opacity-10 me-3">
+                            <i class="bi bi-calendar3 text-primary fs-4"></i>
                         </div>
                         <div class="flex-grow-1">
                             <p class="text-muted mb-1">This Month's Expenses</p>
@@ -79,7 +79,7 @@
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <div>
                         <h5 class="fw-bold text-dark mb-1">
-                            <i class="bi bi-journal-text text-primary me-2"></i> Daily Expenses
+                            <i class="bi bi-journal-text text-jg-blue me-2"></i> Daily Expenses
                         </h5>
                         <p class="text-muted small mb-0">Small daily costs like snacks, printouts, or stationery</p>
                     </div>
@@ -136,7 +136,7 @@
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <div>
                         <h5 class="fw-bold text-dark mb-1">
-                            <i class="bi bi-calendar2-check text-info me-2"></i> Monthly Expenses
+                            <i class="bi bi-calendar2-check text-jg-blue me-2"></i> Monthly Expenses
                         </h5>
                         <p class="text-muted small mb-0">Regular monthly costs like bills, rent, and subscriptions</p>
                     </div>
@@ -560,15 +560,15 @@
     }
 
     .summary-card.today {
-        border-left-color: #4cc9f0;
+        border-left-color: var(--primary);
     }
 
     .summary-card.month {
-        border-left-color: #1a5fb8;
+        border-left-color: var(--primary);
     }
 
     .summary-card.total {
-        border-left-color: #2a83df;
+        border-left-color: var(--danger);
     }
 
     .icon-container {
@@ -643,25 +643,14 @@
         transition: all 0.3s ease;
     }
 
-    .btn-primary {
-        background-color: #4361ee;
-        border-color: #4361ee;
+    .btn-primary, .btn-info {
+        background-color: var(--primary) !important;
+        border-color: var(--primary) !important;
     }
 
-    .btn-primary:hover {
-        background-color: #3f37c9;
-        border-color: #3f37c9;
-        transform: translateY(-2px);
-    }
-
-    .btn-info {
-        background-color: #4895ef;
-        border-color: #4895ef;
-    }
-
-    .btn-info:hover {
-        background-color: #3a7bd5;
-        border-color: #3a7bd5;
+    .btn-primary:hover, .btn-info:hover {
+        background-color: #12167d !important;
+        border-color: #12167d !important;
         transform: translateY(-2px);
     }
 
