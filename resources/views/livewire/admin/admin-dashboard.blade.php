@@ -133,7 +133,7 @@
                     
                     <div class="d-flex justify-content-between align-items-center">
                         <small class="text-muted">Delivery Revenue</small>
-                        <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2 py-1">
+                        <span class="badge  bg-opacity-10 text-primary border border-primary border-opacity-25 px-2 py-1">
                             Rs.{{ number_format($deliverySalesRevenue, 0) }}
                         </span>
                     </div>
@@ -153,7 +153,7 @@
                     
                     <div class="d-flex justify-content-between align-items-center">
                         <small class="text-muted">Available Stock</small>
-                        <span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25 px-2 py-1">
+                        <span class="badge  bg-opacity-10 text-info border border-info border-opacity-25 px-2 py-1">
                             {{ number_format($availableStock) }} units
                         </span>
                     </div>
@@ -177,7 +177,7 @@
                     
                     <div class="d-flex justify-content-between align-items-center">
                         <small class="text-muted">Today Expense</small>
-                        <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-2 py-1">
+                        <span class="badge  bg-opacity-10 text-danger border border-danger border-opacity-25 px-2 py-1">
                             Rs.{{ number_format($todayTotal, 0) }}
                         </span>
                     </div>

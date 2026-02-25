@@ -356,14 +356,13 @@
             <div class="modal-content border-0 shadow-lg overflow-hidden" style="border-radius: 15px;">
                 <div class="modal-body p-0">
                     {{-- Header Section --}}
-                    <div class="p-4 bg-white border-bottom">
+                    <div class="p-1 bg-white border-bottom">
                         <div class="row align-items-center">
                             <div class="col-3">
                                 <img src="{{ asset('images/jg.png') }}" alt="Logo" class="img-fluid" style="max-height: 70px;">
                             </div>
                             <div class="col-6 text-center">
-                                <h2 class="mb-0 fw-black text-dark" style="font-size: 1.8rem; letter-spacing: 1px; line-height: 1.2;">JAFFNA GOLD<br><span style="font-size: 1.2rem; opacity: 0.8;">(PVT) LTD</span></h2>
-                                <p class="mb-0 text-muted small text-uppercase fw-bold" style="letter-spacing: 3px; font-size: 0.65rem;">Gold Shop</p>
+                                <h2 class="mb-0 fw-black text-dark" style="font-size: 1.8rem; letter-spacing: 1px; line-height: 1.2;">JAFFNA GOLD COVERING</h2>
                             </div>
                             <div class="col-3 text-end">
                                 <div class="badge bg-gold text-white p-2 px-3 rounded-pill fw-bold" style="font-size: 0.7rem;">SALE CONFIRMED</div>
@@ -372,7 +371,7 @@
                     </div>
 
                     {{-- Info Section --}}
-                    <div class="p-4 bg-light-gold border-bottom">
+                    <div class="p-2 bg-light-gold border-bottom">
                         <div class="row g-4">
                             <div class="col-6">
                                 <div class="text-muted small text-uppercase fw-bold mb-2" style="font-size: 0.65rem; letter-spacing: 1px;">Customer Information</div>
@@ -413,34 +412,6 @@
                                         <span class="text-muted small">Status:</span>
                                         <span class="text-success fw-bold small"><i class="bi bi-patch-check-fill me-1"></i>{{ $createdSale->status }}</span>
                                     </div>
-                                     <div class="text-center mt-3" wire:ignore
-                                          x-data="{ 
-                                             saleId: '{{ $createdSale->invoice_number ?? $createdSale->sale_id }}',
-                                             init() {
-                                                 this.renderBarcode();
-                                             },
-                                             renderBarcode() {
-                                                 let attempts = 0;
-                                                 const tryRender = () => {
-                                                     if (typeof JsBarcode === 'function' && this.$refs.barcode) {
-                                                         JsBarcode(this.$refs.barcode, this.saleId, {
-                                                             format: 'CODE128',
-                                                             width: 1.2,
-                                                             height: 35,
-                                                             displayValue: true,
-                                                             fontSize: 10,
-                                                             margin: 0
-                                                         });
-                                                     } else if (attempts < 30) {
-                                                         attempts++;
-                                                         setTimeout(tryRender, 200);
-                                                     }
-                                                 };
-                                                 tryRender();
-                                             }
-                                          }">
-                                         <img x-ref="barcode" style="max-width: 100%;" />
-                                     </div>
                                 </div>
                             </div>
                         </div>
@@ -840,6 +811,9 @@
         color: #ccc;
     }
 
+    .table-responsive{
+        min-height: 100px !important;
+    }
     /* Responsive adjustments */
     @media (max-width: 768px) {
         .premium-search-input {

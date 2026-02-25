@@ -26,7 +26,7 @@
                     <select wire:model.live="categoryFilter" class="form-select">
                         <option value="">All Categories</option>
                         @foreach($categories as $category)
-                            <option value="{{ $category->id }}">{{ $category->name }}</option>
+                            <option value="{{ $category->id }}">{{ $category->category_name }}</option>
                         @endforeach
                     </select>
                 </div>
