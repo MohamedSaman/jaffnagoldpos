@@ -167,7 +167,8 @@ class SalesSystem extends Component
         foreach ($this->cart as $index => $item) {
             // Get the corresponding product record to get the correct price
             $productRecord = ProductDetail::with(['price', 'prices'])->find($item['id']);
-            if (!$productRecord) continue;
+            if (!$productRecord)
+                continue;
 
             // Find correct price record for variant
             $priceRecord = $productRecord->price;
@@ -188,19 +189,20 @@ class SalesSystem extends Component
             }
 
             // Update item discount using new percentage
-            $discountAmount = ((float)$newPrice * (float)$discountPercentage) / 100;
+            $discountAmount = ((float) $newPrice * (float) $discountPercentage) / 100;
             $this->cart[$index]['discount'] = (float) round($discountAmount, 2);
             $this->cart[$index]['discount_type'] = 'percentage';
             $this->cart[$index]['discount_percentage'] = (float) $discountPercentage;
-            $this->cart[$index]['total'] = (float) (((float)$newPrice - (float)$this->cart[$index]['discount']) * (int)$this->cart[$index]['quantity']);
+            $this->cart[$index]['total'] = (float) (((float) $newPrice - (float) $this->cart[$index]['discount']) * (int) $this->cart[$index]['quantity']);
         }
     }
 
     // Helper method to get price based on price type
     public function getPriceValue($priceRecord)
     {
-        if (!$priceRecord) return 0;
-        
+        if (!$priceRecord)
+            return 0;
+
         return match ($this->priceType) {
             'retail' => $priceRecord->retail_price ?? 0,
             'wholesale' => $priceRecord->wholesale_price ?? 0,
@@ -327,7 +329,8 @@ class SalesSystem extends Component
                     if ($product->variant_id !== null && $product->stocks && $product->stocks->isNotEmpty()) {
                         // Expand each variant as a separate search result
                         foreach ($product->stocks as $stock) {
-                            if (($stock->available_stock ?? 0) <= 0) continue;
+                            if (($stock->available_stock ?? 0) <= 0)
+                                continue;
 
                             // Find matching price record for this variant value
                             $priceRecord = $product->prices->firstWhere('variant_value', $stock->variant_value) ?? $product->price;
@@ -410,6 +413,8 @@ class SalesSystem extends Component
 
         $existingIndex = null;
         foreach ($this->cart as $index => $item) {
+            if (!empty($item['is_custom']))
+                continue; // Skip custom products
             $itemIdentifier = $item['id'] . '::' . ($item['variant_value'] ?? '');
             if ($itemIdentifier === $cartIdentifier) {
                 $existingIndex = $index;
@@ -425,7 +430,7 @@ class SalesSystem extends Component
             }
 
             $this->cart[$existingIndex]['quantity'] += 1;
-            $this->cart[$existingIndex]['total'] = (float) (((float)$this->cart[$existingIndex]['price'] - (float)$this->cart[$existingIndex]['discount']) * (int)$this->cart[$existingIndex]['quantity']);
+            $this->cart[$existingIndex]['total'] = (float) (((float) $this->cart[$existingIndex]['price'] - (float) $this->cart[$existingIndex]['discount']) * (int) $this->cart[$existingIndex]['quantity']);
         } else {
             // Apply automatic discount percentage based on priceType
             $discountPercentage = 0;
@@ -448,10 +453,11 @@ class SalesSystem extends Component
                 'discount' => (float) round($discountPrice, 2),
                 'discount_type' => 'percentage',
                 'discount_percentage' => (float) $discountPercentage,
-                'total' => (float) ((float)$product['price'] - (float)round($discountPrice, 2)),
+                'total' => (float) ((float) $product['price'] - (float) round($discountPrice, 2)),
                 'stock' => (int) $product['stock'],
                 'variant_id' => $product['variant_id'] ?? null,
                 'variant_value' => $product['variant_value'] ?? null,
+                'is_custom' => false,
             ];
 
             // Prepend new item to the beginning of the cart so it appears at the top
@@ -463,10 +469,53 @@ class SalesSystem extends Component
         $this->dispatch('focus-search');
     }
 
+    // Add Custom Product to Cart (product not in system)
+    public function addCustomProduct()
+    {
+        $newItem = [
+            'key' => uniqid('custom_'),
+            'id' => 0,
+            'name' => 'Custom Product',
+            'code' => 'CUSTOM-' . strtoupper(substr(uniqid(), -6)),
+            'model' => 'N/A',
+            'price' => 0,
+            'quantity' => 1,
+            'discount' => 0,
+            'discount_type' => 'fixed',
+            'discount_percentage' => 0,
+            'total' => 0,
+            'stock' => 9999, // Unlimited stock for custom products
+            'variant_id' => null,
+            'variant_value' => null,
+            'is_custom' => true,
+        ];
+
+        // Prepend to top of cart
+        array_unshift($this->cart, $newItem);
+        $this->dispatch('focus-search');
+    }
+
+    // Update custom product name
+    public function updateCustomName($index, $name)
+    {
+        if (isset($this->cart[$index]) && !empty($this->cart[$index]['is_custom'])) {
+            $this->cart[$index]['name'] = $name;
+        }
+    }
+
+    // Update custom product code
+    public function updateCustomCode($index, $code)
+    {
+        if (isset($this->cart[$index]) && !empty($this->cart[$index]['is_custom'])) {
+            $this->cart[$index]['code'] = $code;
+        }
+    }
+
     // Update Quantity
     public function updateQuantity($index, $quantity)
     {
-        if ($quantity < 1) $quantity = 1;
+        if ($quantity < 1)
+            $quantity = 1;
 
         // Check stock availability
         $productStock = $this->cart[$index]['stock'];
@@ -476,7 +525,7 @@ class SalesSystem extends Component
         }
 
         $this->cart[$index]['quantity'] = (int) $quantity;
-        $this->cart[$index]['total'] = (float) (((float)$this->cart[$index]['price'] - (float)$this->cart[$index]['discount']) * (int)$quantity);
+        $this->cart[$index]['total'] = (float) (((float) $this->cart[$index]['price'] - (float) $this->cart[$index]['discount']) * (int) $quantity);
     }
 
     // Increment Quantity
@@ -491,7 +540,7 @@ class SalesSystem extends Component
         }
 
         $this->cart[$index]['quantity'] += 1;
-        $this->cart[$index]['total'] = (float) (((float)$this->cart[$index]['price'] - (float)$this->cart[$index]['discount']) * (int)$this->cart[$index]['quantity']);
+        $this->cart[$index]['total'] = (float) (((float) $this->cart[$index]['price'] - (float) $this->cart[$index]['discount']) * (int) $this->cart[$index]['quantity']);
     }
 
     // Decrement Quantity
@@ -499,24 +548,25 @@ class SalesSystem extends Component
     {
         if ($this->cart[$index]['quantity'] > 1) {
             $this->cart[$index]['quantity'] -= 1;
-            $this->cart[$index]['total'] = (float) (((float)$this->cart[$index]['price'] - (float)$this->cart[$index]['discount']) * (int)$this->cart[$index]['quantity']);
+            $this->cart[$index]['total'] = (float) (((float) $this->cart[$index]['price'] - (float) $this->cart[$index]['discount']) * (int) $this->cart[$index]['quantity']);
         }
     }
 
     // Update Price
     public function updatePrice($index, $price)
     {
-        if ($price < 0) $price = 0;
+        if ($price < 0)
+            $price = 0;
 
         $this->cart[$index]['price'] = (float) $price;
-        $this->cart[$index]['total'] = (float) (((float)$price - (float)$this->cart[$index]['discount']) * (int)$this->cart[$index]['quantity']);
+        $this->cart[$index]['total'] = (float) (((float) $price - (float) $this->cart[$index]['discount']) * (int) $this->cart[$index]['quantity']);
     }
 
     // Update Discount
     public function updateDiscount($index, $discount)
     {
         $isPercentage = false;
-        
+
         if (is_string($discount) && str_ends_with(trim($discount), '%')) {
             $isPercentage = true;
             $discountValue = (float) str_replace('%', '', $discount);
@@ -524,10 +574,12 @@ class SalesSystem extends Component
             $discountValue = (float) $discount;
         }
 
-        if ($discountValue < 0) $discountValue = 0;
+        if ($discountValue < 0)
+            $discountValue = 0;
 
         if ($isPercentage) {
-            if ($discountValue > 100) $discountValue = 100;
+            if ($discountValue > 100)
+                $discountValue = 100;
             $amount = ($this->cart[$index]['price'] * $discountValue) / 100;
             $this->cart[$index]['discount'] = round($amount, 2);
             $this->cart[$index]['discount_percentage'] = $discountValue;
@@ -675,6 +727,36 @@ class SalesSystem extends Component
 
             // Create sale items and update stock using FIFO
             foreach ($this->cart as $item) {
+                // Custom products: skip FIFO, just create sale item directly
+                if (!empty($item['is_custom'])) {
+                    SaleItem::create([
+                        'sale_id' => $sale->id,
+                        'product_id' => null,
+                        'product_code' => $item['code'],
+                        'product_name' => $item['name'],
+                        'product_model' => $item['model'] ?? 'N/A',
+                        'quantity' => $item['quantity'],
+                        'unit_price' => $item['price'],
+                        'discount_per_unit' => $item['discount'],
+                        'total_discount' => $item['discount'] * $item['quantity'],
+                        'discount_type' => $item['discount_type'] ?? 'fixed',
+                        'discount_percentage' => $item['discount_percentage'] ?? 0,
+                        'total' => ($item['price'] - $item['discount']) * $item['quantity'],
+                        'variant_id' => null,
+                        'variant_value' => null,
+                        'has_warranty' => false,
+                        'warranty_duration' => null,
+                    ]);
+
+                    Log::info("Custom Product added to Sale", [
+                        'name' => $item['name'],
+                        'code' => $item['code'],
+                        'price' => $item['price'],
+                        'quantity' => $item['quantity'],
+                    ]);
+                    continue;
+                }
+
                 // Update product stock using FIFO method (with variant support)
                 try {
                     $variantId = $item['variant_id'] ?? null;
@@ -692,6 +774,10 @@ class SalesSystem extends Component
 
                     // Create sale items based on batch deductions
                     foreach ($fifoResult['deductions'] as $deduction) {
+                        $itemTotal = ($cartUnitPrice - $item['discount']) * $deduction['quantity'];
+                        $warrantyThreshold = \App\Models\Setting::where('key', 'warranty_min_amount')->value('value') ?? 1000;
+                        $hasWarranty = ($itemTotal / $deduction['quantity']) >= $warrantyThreshold;
+
                         SaleItem::create([
                             'sale_id' => $sale->id,
                             'product_id' => $item['id'],
@@ -702,9 +788,13 @@ class SalesSystem extends Component
                             'unit_price' => $cartUnitPrice,
                             'discount_per_unit' => $item['discount'],
                             'total_discount' => $item['discount'] * $deduction['quantity'],
-                            'total' => ($cartUnitPrice - $item['discount']) * $deduction['quantity'],
+                            'discount_type' => $item['discount_type'] ?? 'fixed',
+                            'discount_percentage' => $item['discount_percentage'] ?? 0,
+                            'total' => $itemTotal,
                             'variant_id' => $variantId,
                             'variant_value' => $variantValue,
+                            'has_warranty' => $hasWarranty,
+                            'warranty_duration' => $hasWarranty ? '6 Months' : null,
                         ]);
                     }
 
@@ -728,7 +818,7 @@ class SalesSystem extends Component
             // Ensure there is an open POS session for this user and update its totals
             try {
                 $this->currentSession = POSSession::getTodaySession(Auth::id());
-                if (! $this->currentSession) {
+                if (!$this->currentSession) {
                     // Create a session with zero opening cash so admin sales are still tracked
                     $this->currentSession = POSSession::openSession(Auth::id(), 0);
                 }
@@ -760,9 +850,13 @@ class SalesSystem extends Component
             return;
         }
 
-        $sale = Sale::with(['customer', 'items', 'returns' => function ($q) {
-            $q->with('product');
-        }])->find($this->lastSaleId);
+        $sale = Sale::with([
+            'customer',
+            'items',
+            'returns' => function ($q) {
+                $q->with('product');
+            }
+        ])->find($this->lastSaleId);
 
         if (!$sale) {
             $this->js("Swal.fire('error', 'Sale not found.', 'error')");

@@ -383,11 +383,13 @@ class StoreBilling extends Component
      */
     public function loadCategories()
     {
-        $this->categories = CategoryList::withCount(['products' => function ($query) {
-            $query->whereHas('stock', function ($q) {
-                $q->where('available_stock', '>', 0);
-            });
-        }])->get();
+        $this->categories = CategoryList::withCount([
+            'products' => function ($query) {
+                $query->whereHas('stock', function ($q) {
+                    $q->where('available_stock', '>', 0);
+                });
+            }
+        ])->get();
     }
 
     /**
@@ -437,14 +439,16 @@ class StoreBilling extends Component
                 // Map stocks by variant_value for quick lookup
                 $stocksByValue = [];
                 foreach ($product->stocks as $stock) {
-                    if (($stock->available_stock ?? 0) <= 0) continue;
+                    if (($stock->available_stock ?? 0) <= 0)
+                        continue;
                     $stocksByValue[$stock->variant_value] = $stock;
                 }
 
                 if (!empty($orderedValues)) {
                     // Add variants in the DB-stored order
                     foreach ($orderedValues as $val) {
-                        if (!isset($stocksByValue[$val])) continue;
+                        if (!isset($stocksByValue[$val]))
+                            continue;
                         $stock = $stocksByValue[$val];
 
                         // find matching price record for this variant value if exists
@@ -481,7 +485,8 @@ class StoreBilling extends Component
 
                     // Append any stocks not listed in variant_values
                     foreach ($stocksByValue as $v => $stock) {
-                        if (in_array($v, $orderedValues)) continue;
+                        if (in_array($v, $orderedValues))
+                            continue;
                         $priceRecord = $product->prices->firstWhere('variant_value', $stock->variant_value) ?? $product->price;
                         $priceValue = $this->getPriceValue($priceRecord);
 
@@ -514,7 +519,8 @@ class StoreBilling extends Component
                     }
                 } else {
                     foreach ($product->stocks as $stock) {
-                        if (($stock->available_stock ?? 0) <= 0) continue;
+                        if (($stock->available_stock ?? 0) <= 0)
+                            continue;
 
                         // find matching price record for this variant value if exists
                         $priceRecord = $product->prices->firstWhere('variant_value', $stock->variant_value) ?? $product->price;
@@ -687,7 +693,7 @@ class StoreBilling extends Component
     // Toggle the sliding category panel
     public function toggleCategoryPanel()
     {
-        $this->showCategoryPanel = ! $this->showCategoryPanel;
+        $this->showCategoryPanel = !$this->showCategoryPanel;
         // Close brand panel if open
         if ($this->showCategoryPanel) {
             $this->showBrandPanel = false;
@@ -709,15 +715,17 @@ class StoreBilling extends Component
                 });
             });
         })
-            ->withCount(['products' => function ($q) {
-                $q->where(function ($query) {
-                    $query->whereHas('stock', function ($sq) {
-                        $sq->where('available_stock', '>', 0);
-                    })->orWhereHas('stocks', function ($sq) {
-                        $sq->where('available_stock', '>', 0);
+            ->withCount([
+                'products' => function ($q) {
+                    $q->where(function ($query) {
+                        $query->whereHas('stock', function ($sq) {
+                            $sq->where('available_stock', '>', 0);
+                        })->orWhereHas('stocks', function ($sq) {
+                            $sq->where('available_stock', '>', 0);
+                        });
                     });
-                });
-            }])
+                }
+            ])
             ->get()
             ->map(function ($brand) {
                 return [
@@ -758,7 +766,7 @@ class StoreBilling extends Component
     // Toggle the sliding brand panel
     public function toggleBrandPanel()
     {
-        $this->showBrandPanel = ! $this->showBrandPanel;
+        $this->showBrandPanel = !$this->showBrandPanel;
         // Close category panel if open
         if ($this->showBrandPanel) {
             $this->showCategoryPanel = false;
@@ -899,7 +907,7 @@ class StoreBilling extends Component
 
     public function getGrandTotalProperty()
     {
-        return (float)($this->subtotalAfterItemDiscounts ?? 0) - (float)($this->additionalDiscountAmount ?? 0);
+        return (float) ($this->subtotalAfterItemDiscounts ?? 0) - (float) ($this->additionalDiscountAmount ?? 0);
     }
 
     public function getTotalPaidAmountProperty()
@@ -1019,7 +1027,8 @@ class StoreBilling extends Component
         foreach ($this->cart as $index => $item) {
             // Get the corresponding product record to get the correct price
             $productRecord = ProductDetail::with(['price', 'prices'])->find($item['product_id']);
-            if (!$productRecord) continue;
+            if (!$productRecord)
+                continue;
 
             // Find correct price record for variant
             $priceRecord = $productRecord->price;
@@ -1076,7 +1085,7 @@ class StoreBilling extends Component
         if ($value === '' || !is_numeric($value)) {
             $this->amountReceived = 0;
         } else {
-            $this->amountReceived = (float)$value;
+            $this->amountReceived = (float) $value;
         }
     }
 
@@ -1086,7 +1095,7 @@ class StoreBilling extends Component
         if ($value === '' || !is_numeric($value)) {
             $this->bankTransferAmount = 0;
         } else {
-            $this->bankTransferAmount = (float)$value;
+            $this->bankTransferAmount = (float) $value;
         }
     }
 
@@ -1420,15 +1429,18 @@ class StoreBilling extends Component
                     );
 
                     $stocksToShow = collect($p->stocks)->filter(function ($stock) use ($productMatched, $searchTerm, $searchWords, $p) {
-                        if (($stock->available_stock ?? 0) <= 0) return false;
+                        if (($stock->available_stock ?? 0) <= 0)
+                            return false;
 
                         // Show all variants if product name/code matched
-                        if ($productMatched && count($searchWords) == 1) return true;
+                        if ($productMatched && count($searchWords) == 1)
+                            return true;
 
                         // For multi-word search, check if combined name matches
                         if (count($searchWords) > 1) {
                             $combinedName = $p->name . ' ' . $stock->variant_value;
-                            if (mb_stripos($combinedName, $searchTerm) !== false) return true;
+                            if (mb_stripos($combinedName, $searchTerm) !== false)
+                                return true;
                         }
 
                         // Show if variant value matches search term
@@ -1442,7 +1454,8 @@ class StoreBilling extends Component
 
                     if (!empty($orderedValues)) {
                         foreach ($orderedValues as $val) {
-                            if (!isset($stocksByValue[$val])) continue;
+                            if (!isset($stocksByValue[$val]))
+                                continue;
                             $stock = $stocksByValue[$val];
                             $priceRecord = $p->prices->firstWhere('variant_value', $stock->variant_value) ?? $p->price;
                             $priceValue = $this->getPriceValue($priceRecord);
@@ -1473,7 +1486,8 @@ class StoreBilling extends Component
 
                         // append any remaining stocks not in the variant list
                         foreach ($stocksByValue as $v => $stock) {
-                            if (in_array($v, $orderedValues)) continue;
+                            if (in_array($v, $orderedValues))
+                                continue;
                             $priceRecord = $p->prices->firstWhere('variant_value', $stock->variant_value) ?? $p->price;
                             $priceValue = $this->getPriceValue($priceRecord);
 
@@ -1502,7 +1516,8 @@ class StoreBilling extends Component
                         }
                     } else {
                         foreach ($p->stocks as $stock) {
-                            if (($stock->available_stock ?? 0) <= 0) continue;
+                            if (($stock->available_stock ?? 0) <= 0)
+                                continue;
 
                             $priceRecord = $p->prices->firstWhere('variant_value', $stock->variant_value) ?? $p->price;
                             $priceValue = $this->getPriceValue($priceRecord);
@@ -1705,7 +1720,9 @@ class StoreBilling extends Component
             $cartId .= '_batches_' . implode('_', $batchNumbers);
         }
 
-        $existing = collect($this->cart)->firstWhere('id', $cartId);
+        $existing = collect($this->cart)->first(function ($item) use ($cartId) {
+            return $item['id'] == $cartId && empty($item['is_custom']);
+        });
 
         if ($existing) {
             // Check if adding more exceeds stock (with edit mode adjustment)
@@ -1715,7 +1732,7 @@ class StoreBilling extends Component
             }
 
             $this->cart = collect($this->cart)->map(function ($item) use ($cartId) {
-                if ($item['id'] == $cartId) {
+                if ($item['id'] == $cartId && empty($item['is_custom'])) {
                     $item['quantity'] += 1;
                     $item['total'] = ($item['price'] - $item['discount']) * $item['quantity'];
                     // Ensure key exists
@@ -1755,6 +1772,7 @@ class StoreBilling extends Component
                 'pending' => $product['pending'] ?? 0,
                 'image' => $product['image'] ?? null,
                 'batch_numbers' => $batchNumbers, // Store batch info for later reference
+                'is_custom' => false,
             ];
 
             // Prepend new item to the beginning of the cart so latest appears at top
@@ -1769,10 +1787,57 @@ class StoreBilling extends Component
         $this->dispatch('product-added-to-cart', index: 0);
     }
 
+    // Add Custom Product to Cart (product not in system)
+    public function addCustomProduct()
+    {
+        $newItem = [
+            'key' => uniqid('custom_'),
+            'id' => 0,
+            'product_id' => 0,
+            'variant_id' => null,
+            'variant_value' => null,
+            'name' => 'Custom Product',
+            'code' => 'CUSTOM-' . strtoupper(substr(uniqid(), -6)),
+            'model' => 'N/A',
+            'price' => 0,
+            'quantity' => 1,
+            'discount' => 0,
+            'discount_type' => 'fixed',
+            'discount_percentage' => 0,
+            'total' => 0,
+            'stock' => 9999,
+            'pending' => 0,
+            'image' => null,
+            'batch_numbers' => null,
+            'is_custom' => true,
+        ];
+
+        // Prepend to top of cart
+        array_unshift($this->cart, $newItem);
+        $this->dispatch('product-added-to-cart', index: 0);
+    }
+
+    // Update custom product name
+    public function updateCustomName($index, $name)
+    {
+        if (isset($this->cart[$index]) && !empty($this->cart[$index]['is_custom'])) {
+            $this->cart[$index]['name'] = $name;
+        }
+    }
+
+    // Update custom product code
+    public function updateCustomCode($index, $code)
+    {
+        if (isset($this->cart[$index]) && !empty($this->cart[$index]['is_custom'])) {
+            $this->cart[$index]['code'] = $code;
+        }
+    }
+
     // Update Quantity
     public function updateQuantity($index, $quantity)
     {
-        if ($quantity < 1) $quantity = 1;
+        if ($quantity < 1)
+            $quantity = 1;
 
         $baseProductId = $this->cart[$index]['product_id'];
         $variantValue = $this->cart[$index]['variant_value'] ?? null;
@@ -1825,7 +1890,8 @@ class StoreBilling extends Component
     // Update Price
     public function updatePrice($index, $price)
     {
-        if ($price < 0) $price = 0;
+        if ($price < 0)
+            $price = 0;
 
         $this->cart[$index]['price'] = $price;
 
@@ -1844,7 +1910,8 @@ class StoreBilling extends Component
     // Update Discount - Auto-detects "10" as Rs.10 or "10%" as 10%
     public function updateDiscount($index, $discount)
     {
-        if (!isset($this->cart[$index])) return;
+        if (!isset($this->cart[$index]))
+            return;
 
         $discountValue = trim($discount);
 
@@ -1860,7 +1927,7 @@ class StoreBilling extends Component
             $this->cart[$index]['discount_percentage'] = $percentage;
         } else {
             // Fixed discount
-            $discountAmount = max(0, (float)$discountValue);
+            $discountAmount = max(0, (float) $discountValue);
             $discountAmount = min($discountAmount, $this->cart[$index]['price']);
 
             // Store discount type
@@ -2246,6 +2313,11 @@ class StoreBilling extends Component
                 // Restore previous stock quantities (both ProductStock and ProductBatch)
                 $previousItems = SaleItem::where('sale_id', $sale->id)->get();
                 foreach ($previousItems as $prevItem) {
+                    // Skip custom products (no stock to restore)
+                    if (empty($prevItem->product_id)) {
+                        continue;
+                    }
+
                     $baseProductId = $prevItem->product_id;
                     $variantValue = $prevItem->variant_value ?? null;
                     $variantId = $prevItem->variant_id ?? null;
@@ -2382,6 +2454,36 @@ class StoreBilling extends Component
 
             // Create sale items and deduct stock using FIFO method
             foreach ($this->cart as $item) {
+                // Custom products: skip FIFO, just create sale item directly
+                if (!empty($item['is_custom'])) {
+                    SaleItem::create([
+                        'sale_id' => $sale->id,
+                        'product_id' => null,
+                        'product_code' => $item['code'] ?? '',
+                        'product_name' => $item['name'],
+                        'product_model' => $item['model'] ?? 'N/A',
+                        'quantity' => $item['quantity'],
+                        'unit_price' => $item['price'],
+                        'discount_per_unit' => $item['discount'],
+                        'total_discount' => $item['discount'] * $item['quantity'],
+                        'discount_type' => $item['discount_type'] ?? 'fixed',
+                        'discount_percentage' => $item['discount_percentage'] ?? 0,
+                        'total' => $item['total'],
+                        'variant_value' => null,
+                        'variant_id' => null,
+                        'has_warranty' => false,
+                        'warranty_duration' => null,
+                    ]);
+
+                    Log::info('Custom Product added to Sale', [
+                        'name' => $item['name'],
+                        'code' => $item['code'],
+                        'price' => $item['price'],
+                        'quantity' => $item['quantity'],
+                    ]);
+                    continue;
+                }
+
                 // Resolve base product id (handle variant entries where 'product_id' exists)
                 $baseProductId = $item['product_id'] ?? $item['id'];
                 $variantId = $item['variant_id'] ?? null;
@@ -2434,7 +2536,7 @@ class StoreBilling extends Component
 
                 if ($this->paymentMethod === 'multiple') {
                     // Create a cash payment for the cash portion (if any)
-                    if (!empty($this->cashAmount) && (float)$this->cashAmount > 0) {
+                    if (!empty($this->cashAmount) && (float) $this->cashAmount > 0) {
                         $cashPayment = Payment::create([
                             'customer_id' => $customer->id,
                             'sale_id' => $sale->id,
@@ -2442,7 +2544,7 @@ class StoreBilling extends Component
                             'payment_method' => 'cash',
                             'payment_date' => now(),
                             'is_completed' => true,
-                            'status' =>  'paid',
+                            'status' => 'paid',
                         ]);
 
                         $cashPayment->update([
@@ -2462,7 +2564,7 @@ class StoreBilling extends Component
                             'payment_method' => 'cheque',
                             'payment_date' => now(),
                             'is_completed' => true,
-                            'status' =>  'paid',
+                            'status' => 'paid',
                         ]);
 
                         Cheque::create([
@@ -2489,7 +2591,7 @@ class StoreBilling extends Component
                         'payment_method' => $this->paymentMethod,
                         'payment_date' => now(),
                         'is_completed' => true,
-                        'status' =>  'paid',
+                        'status' => 'paid',
                     ]);
 
                     // Handle payment method specific data
@@ -2616,7 +2718,7 @@ class StoreBilling extends Component
 
             // Ensure there is an open POS session for this user and update its totals
             $this->currentSession = POSSession::getTodaySession(Auth::id());
-            if (! $this->currentSession) {
+            if (!$this->currentSession) {
                 // If no open session, create one with zero opening cash so sales still get tracked
                 $this->currentSession = POSSession::openSession(Auth::id(), 0);
             }
@@ -2634,7 +2736,7 @@ class StoreBilling extends Component
             $this->createdSale = Sale::with(['customer', 'items', 'payments'])->find($sale->id);
             $this->showSaleModal = true;
 
-            $isEditMode = (bool)$this->editingSaleId;
+            $isEditMode = (bool) $this->editingSaleId;
             $actionType = $isEditMode ? 'updated' : 'created';
             $statusMessage = 'Sale ' . $actionType . ' successfully! Payment status: ' . ucfirst($this->paymentStatus);
             if ($this->dueAmount > 0) {
@@ -2703,9 +2805,13 @@ class StoreBilling extends Component
             return;
         }
 
-        $sale = Sale::with(['customer', 'items', 'returns' => function ($q) {
-            $q->with('product');
-        }])->find($this->lastSaleId);
+        $sale = Sale::with([
+            'customer',
+            'items',
+            'returns' => function ($q) {
+                $q->with('product');
+            }
+        ])->find($this->lastSaleId);
 
         if (!$sale) {
             $this->showToast('error', 'Sale not found.');
@@ -2733,9 +2839,14 @@ class StoreBilling extends Component
             return;
         }
 
-        $sale = Sale::with(['customer', 'items', 'payments', 'returns' => function ($q) {
-            $q->with('product');
-        }])->find($this->createdSale->id);
+        $sale = Sale::with([
+            'customer',
+            'items',
+            'payments',
+            'returns' => function ($q) {
+                $q->with('product');
+            }
+        ])->find($this->createdSale->id);
 
         if (!$sale) {
             $this->showToast('error', 'Sale not found.');
