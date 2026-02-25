@@ -85,6 +85,11 @@
             </div>
 
             <div class="flex items-center gap-2">
+                <button class="flex items-center gap-2 px-4 py-2 rounded-full bg-slate-100 hover:bg-slate-200 transition-colors text-xs font-bold text-slate-600 border border-slate-200"
+                    wire:click="goToDashboard">
+                    <span class="material-symbols-outlined text-base">dashboard</span>
+                    DASHBOARD
+                </button>
                 <div class="bg-slate-100 px-3 py-1 rounded border border-slate-200">
                     <span class="font-mono text-base font-bold text-[#161b97] tracking-widest" id="posClock">00:00:00</span>
                 </div>
@@ -557,8 +562,8 @@
         {{-- Header --}}
         <div class="bg-gradient-to-r from-slate-900 to-slate-800 px-5 py-3.5 flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-lg bg-white/10 border border-white/20 flex items-center justify-center">
-                    <span class="material-symbols-outlined text-white text-base">person</span>
+                <div class="w-8 h-8 rounded-lg bg-[#161b97]/20 border border-[#161b97]/30 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-[#161b97] text-base">person</span>
                 </div>
                 <div>
                     <h3 class="font-black text-sm text-white uppercase tracking-widest leading-none">Customer Details</h3>
@@ -729,8 +734,8 @@
         {{-- Header --}}
         <div class="shrink-0 bg-gradient-to-r from-slate-900 to-slate-800 px-5 py-3.5 flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-lg bg-white/10 border border-white/20 flex items-center justify-center">
-                    <span class="material-symbols-outlined text-white text-base">payments</span>
+                <div class="w-8 h-8 rounded-lg bg-[#161b97]/20 border border-[#161b97]/30 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-[#161b97] text-base">payments</span>
                 </div>
                 <div>
                     <h3 class="font-black text-sm text-white uppercase tracking-widest leading-none">Secure Transaction</h3>
@@ -786,7 +791,7 @@
                             <span class="material-symbols-outlined text-emerald-600 text-base">currency_exchange</span>
                             <span class="text-[9px] font-black text-emerald-700 uppercase tracking-widest">Balance to Return</span>
                         </div>
-                        <span class="text-lg font-black text-emerald-700">Rs. {{ number_format(max(0, ($amountReceived ?? 0) - $grandTotal), 2) }}</span>
+                        <span class="text-lg font-black text-emerald-700">Rs. {{ number_format(max(0, (float)($amountReceived ?: 0) - (float)($grandTotal ?? 0)), 2) }}</span>
                     </div>
                 </div>
                 @endif
@@ -857,7 +862,10 @@
                 <div class="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl px-5 py-4 flex items-center justify-between">
                     <div>
                         <p class="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em]">Grand Total</p>
-                        <p class="text-3xl font-black text-white tracking-tight mt-0.5">Rs. {{ number_format($grandTotal, 2) }}</p>
+                        <p class="text-3xl font-black text-[#161b97] tracking-tight mt-0.5">Rs. {{ number_format($grandTotal, 2) }}</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-xl bg-[#161b97]/15 border border-[#161b97]/30 flex items-center justify-center">
+                        <span class="material-symbols-outlined text-[#161b97] text-xl">paid</span>
                     </div>
                 </div>
 
@@ -868,9 +876,9 @@
                         <p class="text-[9px] font-black text-slate-400 uppercase tracking-wider">Paying via</p>
                         <p class="text-xs font-black text-slate-700">{{ $paymentMethod === 'cash' ? 'Cash Payment' : 'Bank Transfer' }}</p>
                     </div>
-                    @if($paymentMethod === 'cash' && ($amountReceived ?? 0) >= $grandTotal)
+                    @if($paymentMethod === 'cash' && (float)($amountReceived ?: 0) >= (float)($grandTotal ?? 0))
                     <span class="text-[9px] font-black text-emerald-600 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">Ready</span>
-                    @elseif($paymentMethod === 'bank_transfer' && $bankTransferAmount >= $grandTotal)
+                    @elseif($paymentMethod === 'bank_transfer' && (float)($bankTransferAmount ?: 0) >= (float)($grandTotal ?? 0))
                     <span class="text-[9px] font-black text-emerald-600 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">Ready</span>
                     @endif
                 </div>
@@ -896,8 +904,8 @@
         {{-- Header --}}
         <div class="bg-gradient-to-r from-slate-900 to-slate-800 px-5 py-3.5 flex items-center justify-between shrink-0">
             <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-lg bg-white/10 border border-white/20 flex items-center justify-center">
-                    <span class="material-symbols-outlined text-white text-base">receipt_long</span>
+                <div class="w-8 h-8 rounded-lg bg-[#161b97]/20 border border-[#161b97]/30 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-[#161b97] text-base">receipt_long</span>
                 </div>
                 <div>
                     <h3 class="font-black text-sm text-white uppercase tracking-widest leading-none">Transaction Finalized</h3>

@@ -11,8 +11,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-    <!-- Barcode scanner library -->
+    <!-- Barcode libraries -->
     <script src="https://cdn.jsdelivr.net/npm/quagga@0.12.1/dist/quagga.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Inter font from Google Fonts -->
@@ -358,6 +359,7 @@
             text-transform: uppercase;
             font-family: 'Inter', sans-serif;
         }
+        
 
         /* Navigation styles */
         .nav-item {
@@ -1049,7 +1051,9 @@
             <div class="sidebar-header">
                 <img src="{{ asset('images/jg.png') }}" alt="Logo" width="60" class="logo-img me-3">
                 <div class="sidebar-title">
-                    Jaffna Gold
+
+                    <img src="{{ asset('images/jg.png') }}" alt="Logo" width="60">
+                    <div>JAFFNA GOLD</div>
                 </div>
             </div>
             <div class="sidebar-separator"></div>
@@ -1121,6 +1125,12 @@
                                     <i class="bi bi-layers"></i> <span>Product Variant</span>
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link py-2" href="{{ route('admin.barcode-print') }}">
+                                    <i class="bi bi-upc-scan"></i> <span>Barcode Print</span>
+                                </a>
+                            </li>
+
                         </ul>
                     </div>
                 </li>
@@ -1141,11 +1151,11 @@
                                     <i class="bi bi-table"></i> <span>List Sales</span>
                                 </a>
                             </li>
-                            <li class="nav-item">
+                            <!-- <li class="nav-item">
                                 <a class="nav-link py-2" href="{{ route('admin.pos-sales') }}">
                                     <i class="bi bi-shop"></i> <span>POS Sales list</span>
                                 </a>
-                            </li>
+                            </li> -->
                             <li class="nav-item">
                                 <a class="nav-link {{ request()->routeIs('admin.sale-approval') ? 'active' : '' }}" href="{{ route('admin.sale-approval') }}">
                                     <i class="bi bi-check-circle"></i> <span>Staff Sale List</span>
@@ -1388,12 +1398,12 @@
                     <a class="nav-link" href="{{ route('admin.profit-loss') }}">
                         <i class="bi bi-graph-up-arrow"></i> <span>Profit & Loss</span>
                     </a>
-                </li>
+                </li>-->
                 <li>
                     <a class="nav-link" href="{{ route('admin.settings') }}">
                         <i class="bi bi-gear"></i> <span>Settings</span>
                     </a>
-                </li> -->
+                </li> 
             </ul>
         </div>
 

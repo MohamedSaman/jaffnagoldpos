@@ -11,14 +11,16 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-    <!-- Barcode scanner library -->
+    <!-- Barcode libraries -->
     <script src="https://cdn.jsdelivr.net/npm/quagga@0.12.1/dist/quagga.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Inter font from Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    @stack('styles')
 
     <style>
         /* Theme tokens: Premium Blue & Black theme */
@@ -434,10 +436,21 @@
                     </a>
                 </li>
                 
+                <li>
+                    <a class="nav-link {{ request()->routeIs('shop-staff.store-billing') ? 'active' : '' }}" href="{{ route('shop-staff.store-billing') }}">
+                        <i class="bi bi-cart-plus"></i> <span>Store Billing</span>
+                    </a>
+                </li>
+                
                 @php
                     $staffType = auth()->user()->staff_type ?? 'shop_staff';
                     $permissionModel = new \App\Models\StaffTypePermission();
                 @endphp
+                
+                {{-- Sales Section --}}
+                @if($permissionModel->hasPermission($staffType, 'create_sales'))
+                {{-- Already added static link above for convenience, or can wrap it here --}}
+                @endif
                 
                 {{-- Products Section --}}
                 @if($permissionModel->hasPermission($staffType, 'view_products'))
@@ -556,5 +569,6 @@
             }
         });
     </script>
+    @stack('scripts')
 </body>
 </html>

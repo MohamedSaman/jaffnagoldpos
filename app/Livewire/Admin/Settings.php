@@ -53,6 +53,9 @@ class Settings extends Component
     public $selectedStaffType = 'salesman';
     public $staffTypePermissions = [];
     public $showStaffPermissionModal = false;
+    
+    // POS Settings
+    public $warranty_min_amount = 1000;
 
     protected $listeners = [
         'deleteConfirmed' => 'deleteConfiguration',
@@ -79,6 +82,7 @@ class Settings extends Component
         $this->loadExpenses();
         $this->loadExpenseCategories();
         $this->loadStaffTypePermissions();
+        $this->loadPOSSettings();
         $this->expenseDate = now()->format('Y-m-d');
     }
 
@@ -102,6 +106,31 @@ class Settings extends Component
     public function loadSettings()
     {
         $this->settings = Setting::orderBy('created_at', 'desc')->get();
+    }
+
+    public function loadPOSSettings()
+    {
+        $this->warranty_min_amount = Setting::where('key', 'warranty_min_amount')->value('value') ?? 1000;
+    }
+
+    public function savePOSSettings()
+    {
+        try {
+            $this->validate([
+                'warranty_min_amount' => 'required|numeric|min:0',
+            ]);
+
+            Setting::updateOrCreate(
+                ['key' => 'warranty_min_amount'],
+                ['value' => $this->warranty_min_amount, 'date' => now()]
+            );
+
+            $this->js("Swal.fire('Success!', 'POS Settings updated successfully.', 'success')");
+            $this->loadPOSSettings();
+            $this->loadSettings(); // Refresh general list too
+        } catch (\Exception $e) {
+            $this->js("Swal.fire('Error!', 'Unable to update POS Settings. Please try again.', 'error')");
+        }
     }
 
     public function resetForm()

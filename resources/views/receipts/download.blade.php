@@ -382,6 +382,18 @@
                             <span class="fw-bold">Grand Total:</span>
                             <span class="fw-bold">Rs.{{ number_format($sale->total_amount, 2) }}</span>
                         </div>
+                        @php
+                            $totalReceived = $sale->payments->sum('amount');
+                            $balanceAmount = max(0, $totalReceived - $sale->total_amount);
+                        @endphp
+                        <div class="d-flex justify-content-between" style="margin-top: 8px;">
+                            <span class="fw-bold">Received Amount:</span>
+                            <span class="fw-bold">Rs.{{ number_format($totalReceived, 2) }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between" style="margin-top: 4px;">
+                            <span class="fw-bold">Balance Amount:</span>
+                            <span class="fw-bold">Rs.{{ number_format($balanceAmount, 2) }}</span>
+                        </div>
                     </div>
                 </div>
             </div>

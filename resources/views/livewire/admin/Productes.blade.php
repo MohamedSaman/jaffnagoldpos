@@ -1,170 +1,135 @@
 <div>
     @push('styles')
-    <style>
-        /* Tab navigation styles */
-        .content-tabs {
-            display: flex;
-            border-bottom: 1px solid #dee2e6;
-            margin-bottom: 20px;
-        }
+        <style>
+            /* Tab navigation styles */
+            .content-tabs {
+                display: flex;
+                border-bottom: 1px solid #dee2e6;
+                margin-bottom: 20px;
+            }
 
-        .content-tab {
-            padding: 10px 20px;
-            cursor: pointer;
-            font-weight: 500;
-            color: #495057;
-            border-bottom: 3px solid transparent;
-            transition: all 0.2s;
-        }
+            .content-tab {
+                padding: 10px 20px;
+                cursor: pointer;
+                font-weight: 500;
+                color: #495057;
+                border-bottom: 3px solid transparent;
+                transition: all 0.2s;
+            }
 
-        .content-tab.active {
-            color: var(--primary);
-            border-bottom-color: var(--primary);
-        }
+            .content-tab.active {
+                color: var(--primary);
+                border-bottom-color: var(--primary);
+            }
 
-        .content-tab:hover:not(.active) {
-            color: var(--primary);
-            border-bottom-color: #dee2e6;
-        }
+            .content-tab:hover:not(.active) {
+                color: var(--primary);
+                border-bottom-color: #dee2e6;
+            }
 
-        .tab-content {
-            display: none;
-        }
+            .tab-content {
+                display: none;
+            }
 
-        .tab-content.active {
-            display: block;
-        }
+            .tab-content.active {
+                display: block;
+            }
 
-        /* Modern card styling */
-        .card {
-            border: none;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-            transition: all 0.3s ease;
-        }
+          .action-btn.view {
+              color: var(--primary);
+              background-color: rgba(22, 27, 151, 0.1);
+          }
 
-        .card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
-        }
+          .action-btn.edit {
+              color: var(--primary);
+              background-color: rgba(22, 27, 151, 0.1);
+          }
 
-        .card-header {
-            background-color: white;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-            border-radius: 12px 12px 0 0 !important;
-            padding: 1.25rem 1.5rem;
-        }
+          .action-btn.delete {
+              color: var(--danger);
+              background-color: rgba(243, 11, 31, 0.1);
+          }
 
-        /* Modern header styling */
-        .inventory-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
+          .action-btn:hover.view {
+              background-color: rgba(22, 27, 151, 0.2);
+          }
 
-        .search-bar {
-            width: 300px;
-        }
+          .action-btn:hover.edit {
+              background-color: rgba(22, 27, 151, 0.2);
+          }
 
-        /* Modern table styling */
-        .table th {
-            border-top: none;
-            font-weight: 600;
+          .action-btn:hover.delete {
+              background-color: rgba(243, 11, 31, 0.2);
+          }
+            /* Modern card styling */
+            .card {
+                border: none;
+                border-radius: 12px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+                transition: all 0.3s ease;
+            }
 
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
+            .card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+            }
 
-        .table td {
-            vertical-align: middle;
-            padding: 1rem 0.75rem;
-        }
+            .card-header {
+                background-color: white;
+                border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+                border-radius: 12px 12px 0 0 !important;
+                padding: 1.25rem 1.5rem;
+            }
 
-        /* Modern action buttons */
-        .action-btns {
-            display: flex;
-            gap: 8px;
-            justify-content: center;
-        }
+            /* Modern header styling */
+            .inventory-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 20px;
+            }
 
-        .action-btn {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: none;
-            background: transparent;
-            transition: all 0.2s ease;
-        }
+            .search-bar {
+                width: 300px;
+            }
 
-        .action-btn:hover {
-            transform: scale(1.1);
-        }
+            /* Modern table styling */
+            .table th {
+                border-top: none;
+                font-weight: 600;
 
-        .action-btn.view {
-            color: var(--primary);
-            background-color: rgba(22, 27, 151, 0.1);
-        }
+                font-size: 0.85rem;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
 
-        .action-btn.edit {
-            color: var(--primary);
-            background-color: rgba(22, 27, 151, 0.1);
-        }
+            .table td {
+                vertical-align: middle;
+                padding: 1rem 0.75rem;
+            }
 
-        .action-btn.delete {
-            color: var(--danger);
-            background-color: rgba(243, 11, 31, 0.1);
-        }
+            /* Modern action buttons */
+            .action-btns {
+                display: flex;
+                gap: 8px;
+                justify-content: center;
+            }
 
-        .action-btn:hover.view {
-            background-color: rgba(22, 27, 151, 0.2);
-        }
+            .action-btn {
+                width: 32px;
+                height: 32px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border: none;
+                background: transparent;
+                transition: all 0.2s ease;
+            }
 
-        .action-btn:hover.edit {
-            background-color: rgba(22, 27, 151, 0.2);
-        }
-
-        .action-btn:hover.delete {
-            background-color: rgba(243, 11, 31, 0.2);
-        }
-
-        /* Modern modal styling */
-        .modal-content {
-            border: none;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-        }
-
-        .modal-header {
-            border-radius: 12px 12px 0 0;
-        }
-
-        /* Modern form styling */
-        .form-control,
-        .form-select {
-            border-radius: 8px;
-            padding: 0.75rem 1rem;
-            border: 1px solid #e2e8f0;
-        }
-
-        .form-control:focus,
-        .form-select:focus {
-            box-shadow: 0 0 0 3px rgba(22, 27, 151, 0.15);
-            border-color: var(--primary);
-        }
-
-        /* Modern button styling */
-        .btn {
-            border-radius: 8px;
-            font-weight: 500;
-            padding: 0.75rem 1.5rem;
-            transition: all 0.3s ease;
-        }
-
+            .action-btn:hover {
+                transform: scale(1.1);
+            }
         .btn-primary {
             background-color: var(--primary) !important;
             border-color: var(--primary) !important;
@@ -181,285 +146,365 @@
             color: #fff !important;
         }
 
-        /* History Modal Styles */
-        .nav-tabs-custom .nav-link {
-            border: none;
-            color: #6c757d;
-            font-weight: 500;
-            padding: 1rem 1.5rem;
-            border-bottom: 3px solid transparent;
-            transition: all 0.3s ease;
-        }
-
-        .nav-tabs-custom .nav-link.active {
-            color: var(--primary);
-            border-bottom-color: var(--primary);
-            background-color: transparent;
-        }
-
-        .nav-tabs-custom .nav-link:hover {
-            color: var(--primary);
-            border-bottom-color: #dee2e6;
-        }
-
-        /* History Table Styles */
-        .history-table th {
-            background: linear-gradient(135deg, #000000 0%, #000000 100%);
-            color: white;
-            font-weight: 600;
-            border: none;
-        }
-
-        .history-table td {
-            vertical-align: middle;
-            padding: 0.75rem;
-        }
-
-        /* Badge styles for counts */
-        .badge {
-            font-size: 0.7em;
-            padding: 0.35em 0.65em;
-        }
-
-        /* Responsive design */
-        @media (max-width: 576px) {
-            .content-tabs {
-                flex-direction: column;
-                border-bottom: none;
+            /* Modern modal styling */
+            .modal-content {
+                border: none;
+                border-radius: 12px;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
             }
 
-            .content-tab {
-                text-align: center;
-                border: 1px solid #dee2e6;
-                border-radius: 4px;
-                margin-bottom: 8px;
-                padding: 12px 15px;
+            .modal-header {
+                border-radius: 12px 12px 0 0;
             }
 
-            .content-tab.active {
-                background-color: #4361ee;
-                color: white;
-                border-color: #4361ee;
-            }
-
-            .pagination {
-                flex-wrap: wrap;
-                justify-content: center;
-            }
-
-            .page-item {
-                margin-bottom: 0.25rem;
-            }
-
-            h2,
-            .h2 {
-                font-size: 1.5rem;
-            }
-
-            h5,
-            .h5 {
-                font-size: 1.1rem;
-            }
-
-            .fs-5 {
-                font-size: 1rem !important;
-            }
-
-            .card-title {
-                margin-bottom: 0.5rem;
-            }
-
-            .form-select,
-            .form-control {
-                font-size: 0.95rem;
-                padding: 0.375rem 0.5rem;
-            }
-
-            .badge {
-                font-size: 0.75rem;
-            }
-
-            .nav-tabs-custom .nav-link {
+            /* Modern form styling */
+            .form-control,
+            .form-select {
+                border-radius: 8px;
                 padding: 0.75rem 1rem;
-                font-size: 0.9rem;
+                border: 1px solid #e2e8f0;
             }
 
-            .history-table {
+            .form-control:focus,
+            .form-select:focus {
+                box-shadow: 0 0 0 3px rgba(22, 27, 151, 0.15);
+                border-color: var(--primary);
+            }
+
+            /* Modern button styling */
+            .btn {
+                border-radius: 8px;
+                font-weight: 500;
+                padding: 0.75rem 1.5rem;
+                transition: all 0.3s ease;
+            }
+
+            .btn-primary {
+                background-color: var(--primary);
+                border-color: var(--primary);
+            }
+
+            .btn-primary:hover {
+                background-color: var(--primary-600);
+                border-color: var(--primary-600);
+                transform: translateY(-2px);
+            }
+
+            .btn-success {
+                background-color: #4cc9f0;
+                border-color: #4cc9f0;
+            }
+
+            .btn-success:hover {
+                background-color: #3db8e0;
+                border-color: #3db8e0;
+                transform: translateY(-2px);
+            }
+
+            .btn-warning {
+                background-color: #ffc107;
+                border-color: #ffc107;
+                color: #000;
+            }
+
+            .btn-warning:hover {
+                background-color: #e0a800;
+                border-color: #e0a800;
+                transform: translateY(-2px);
+                color: #000;
+            }
+
+            /* History Modal Styles */
+            .nav-tabs-custom .nav-link {
+                border: none;
+                color: #6c757d;
+                font-weight: 500;
+                padding: 1rem 1.5rem;
+                border-bottom: 3px solid transparent;
+                transition: all 0.3s ease;
+            }
+
+            .nav-tabs-custom .nav-link.active {
+                color: var(--primary);
+                border-bottom-color: var(--primary);
+                background-color: transparent;
+            }
+
+            .nav-tabs-custom .nav-link:hover {
+                color: var(--primary);
+                border-bottom-color: #dee2e6;
+            }
+
+            /* History Table Styles */
+            .history-table th {
+                background: linear-gradient(135deg, #000000 0%, #000000 100%);
+                color: white;
+                font-weight: 600;
+                border: none;
+            }
+
+            .history-table td {
+                vertical-align: middle;
+                padding: 0.75rem;
+            }
+
+            /* Badge styles for counts */
+            .badge {
+                font-size: 0.7em;
+                padding: 0.35em 0.65em;
+            }
+
+            /* Responsive design */
+            @media (max-width: 576px) {
+                .content-tabs {
+                    flex-direction: column;
+                    border-bottom: none;
+                }
+
+                .content-tab {
+                    text-align: center;
+                    border: 1px solid #dee2e6;
+                    border-radius: 4px;
+                    margin-bottom: 8px;
+                    padding: 12px 15px;
+                }
+
+                .content-tab.active {
+                    background-color: #4361ee;
+                    color: white;
+                    border-color: #4361ee;
+                }
+
+                .pagination {
+                    flex-wrap: wrap;
+                    justify-content: center;
+                }
+
+                .page-item {
+                    margin-bottom: 0.25rem;
+                }
+
+                h2,
+                .h2 {
+                    font-size: 1.5rem;
+                }
+
+                h5,
+                .h5 {
+                    font-size: 1.1rem;
+                }
+
+                .fs-5 {
+                    font-size: 1rem !important;
+                }
+
+                .card-title {
+                    margin-bottom: 0.5rem;
+                }
+
+                .form-select,
+                .form-control {
+                    font-size: 0.95rem;
+                    padding: 0.375rem 0.5rem;
+                }
+
+                .badge {
+                    font-size: 0.75rem;
+                }
+
+                .nav-tabs-custom .nav-link {
+                    padding: 0.75rem 1rem;
+                    font-size: 0.9rem;
+                }
+
+                .history-table {
+                    font-size: 0.85rem;
+                }
+            }
+
+            @media (max-width: 767.98px) {
+                .modal-body .row .col-md-4.border-end {
+                    border-right: none !important;
+                    border-bottom: 1px solid #dee2e6;
+                    padding-bottom: 1rem;
+                    margin-bottom: 1rem;
+                }
+
+                .accordion-button {
+                    padding: 0.75rem;
+                }
+
+                .accordion-body {
+                    padding: 0.75rem;
+                }
+
+                .table-borderless th {
+                    width: auto !important;
+                    min-width: 120px;
+                }
+            }
+
+            /* Dropdown Styles */
+            .dropdown-toggle::after {
+                margin-left: 0.5em;
+            }
+
+            .dropdown-menu {
+                box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+                border: 1px solid rgba(0, 0, 0, 0.1);
+                position: absolute;
+                z-index: 1000;
+            }
+
+            .dropdown-item {
+                padding: 0.5rem 1rem;
+                transition: all 0.2s ease;
+            }
+
+            .dropdown-item:hover {
+                background-color: #f8f9fa;
+            }
+
+            .dropdown-item:active {
+                background-color: #e9ecef;
+            }
+
+            /* Table responsive for dropdowns */
+            .table-responsive {
+                overflow: visible !important;
+
+            }
+
+            .table-responsive.view {
+                min-height: 100px !important;
+            }
+
+
+            .table td .dropdown {
+                position: static;
+            }
+
+            /* Stock Adjustment Modal Styles */
+            #stockAdjustmentModal .modal-header {
+                background: linear-gradient(135deg, #000000 0%, #000000 100%) !important;
+            }
+
+            #stockAdjustmentModal .alert-info {
+                background-color: #f8f9fa;
+                border-left: 4px solid #17a2b8;
+            }
+
+            #stockAdjustmentModal .preview-box {
+                background: #f8f9fa;
+                border-radius: 8px;
+                padding: 15px;
+                border-left: 4px solid #28a745;
+            }
+
+            /* Stock level indicators */
+            .stock-low {
+                color: #dc3545;
+                font-weight: bold;
+            }
+
+            .stock-medium {
+                color: #fe9604ff;
+                font-weight: bold;
+            }
+
+            .stock-high {
+                color: #28a745;
+                font-weight: bold;
+            }
+
+            /* Modal Enhancements */
+            #viewProductModal .modal-content {
+                border-radius: 1rem;
+                overflow: hidden;
+            }
+
+            #viewProductModal .product-image {
+                transition: transform 0.3s ease;
+            }
+
+            #viewProductModal .product-image:hover {
+                transform: scale(1.05);
+            }
+
+            #viewProductModal .info-section {
+                animation: fadeInUp 0.5s ease;
+            }
+
+            @keyframes fadeInUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(20px);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            #viewProductModal .info-item,
+            #viewProductModal .price-card,
+            #viewProductModal .stock-card {
+                transition: all 0.3s ease;
+            }
+
+            #viewProductModal .info-item:hover,
+            #viewProductModal .price-card:hover,
+            #viewProductModal .stock-card:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+            }
+
+            #viewProductModal .section-header {
+                position: relative;
+            }
+
+            #viewProductModal .section-header::after {
+                content: '';
+                position: absolute;
+                bottom: -8px;
+                left: 0;
+                width: 60px;
+                height: 3px;
+                background: linear-gradient(90deg, #1536c7ff, #2143ebff);
+                border-radius: 2px;
+            }
+
+            #viewProductModal .badge {
                 font-size: 0.85rem;
-            }
-        }
-
-        @media (max-width: 767.98px) {
-            .modal-body .row .col-md-4.border-end {
-                border-right: none !important;
-                border-bottom: 1px solid #dee2e6;
-                padding-bottom: 1rem;
-                margin-bottom: 1rem;
+                font-weight: 600;
+                padding: 0.5rem 1rem;
             }
 
-            .accordion-button {
-                padding: 0.75rem;
+            #viewProductModal .icon-box i {
+                font-size: 1.25rem;
             }
 
-            .accordion-body {
-                padding: 0.75rem;
+            /* Responsive adjustments */
+            @media (max-width: 991px) {
+                #viewProductModal .col-lg-4 {
+                    border-bottom: 1px solid #dee2e6;
+                    border-right: none;
+                }
             }
 
-            .table-borderless th {
-                width: auto !important;
-                min-width: 120px;
-            }
-        }
-
-        /* Dropdown Styles */
-        .dropdown-toggle::after {
-            margin-left: 0.5em;
-        }
-
-        .dropdown-menu {
-            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-            border: 1px solid rgba(0, 0, 0, 0.1);
-            position: absolute;
-            z-index: 1000;
-        }
-
-        .dropdown-item {
-            padding: 0.5rem 1rem;
-            transition: all 0.2s ease;
-        }
-
-        .dropdown-item:hover {
-            background-color: #f8f9fa;
-        }
-
-        .dropdown-item:active {
-            background-color: #e9ecef;
-        }
-
-        /* Table responsive for dropdowns */
-        .table-responsive {
-            overflow: visible !important;
-
-        }
-
-        .table-responsive.view {
-            min-height: 100px !important;
-        }
-
-
-        .table td .dropdown {
-            position: static;
-        }
-
-        /* Stock Adjustment Modal Styles */
-        #stockAdjustmentModal .modal-header {
-            background: linear-gradient(135deg, #000000 0%, #000000 100%) !important;
-        }
-
-        #stockAdjustmentModal .alert-info {
-            background-color: #f8f9fa;
-            border-left: 4px solid #17a2b8;
-        }
-
-        #stockAdjustmentModal .preview-box {
-            background: #f8f9fa;
-            border-radius: 8px;
-            padding: 15px;
-            border-left: 4px solid #28a745;
-        }
-
-        /* Stock level indicators */
-        .stock-low {
-            color: #dc3545;
-            font-weight: bold;
-        }
-
-        .stock-medium {
-            color: #fe9604ff;
-            font-weight: bold;
-        }
-
-        .stock-high {
-            color: #28a745;
-            font-weight: bold;
-        }
-
-        /* Modal Enhancements */
-        #viewProductModal .modal-content {
-            border-radius: 1rem;
-            overflow: hidden;
-        }
-
-        #viewProductModal .product-image {
-            transition: transform 0.3s ease;
-        }
-
-        #viewProductModal .product-image:hover {
-            transform: scale(1.05);
-        }
-
-        #viewProductModal .info-section {
-            animation: fadeInUp 0.5s ease;
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
+            /* Barcode styles */
+            .product-barcode {
+                max-width: 140px;
+                height: auto;
+                cursor: pointer;
+                transition: transform 0.2s ease;
             }
 
-            to {
-                opacity: 1;
-                transform: translateY(0);
+            .product-barcode:hover {
+                transform: scale(1.05);
             }
-        }
-
-        #viewProductModal .info-item,
-        #viewProductModal .price-card,
-        #viewProductModal .stock-card {
-            transition: all 0.3s ease;
-        }
-
-        #viewProductModal .info-item:hover,
-        #viewProductModal .price-card:hover,
-        #viewProductModal .stock-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
-        }
-
-        #viewProductModal .section-header {
-            position: relative;
-        }
-
-        #viewProductModal .section-header::after {
-            content: '';
-            position: absolute;
-            bottom: -8px;
-            left: 0;
-            width: 60px;
-            height: 3px;
-            background: linear-gradient(90deg, #1536c7ff, #2143ebff);
-            border-radius: 2px;
-        }
-
-        #viewProductModal .badge {
-            font-size: 0.85rem;
-            font-weight: 600;
-            padding: 0.5rem 1rem;
-        }
-
-        #viewProductModal .icon-box i {
-            font-size: 1.25rem;
-        }
-
-        /* Responsive adjustments */
-        @media (max-width: 991px) {
-            #viewProductModal .col-lg-4 {
-                border-bottom: 1px solid #dee2e6;
-                border-right: none;
-            }
-        }
-    </style>
+        </style>
     @endpush
 
     <div class="container-fluid p-3">
@@ -489,14 +534,14 @@
 
                     <div class="d-flex gap-2 justify-content-md-end">
                         @if (!$isStaff)
-                        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#importProductsModal">
-                            <i class="bi bi-file-earmark-excel"></i>
-                            <span class="d-none d-sm-inline">Import Excel</span>
-                        </button>
-                        <button class="btn btn-primary add-product-btn" wire:click="openCreateModal">
-                            <i class="bi bi-plus-lg"></i>
-                            <span class="d-none d-sm-inline">Add Product</span>
-                        </button>
+                            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#importProductsModal">
+                                <i class="bi bi-file-earmark-excel"></i>
+                                <span class="d-none d-sm-inline">Import Excel</span>
+                            </button>
+                            <button class="btn btn-primary add-product-btn" wire:click="openCreateModal">
+                                <i class="bi bi-plus-lg"></i>
+                                <span class="d-none d-sm-inline">Add Product</span>
+                            </button>
                         @endif
                     </div>
 
@@ -515,7 +560,8 @@
                             </div>
                             <div class="d-flex align-items-center gap-2">
                                 <label class="text-sm text-muted fw-medium">Show</label>
-                                <select wire:model.live="perPage" class="form-select form-select-sm" style="width: 80px;">
+                                <select wire:model.live="perPage" class="form-select form-select-sm"
+                                    style="width: 80px;">
                                     <option value="10">10</option>
                                     <option value="25">25</option>
                                     <option value="50">50</option>
@@ -533,162 +579,202 @@
                                     <thead class="table-light">
                                         <tr>
                                             <th class="ps-4">No</th>
-                                            <th>Code</th>
+                                            <th>Image</th>
                                             <th>Product Name</th>
-
-                                            <th>Brand</th>
-                                            <th>Model</th>
-                                            @if ($isStaff)
+                                            <th>Cost</th>
+                                            <th>Retail Price</th>
                                             <th>Wholesale Price</th>
-                                            @endif
                                             <th>Stock</th>
                                             <th>Status</th>
-
+                                            <th>Barcode</th>
+                                            <th>QR Code</th>
                                             @if (!$isStaff)
-                                            <th class="text-end pe-5">Actions</th>
+                                                <th class="text-end pe-5">Actions</th>
                                             @endif
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @if ($products->count() > 0)
-                                        @foreach ($products as $product)
-                                        <tr wire:key="product-{{ $product->id }}-{{ $products->currentPage() }}">
-                                            <td class="ps-4" wire:click="viewProductDetails({{ $product->id }})">
-                                                <span class="fw-medium text-dark">{{ $loop->iteration }}</span>
-                                            </td>
-                                            <td wire:click="viewProductDetails({{ $product->id }})">
-                                                <span class="fw-medium text-dark">{{ $product->code }}</span>
-                                            </td>
-                                            <td wire:click="viewProductDetails({{ $product->id }})">
-                                                <span class="fw-medium text-dark">{{ $product->product_name }}</span>
-                                            </td>
-
-                                            <td wire:click="viewProductDetails({{ $product->id }})">
-                                                <span class="fw-medium text-dark">{{ $product->brand }}</span>
-                                            </td>
-                                            <td wire:click="viewProductDetails({{ $product->id }})">
-                                                <span class="fw-medium text-dark">{{ $product->model }}</span>
-                                            </td>
-                                            @if ($isStaff)
-                                            <td wire:click="viewProductDetails({{ $product->id }})">
-                                                <span class="fw-medium text-primary">Rs.{{ number_format($product->wholesale_price ?? 0, 2) }}</span>
-                                            </td>
-                                            @endif
-                                            <td wire:click="viewProductDetails({{ $product->id }})">
-                                                @php
-                                                $availableStock = $product->available_stock ?? 0;
-                                                $stockClass = 'stock-high';
-                                                if ($availableStock <= 5) { $stockClass='stock-low' ; } elseif
-                                                    ($availableStock <=15) { $stockClass='stock-medium' ; } @endphp
-                                                    <span class="fw-medium {{ $stockClass }}">
-                                                    {{ $availableStock }}
-                                                    @if($availableStock <= 5) <i
-                                                        class="bi bi-exclamation-triangle-fill ms-1"></i>
+                                            @foreach ($products as $product)
+                                                <tr wire:key="product-{{ $product->id }}-{{ $products->currentPage() }}">
+                                                    <td class="ps-4" wire:click="viewProductDetails({{ $product->id }})">
+                                                        <span class="fw-medium text-dark">{{ $loop->iteration }}</span>
+                                                    </td>
+                                                    <td wire:click="viewProductDetails({{ $product->id }})">
+                                                        @if ($product->image)
+                                                            @php
+                                                                $imagePath = $product->image;
+                                                                if (strpos($imagePath, 'storage/images/') === 0) {
+                                                                    $imgFilename = substr($imagePath, strlen('storage/images/'));
+                                                                    $imageUrl = url('/product-image-serve/' . $imgFilename);
+                                                                } else {
+                                                                    $imageUrl = asset($imagePath);
+                                                                }
+                                                                $defaultImage = asset('images/product.jpg');
+                                                            @endphp
+                                                            <img src="{{ $imageUrl }}" alt="{{ $product->product_name }}"
+                                                                class="img-thumbnail"
+                                                                style="width: 50px; height: 50px; object-fit: cover;"
+                                                                onerror="this.src='{{ $defaultImage }}'">
+                                                        @else
+                                                            <div class="bg-light d-flex align-items-center justify-content-center"
+                                                                style="width: 50px; height: 50px;">
+                                                                <i class="bi bi-image text-muted"></i>
+                                                            </div>
                                                         @endif
+                                                    </td>
+                                                    <td wire:click="viewProductDetails({{ $product->id }})">
+                                                        <span class="fw-medium text-dark">{{ $product->product_name }}</span>
+                                                    </td>
+                                                    <td wire:click="viewProductDetails({{ $product->id }})">
+                                                        <span
+                                                            class="fw-medium text-primary">Rs.{{ number_format($product->supplier_price ?? 0, 2) }}</span>
+                                                    </td>
+                                                    <td wire:click="viewProductDetails({{ $product->id }})">
+                                                        <span
+                                                            class="fw-medium text-primary">Rs.{{ number_format($product->retail_price ?? 0, 2) }}</span>
+                                                    </td>
+                                                    <td wire:click="viewProductDetails({{ $product->id }})">
+                                                        <span
+                                                            class="fw-medium text-primary">Rs.{{ number_format($product->wholesale_price ?? 0, 2) }}</span>
+                                                    </td>
+                                                    <td wire:click="viewProductDetails({{ $product->id }})">
+                                                        @php
+                                                            $availableStock = $product->available_stock ?? 0;
+                                                            $stockClass = 'stock-high';
+                                                            if ($availableStock <= 5) {
+                                                                $stockClass = 'stock-low';
+                                                            } elseif
+                                                            ($availableStock <= 15) {
+                                                                $stockClass = 'stock-medium';
+                                                        } @endphp
+                                                        <span class="fw-medium {{ $stockClass }}">
+                                                            {{ $availableStock }}
+                                                            @if($availableStock <= 5) <i
+                                                                class="bi bi-exclamation-triangle-fill ms-1"></i>
+                                                            @endif
                                                         </span>
-                                            </td>
-                                            <td wire:click="viewProductDetails({{ $product->id }})">
-                                                @if ($product->status == 'active')
-                                                <span class="badge bg-success">Active</span>
-                                                @else
-                                                <span class="badge bg-danger">Inactive</span>
-                                                @endif
-                                            </td>
+                                                    </td>
+                                                    <td wire:click="viewProductDetails({{ $product->id }})">
+                                                        @if ($product->status == 'active')
+                                                            <span class="badge bg-success">Active</span>
+                                                        @else
+                                                            <span class="badge bg-danger">Inactive</span>
+                                                        @endif
+                                                    </td>
 
-                                            @if (!$isStaff)
-                                            <td class="text-end pe-4">
-                                                <div class="dropdown">
-                                                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle"
-                                                        type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                                        <i class="bi bi-gear-fill"></i> Actions
-                                                    </button>
-                                                    <ul class="dropdown-menu dropdown-menu-end">
-                                                        <li>
-                                                            <button class="dropdown-item"
-                                                                wire:click="editProduct({{ $product->id }})"
-                                                                wire:loading.attr="disabled"
-                                                                wire:target="editProduct({{ $product->id }})">
+                                                    <td wire:click="viewProductDetails({{ $product->id }})">
+                                                        @if($product->barcode)
+                                                            <svg class="product-barcode"
+                                                                data-barcode="{{ $product->barcode }}"></svg>
+                                                        @else
+                                                            <span class="text-muted">—</span>
+                                                        @endif
+                                                    </td>
 
-                                                                <span wire:loading
-                                                                    wire:target="editProduct({{ $product->id }})">
-                                                                    <i
-                                                                        class="spinner-border spinner-border-sm me-2"></i>
-                                                                    Loading...
-                                                                </span>
-                                                                <span wire:loading.remove
-                                                                    wire:target="editProduct({{ $product->id }})">
-                                                                    <i
-                                                                        class="bi bi-pencil-square text-warning me-2"></i>
-                                                                    Edit
-                                                                </span>
-                                                            </button>
-                                                        </li>
+                                                    <td>
+                                                        <div class="qr-code-cell" data-product-id="{{ $product->id }}"
+                                                            data-url="{{ url('/product-image/' . $product->id) }}"
+                                                            style="cursor: pointer;" title="Click to enlarge QR code">
+                                                            <div class="product-qrcode" id="qr-{{ $product->id }}"
+                                                                data-url="{{ url('/product-image/' . $product->id) }}"></div>
+                                                        </div>
+                                                    </td>
 
-                                                        <!-- Stock Adjustment Button -->
-                                                        <li>
-                                                            <button class="dropdown-item"
-                                                                wire:click="openStockAdjustment({{ $product->id }})"
-                                                                wire:loading.attr="disabled"
-                                                                wire:target="openStockAdjustment({{ $product->id }})">
+                                                    @if (!$isStaff)
+                                                        <td class="text-end pe-4">
+                                                            <div class="dropdown">
+                                                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle"
+                                                                    type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                                    <i class="bi bi-gear-fill"></i> Actions
+                                                                </button>
+                                                                <ul class="dropdown-menu dropdown-menu-end">
+                                                                    <li>
+                                                                        <button class="dropdown-item"
+                                                                            wire:click="editProduct({{ $product->id }})"
+                                                                            wire:loading.attr="disabled"
+                                                                            wire:target="editProduct({{ $product->id }})">
 
-                                                                <span wire:loading
-                                                                    wire:target="openStockAdjustment({{ $product->id }})">
-                                                                    <i
-                                                                        class="spinner-border spinner-border-sm me-2"></i>
-                                                                    Loading...
-                                                                </span>
-                                                                <span wire:loading.remove
-                                                                    wire:target="openStockAdjustment({{ $product->id }})">
-                                                                    <i class="bi bi-clipboard-plus text-info me-2"></i>
-                                                                    Stock Adjustment
-                                                                </span>
-                                                            </button>
-                                                        </li>
+                                                                            <span wire:loading
+                                                                                wire:target="editProduct({{ $product->id }})">
+                                                                                <i
+                                                                                    class="spinner-border spinner-border-sm me-2"></i>
+                                                                                Loading...
+                                                                            </span>
+                                                                            <span wire:loading.remove
+                                                                                wire:target="editProduct({{ $product->id }})">
+                                                                                <i
+                                                                                    class="bi bi-pencil-square text-warning me-2"></i>
+                                                                                Edit
+                                                                            </span>
+                                                                        </button>
+                                                                    </li>
 
-                                                        <!-- History Button -->
-                                                        <li>
-                                                            <a class="dropdown-item"
-                                                                href="{{ route('test.product-history', $product->id) }}"
-                                                                target="_blank">
-                                                                <i class="bi bi-clock-history text-info me-2"></i>
-                                                                View History
-                                                                <i class="bi bi-box-arrow-up-right ms-2 small"></i>
-                                                            </a>
-                                                        </li>
+                                                                    <!-- Stock Adjustment Button -->
+                                                                    <li>
+                                                                        <button class="dropdown-item"
+                                                                            wire:click="openStockAdjustment({{ $product->id }})"
+                                                                            wire:loading.attr="disabled"
+                                                                            wire:target="openStockAdjustment({{ $product->id }})">
 
-                                                        <li>
-                                                            <button class="dropdown-item"
-                                                                wire:click="confirmDeleteProduct({{ $product->id }})"
-                                                                wire:loading.attr="disabled"
-                                                                wire:target="confirmDeleteProduct({{ $product->id }})">
+                                                                            <span wire:loading
+                                                                                wire:target="openStockAdjustment({{ $product->id }})">
+                                                                                <i
+                                                                                    class="spinner-border spinner-border-sm me-2"></i>
+                                                                                Loading...
+                                                                            </span>
+                                                                            <span wire:loading.remove
+                                                                                wire:target="openStockAdjustment({{ $product->id }})">
+                                                                                <i class="bi bi-clipboard-plus text-info me-2"></i>
+                                                                                Stock Adjustment
+                                                                            </span>
+                                                                        </button>
+                                                                    </li>
 
-                                                                <span wire:loading
-                                                                    wire:target="confirmDeleteProduct({{ $product->id }})">
-                                                                    <i
-                                                                        class="spinner-border spinner-border-sm me-2"></i>
-                                                                    Loading...
-                                                                </span>
-                                                                <span wire:loading.remove
-                                                                    wire:target="confirmDeleteProduct({{ $product->id }})">
-                                                                    <i class="bi bi-trash text-danger me-2"></i>
-                                                                    Delete
-                                                                </span>
-                                                            </button>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                            </td>
-                                            @endif
-                                        </tr>
-                                        @endforeach
+                                                                    <!-- History Button -->
+                                                                    <li>
+                                                                        <a class="dropdown-item"
+                                                                            href="{{ route('test.product-history', $product->id) }}"
+                                                                            target="_blank">
+                                                                            <i class="bi bi-clock-history text-info me-2"></i>
+                                                                            View History
+                                                                            <i class="bi bi-box-arrow-up-right ms-2 small"></i>
+                                                                        </a>
+                                                                    </li>
+
+                                                                    <li>
+                                                                        <button class="dropdown-item"
+                                                                            wire:click="confirmDeleteProduct({{ $product->id }})"
+                                                                            wire:loading.attr="disabled"
+                                                                            wire:target="confirmDeleteProduct({{ $product->id }})">
+
+                                                                            <span wire:loading
+                                                                                wire:target="confirmDeleteProduct({{ $product->id }})">
+                                                                                <i
+                                                                                    class="spinner-border spinner-border-sm me-2"></i>
+                                                                                Loading...
+                                                                            </span>
+                                                                            <span wire:loading.remove
+                                                                                wire:target="confirmDeleteProduct({{ $product->id }})">
+                                                                                <i class="bi bi-trash text-danger me-2"></i>
+                                                                                Delete
+                                                                            </span>
+                                                                        </button>
+                                                                    </li>
+                                                                </ul>
+                                                            </div>
+                                                        </td>
+                                                    @endif
+                                                </tr>
+                                            @endforeach
                                         @else
-                                        <tr>
-                                            <td colspan="10" class="text-center py-5">
-                                                <div class="alert alert-primary bg-opacity-10">
-                                                    <i class="bi bi-info-circle me-2"></i> No products found.
-                                                </div>
-                                            </td>
-                                        </tr>
+                                            <tr>
+                                                <td colspan="10" class="text-center py-5">
+                                                    <div class="alert alert-primary bg-opacity-10">
+                                                        <i class="bi bi-info-circle me-2"></i> No products found.
+                                                    </div>
+                                                </td>
+                                            </tr>
                                         @endif
                                     </tbody>
                                 </table>
@@ -721,395 +807,438 @@
 
                     <div class="modal-body p-0">
                         @if($viewProduct)
-                        <div class="row g-0">
-                            @if ($isStaff)
-                            <!-- Staff View: Simplified layout -->
-                            <div class="col-12">
-                                <div class="p-4">
-                                    <!-- Product Image and Status -->
-                                    <div class="text-center mb-4">
-                                        <img src="{{ $viewProduct->image ? asset( $viewProduct->image) : asset('images/product.jpg') }}"
-                                            alt="Product Image" class="img-fluid rounded-3 shadow-sm"
-                                            style="width: 100%; max-width: 250px; height: 250px; object-fit: cover; border: 3px solid #f0f0f0;">
+                            <div class="row g-0">
+                                @if ($isStaff)
+                                    <!-- Staff View: Simplified layout -->
+                                    <div class="col-12">
+                                        <div class="p-4">
+                                            <!-- Product Image and Status -->
+                                            <div class="text-center mb-4">
+                                                @php
+                                                    $staffDefaultImage = asset('images/product.jpg');
+                                                    if ($viewProduct->image) {
+                                                        if (strpos($viewProduct->image, 'storage/images/') === 0) {
+                                                            $staffFilename = substr($viewProduct->image, strlen('storage/images/'));
+                                                            $staffImageUrl = url('/product-image-serve/' . $staffFilename);
+                                                        } else {
+                                                            $staffImageUrl = asset($viewProduct->image);
+                                                        }
+                                                    } else {
+                                                        $staffImageUrl = $staffDefaultImage;
+                                                    }
+                                                @endphp
+                                                <img src="{{ $staffImageUrl }}" alt="Product Image"
+                                                    class="img-fluid rounded-3 shadow-sm"
+                                                    style="width: 100%; max-width: 250px; height: 250px; object-fit: cover; border: 3px solid #f0f0f0;"
+                                                    onerror="this.src='{{ $staffDefaultImage }}';">
 
-                                        @if($viewProduct->status == 'active')
-                                        <div class="mt-3">
-                                            <span class="badge bg-success shadow-sm px-3 py-2">
-                                                <i class="bi bi-check-circle me-1"></i>Active
-                                            </span>
-                                        </div>
-                                        @else
-                                        <div class="mt-3">
-                                            <span class="badge bg-danger shadow-sm px-3 py-2">
-                                                <i class="bi bi-x-circle me-1"></i>Inactive
-                                            </span>
-                                        </div>
-                                        @endif
-                                    </div>
-
-                                    <!-- Product Name and Code -->
-                                    <h4 class="fw-bold text-dark text-center mb-2">{{ $viewProduct->name }}</h4>
-                                    <p class="text-muted text-center mb-4">
-                                        <i class="bi bi-upc-scan me-1"></i>
-                                        <span class="font-monospace">{{ $viewProduct->code }}</span>
-                                    </p>
-
-                                    <!-- Staff Allocated Stock Information -->
-                                    <div class="row g-3 mb-4">
-                                        <div class="col-md-6">
-                                            <div class="card border-0 shadow-sm bg-white h-100">
-                                                <div class="card-body p-3 text-center">
-                                                    <div class="text-success mb-2">
-                                                        <i class="bi bi-box-seam fs-4"></i>
+                                                @if($viewProduct->status == 'active')
+                                                    <div class="mt-3">
+                                                        <span class="badge bg-success shadow-sm px-3 py-2">
+                                                            <i class="bi bi-check-circle me-1"></i>Active
+                                                        </span>
                                                     </div>
-                                                    <h5 class="fw-bold mb-0">
-                                                        @php
-                                                        $availableStock = ($viewProduct->quantity ?? 0) - ($viewProduct->sold_quantity ?? 0);
-                                                        @endphp
-                                                        {{ $availableStock > 0 ? $availableStock : 0 }}
-                                                    </h5>
-                                                    <small class="text-muted">Available Stock</small>
-                                                    <div class="mt-2">
-                                                        @if($availableStock > 0)
-                                                        <span class="badge bg-success bg-opacity-25 text-success">In Stock</span>
-                                                        @else
-                                                        <span class="badge bg-danger bg-opacity-25 text-danger">Out of Stock</span>
-                                                        @endif
+                                                @else
+                                                    <div class="mt-3">
+                                                        <span class="badge bg-danger shadow-sm px-3 py-2">
+                                                            <i class="bi bi-x-circle me-1"></i>Inactive
+                                                        </span>
+                                                    </div>
+                                                @endif
+                                            </div>
+
+                                            <!-- Product Name and Code -->
+                                            <h4 class="fw-bold text-dark text-center mb-2">{{ $viewProduct->name }}</h4>
+                                            <p class="text-muted text-center mb-4">
+                                                <i class="bi bi-upc-scan me-1"></i>
+                                                <span class="font-monospace">{{ $viewProduct->code }}</span>
+                                            </p>
+
+                                            <!-- Staff Allocated Stock Information -->
+                                            <div class="row g-3 mb-4">
+                                                <div class="col-md-6">
+                                                    <div class="card border-0 shadow-sm bg-white h-100">
+                                                        <div class="card-body p-3 text-center">
+                                                            <div class="text-success mb-2">
+                                                                <i class="bi bi-box-seam fs-4"></i>
+                                                            </div>
+                                                            <h5 class="fw-bold mb-0">
+                                                                @php
+                                                                    $availableStock = ($viewProduct->quantity ?? 0) - ($viewProduct->sold_quantity ?? 0);
+                                                                @endphp
+                                                                {{ $availableStock > 0 ? $availableStock : 0 }}
+                                                            </h5>
+                                                            <small class="text-muted">Available Stock</small>
+                                                            <div class="mt-2">
+                                                                @if($availableStock > 0)
+                                                                    <span class="badge bg-success bg-opacity-25 text-success">In
+                                                                        Stock</span>
+                                                                @else
+                                                                    <span class="badge bg-danger bg-opacity-25 text-danger">Out of
+                                                                        Stock</span>
+                                                                @endif
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="card border-0 shadow-sm bg-white h-100">
+                                                        <div class="card-body p-3 text-center">
+                                                            <div class="text-info mb-2">
+                                                                <i class="bi bi-currency-dollar fs-4"></i>
+                                                            </div>
+                                                            <h5 class="fw-bold mb-0">
+                                                                Rs.{{ number_format($viewProduct->unit_price ?? 0, 2) }}
+                                                            </h5>
+                                                            <small class="text-muted">Unit Price</small>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="card border-0 shadow-sm bg-white h-100">
-                                                <div class="card-body p-3 text-center">
-                                                    <div class="text-info mb-2">
-                                                        <i class="bi bi-currency-dollar fs-4"></i>
+
+                                            <!-- Product Details -->
+                                            <div class="card border-0 shadow-sm mb-1">
+                                                <div class="card-body p-3">
+                                                    <h6 class="fw-bold text-dark mb-1">
+                                                        <i class="bi bi-info-circle-fill text-primary me-2"></i>Product
+                                                        Information
+                                                    </h6>
+                                                    <div class="row g-2">
+                                                        <div class="col-md-6">
+                                                            <small class="text-muted d-block mb-1">Product Code</small>
+                                                            <span class="fw-semibold text-dark">{{ $viewProduct->code }}</span>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <small class="text-muted d-block mb-1">Brand</small>
+                                                            <span
+                                                                class="fw-semibold text-dark">{{ $viewProduct->brand ?? '-' }}</span>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <small class="text-muted d-block mb-1">Model</small>
+                                                            <span
+                                                                class="fw-semibold text-dark">{{ $viewProduct->model ?? '-' }}</span>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <small class="text-muted d-block mb-1">Total Allocated</small>
+                                                            <span
+                                                                class="fw-semibold text-dark">{{ $viewProduct->quantity ?? 0 }}
+                                                                units</span>
+                                                        </div>
                                                     </div>
-                                                    <h5 class="fw-bold mb-0">
-                                                        Rs.{{ number_format($viewProduct->unit_price ?? 0, 2) }}
-                                                    </h5>
-                                                    <small class="text-muted">Unit Price</small>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </div>
 
-                                    <!-- Product Details -->
-                                    <div class="card border-0 shadow-sm mb-1">
-                                        <div class="card-body p-3">
-                                            <h6 class="fw-bold text-dark mb-1">
-                                                <i class="bi bi-info-circle-fill text-primary me-2"></i>Product Information
-                                            </h6>
-                                            <div class="row g-2">
-                                                <div class="col-md-6">
-                                                    <small class="text-muted d-block mb-1">Product Code</small>
-                                                    <span class="fw-semibold text-dark">{{ $viewProduct->code }}</span>
+                                            @if($viewProduct->description)
+                                                <div class="card border-0 shadow-sm">
+                                                    <div class="card-body p-3">
+                                                        <h6 class="fw-bold text-dark mb-2">
+                                                            <i class="bi bi-card-text text-info me-2"></i>Description
+                                                        </h6>
+                                                        <p class="mb-0 text-muted small">{{ $viewProduct->description }}</p>
+                                                    </div>
                                                 </div>
-                                                <div class="col-md-6">
-                                                    <small class="text-muted d-block mb-1">Brand</small>
-                                                    <span class="fw-semibold text-dark">{{ $viewProduct->brand ?? '-' }}</span>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <small class="text-muted d-block mb-1">Model</small>
-                                                    <span class="fw-semibold text-dark">{{ $viewProduct->model ?? '-' }}</span>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <small class="text-muted d-block mb-1">Total Allocated</small>
-                                                    <span class="fw-semibold text-dark">{{ $viewProduct->quantity ?? 0 }} units</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    @if($viewProduct->description)
-                                    <div class="card border-0 shadow-sm">
-                                        <div class="card-body p-3">
-                                            <h6 class="fw-bold text-dark mb-2">
-                                                <i class="bi bi-card-text text-info me-2"></i>Description
-                                            </h6>
-                                            <p class="mb-0 text-muted small">{{ $viewProduct->description }}</p>
-                                        </div>
-                                    </div>
-                                    @endif
-                                </div>
-                            </div>
-                            @else
-                            <!-- Admin View: Full product details with pricing -->
-                            <div class="col-lg-4 bg-light border-end">
-                                <div class="p-4 text-center">
-                                    <div class="product-image-container mb-4 position-relative">
-                                        <img src="{{ $viewProduct->image ? asset( $viewProduct->image) : asset('images/product.jpg') }}"
-                                            alt="Product Image" class="img-fluid rounded-3 shadow-sm product-image"
-                                            style="width: 100%; max-width: 280px; height: 280px; object-fit: cover; border: 3px solid #fff;">
-
-                                        <div class="position-absolute top-0 end-0 m-3">
-                                            @if($viewProduct->status == 'active')
-                                            <span class="badge bg-success shadow-sm px-3 py-2">
-                                                <i class="bi bi-check-circle me-1"></i>Active
-                                            </span>
-                                            @else
-                                            <span class="badge bg-danger shadow-sm px-3 py-2">
-                                                <i class="bi bi-x-circle me-1"></i>Inactive
-                                            </span>
                                             @endif
                                         </div>
                                     </div>
+                                @else
+                                                    <!-- Admin View: Full product details with pricing -->
+                                                    <div class="col-lg-4 bg-light border-end">
+                                                        <div class="p-4 text-center">
+                                                            <div class="product-image-container mb-4 position-relative">
+                                                                @php
+                                                                    $modalDefaultImage = asset('images/product.jpg');
+                                                                    if ($viewProduct->image) {
+                                                                        // Handle both storage/images and images paths
+                                                                        if (strpos($viewProduct->image, 'storage/images/') === 0) {
+                                                                            $modalFilename = substr($viewProduct->image, strlen('storage/images/'));
+                                                                            $modalImageUrl = url('/product-image-serve/' . $modalFilename);
+                                                                        } else {
+                                                                            $modalImageUrl = asset($viewProduct->image);
+                                                                        }
+                                                                    } else {
+                                                                        $modalImageUrl = $modalDefaultImage;
+                                                                    }
+                                                                @endphp
+                                                                <img src="{{ $modalImageUrl }}" alt="Product Image"
+                                                                    class="img-fluid rounded-3 shadow-sm product-image"
+                                                                    style="width: 100%; max-width: 280px; height: 280px; object-fit: cover; border: 3px solid #fff;"
+                                                                    onerror="this.src='{{ $modalDefaultImage }}';">
 
-                                    <h4 class="fw-bold text-dark mb-1">{{ $viewProduct->name }}</h4>
-                                    <p class="text-muted mb-1">
-                                        <i class="bi bi-upc-scan me-1"></i>
-                                        <span class="font-monospace">{{ $viewProduct->code }}</span>
-                                    </p>
+                                                                <div class="position-absolute top-0 end-0 m-3">
+                                                                    @if($viewProduct->status == 'active')
+                                                                        <span class="badge bg-success shadow-sm px-3 py-2">
+                                                                            <i class="bi bi-check-circle me-1"></i>Active
+                                                                        </span>
+                                                                    @else
+                                                                        <span class="badge bg-danger shadow-sm px-3 py-2">
+                                                                            <i class="bi bi-x-circle me-1"></i>Inactive
+                                                                        </span>
+                                                                    @endif
+                                                                </div>
+                                                            </div>
 
-                                    @php
-                                    // Compute totals: for variant products sum all variant stocks (available & damaged),
-                                    // otherwise use the single stock record
-                                    $available = 0;
-                                    $damaged = 0;
-                                    if ($viewProduct) {
-                                    if (method_exists($viewProduct, 'hasVariants') && $viewProduct->hasVariants()) {
-                                    $available = $viewProduct->stocks->sum('available_stock');
-                                    $damaged = $viewProduct->stocks->sum('damage_stock');
-                                    } else {
-                                    $available = $viewProduct->stock->available_stock ?? 0;
-                                    $damaged = $viewProduct->stock->damage_stock ?? 0;
-                                    }
-                                    }
-                                    @endphp
+                                                            <h4 class="fw-bold text-dark mb-1">{{ $viewProduct->name }}</h4>
+                                                            <p class="text-muted mb-1">
+                                                                <i class="bi bi-upc-scan me-1"></i>
+                                                                <span class="font-monospace">{{ $viewProduct->code }}</span>
+                                                            </p>
 
-                                    <div class="row g-2 mb-3">
-                                        <div class="col-md-6">
-                                            <div class="card border-0 shadow-sm bg-white">
-                                                <div class="card-body p-3 text-center">
-                                                    <div class="text-primary mb-1">
-                                                        <i class="bi bi-box-seam fs-4"></i>
-                                                    </div>
-                                                    <h5 class="fw-bold mb-0">{{ $available }}</h5>
-                                                    <small class="text-muted">Available Stock</small>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-md-6">
-                                            <div class="card border-0 shadow-sm bg-white">
-                                                <div class="card-body p-3 text-center">
-                                                    <div class="text-danger mb-1">
-                                                        <i class="bi bi-exclamation-triangle-fill fs-4"></i>
-                                                    </div>
-                                                    <h5 class="fw-bold mb-0">{{ $damaged }}</h5>
-                                                    <small class="text-muted">Damaged Stock</small>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    @if(($available ?? 0) > 0)
-                                    <div class="alert alert-success border-0 shadow-sm mb-0" role="alert">
-                                        <i class="bi bi-check-circle-fill me-2"></i>
-                                        <strong>Available</strong> - Ready to sell
-                                    </div>
-                                    @else
-                                    <div class="alert alert-danger border-0 shadow-sm mb-0" role="alert">
-                                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                                        <strong>Out of Stock</strong>
-                                    </div>
-                                    @endif
-                                </div>
-                            </div>
-
-                            <div class="col-lg-8">
-                                <div class="p-4">
-                                    <div class="info-section mb-4">
-                                        <div class="section-header d-flex align-items-center mb-1">
-                                            <div class="icon-box bg-primary bg-opacity-10 text-primary rounded-circle me-3"
-                                                style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
-                                                <i class="bi bi-info-circle-fill"></i>
-                                            </div>
-                                            <h6 class="fw-bold mb-0 text-dark">Basic Information</h6>
-                                        </div>
-                                        <div class="info-grid">
-                                            <div class="row g-3">
-                                                <div class="col-md-6">
-                                                    <div class="info-item p-3 bg-light rounded-3">
-                                                        <small class="text-muted d-block mb-1">Product Name</small>
-                                                        <span class="fw-semibold text-dark">{{ $viewProduct->name
-                                                            }}</span>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div class="info-item p-3 bg-light rounded-3">
-                                                        <small class="text-muted d-block mb-1">Product Code</small>
-                                                        <span class="fw-semibold text-dark font-monospace">{{
-                                                            $viewProduct->code }}</span>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div class="info-item p-3 bg-light rounded-3">
-                                                        <small class="text-muted d-block mb-1">Model</small>
-                                                        <span class="fw-semibold text-dark">{{ $viewProduct->model ??
-                                                            '-' }}</span>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div class="info-item p-3 bg-light rounded-3">
-                                                        <small class="text-muted d-block mb-1">Brand</small>
-                                                        <span class="fw-semibold text-dark">{{ $viewProduct->brand ??
-                                                            '-' }}</span>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-12">
-                                                    <div class="info-item p-3 bg-light rounded-3">
-                                                        <small class="text-muted d-block mb-1">Category</small>
-                                                        <span class="fw-semibold text-dark">{{ $viewProduct->category ??
-                                                            '-' }}</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="info-section mb-4">
-                                        <div class="section-header d-flex align-items-center mb-1">
-                                            <div class="icon-box bg-success bg-opacity-10 text-success rounded-circle me-3"
-                                                style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
-                                                <i class="bi bi-currency-dollar"></i>
-                                            </div>
-                                            <h6 class="fw-bold mb-0 text-dark">Pricing Information</h6>
-                                        </div>
-                                        @if(!$viewProduct || !$viewProduct->hasVariants())
-                                        <div class="row g-3">
-                                            <div class="col-md-4">
-                                                <div class="price-card text-center p-3 border rounded-3 h-100">
-                                                    <small class="text-muted d-block mb-2">Supplier Price</small>
-                                                    <h4 class="fw-bold text-secondary mb-0">
-                                                        Rs.{{ number_format($viewProduct->price->supplier_price ?? 0, 2) }}
-                                                    </h4>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <div
-                                                    class="price-card text-center p-3 border border-success rounded-3 bg-success bg-opacity-10 h-100">
-                                                    <small class="text-success d-block mb-2 fw-semibold">Retail
-                                                        Price</small>
-                                                    <h4 class="fw-bold text-success mb-0">
-                                                        Rs.{{ number_format($viewProduct->price->retail_price ?? 0, 2) }}
-                                                    </h4>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <div class="price-card text-center p-3 border rounded-3 h-100">
-                                                    <small class="text-muted d-block mb-2">Wholesale Price</small>
-                                                    <h4 class="fw-bold text-secondary mb-0">
-                                                        Rs.{{ number_format($viewProduct->price->wholesale_price ?? 0, 2) }}
-                                                    </h4>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        @else
-                                        <div class="card mb-1">
-                                            <div class="card-header bg-light">
-                                                <h6 class="mb-0 fw-semibold">Variant Prices & Stock</h6>
-                                            </div>
-                                            <div class="card-body p-0">
-                                                <div class="table-responsive view">
-                                                    <table class="table table-hover mb-0">
-                                                        <thead class="table-light">
-                                                            <tr>
-                                                                <th>Value</th>
-                                                                <th>Cost</th>
-                                                                <th>Retail</th>
-                                                                <th>Wholesale</th>
-                                                                <th>Available</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
                                                             @php
-                                                            // Prefer values prepared by the component (which now preserves DB order)
-                                                            $variantValues = $viewProduct->sorted_variant_values ?? [];
-
-                                                            if (empty($variantValues)) {
-                                                            if ($viewProduct->variant && is_array($viewProduct->variant->variant_values)) {
-                                                            // Use the variant values as stored in DB (preserve order)
-                                                            $variantValues = $viewProduct->variant->variant_values;
-                                                            } elseif (isset($viewProduct->prices) && $viewProduct->prices->isNotEmpty()) {
-                                                            // Keep the order provided by the prices collection
-                                                            $variantValues = $viewProduct->prices->pluck('variant_value')->unique()->toArray();
-                                                            } else {
-                                                            $variantValues = [];
-                                                            }
-                                                            }
+                                                                // Compute totals: for variant products sum all variant stocks (available & damaged),
+                                                                // otherwise use the single stock record
+                                                                $available = 0;
+                                                                $damaged = 0;
+                                                                if ($viewProduct) {
+                                                                    if (method_exists($viewProduct, 'hasVariants') && $viewProduct->hasVariants()) {
+                                                                        $available = $viewProduct->stocks->sum('available_stock');
+                                                                        $damaged = $viewProduct->stocks->sum('damage_stock');
+                                                                    } else {
+                                                                        $available = $viewProduct->stock->available_stock ?? 0;
+                                                                        $damaged = $viewProduct->stock->damage_stock ?? 0;
+                                                                    }
+                                                                }
                                                             @endphp
 
-                                                            @foreach($variantValues as $value)
-                                                            @php
-                                                            $price = $viewProduct->prices->firstWhere('variant_value', $value) ?? null;
-                                                            $stock = $viewProduct->stocks->firstWhere('variant_value', $value) ?? null;
-                                                            @endphp
-                                                            <tr>
-                                                                <td>{{ $value }}</td>
-                                                                <td>Rs.{{ number_format($price->supplier_price ?? 0, 2) }}</td>
-                                                                <td>Rs.{{ number_format($price->retail_price ?? 0, 2) }}</td>
-                                                                <td>Rs.{{ number_format($price->wholesale_price ?? 0, 2) }}</td>
-                                                                <td>{{ $stock->available_stock ?? 0 }}</td>
-                                                            </tr>
-                                                            @endforeach
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        @endif
-                                    </div>
+                                                            <div class="row g-2 mb-3">
+                                                                <div class="col-md-6">
+                                                                    <div class="card border-0 shadow-sm bg-white">
+                                                                        <div class="card-body p-3 text-center">
+                                                                            <div class="text-primary mb-1">
+                                                                                <i class="bi bi-box-seam fs-4"></i>
+                                                                            </div>
+                                                                            <h5 class="fw-bold mb-0">{{ $available }}</h5>
+                                                                            <small class="text-muted">Available Stock</small>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
 
-                                    <div class="info-section mb-4">
-                                        <div class="section-header d-flex align-items-center mb-1">
-                                            <div class="icon-box bg-warning bg-opacity-10 text-warning rounded-circle me-3"
-                                                style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
-                                                <i class="bi bi-boxes"></i>
-                                            </div>
-                                            <h6 class="fw-bold mb-0 text-dark">Stock Information</h6>
-                                        </div>
-                                        <div class="row g-3">
-                                            <div class="col-md-6">
-                                                <div class="stock-card p-3 border rounded-3 text-center">
-                                                    <i class="bi bi-box-seam text-success fs-3 mb-2"></i>
-                                                    <h5 class="fw-bold mb-1">{{ $available ?? ($viewProduct->stock->available_stock ?? 0) }}</h5>
-                                                    <small class="text-muted">Available Stock</small>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="stock-card p-3 border rounded-3 text-center">
-                                                    <i class="bi bi-exclamation-triangle text-danger fs-3 mb-2"></i>
-                                                    <h5 class="fw-bold mb-1">{{ $damaged ?? ($viewProduct->stock->damage_stock ?? 0) }}</h5>
-                                                    <small class="text-muted">Damaged Stock</small>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+                                                                <div class="col-md-6">
+                                                                    <div class="card border-0 shadow-sm bg-white">
+                                                                        <div class="card-body p-3 text-center">
+                                                                            <div class="text-danger mb-1">
+                                                                                <i class="bi bi-exclamation-triangle-fill fs-4"></i>
+                                                                            </div>
+                                                                            <h5 class="fw-bold mb-0">{{ $damaged }}</h5>
+                                                                            <small class="text-muted">Damaged Stock</small>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
 
-                                    @if($viewProduct->description)
-                                    <div class="info-section">
-                                        <div class="section-header d-flex align-items-center mb-1">
-                                            <div class="icon-box bg-info bg-opacity-10 text-info rounded-circle me-3"
-                                                style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
-                                                <i class="bi bi-card-text"></i>
-                                            </div>
-                                            <h6 class="fw-bold mb-0 text-dark">Description</h6>
-                                        </div>
-                                        <div class="p-3 bg-light rounded-3">
-                                            <p class="mb-0 text-muted">{{ $viewProduct->description }}</p>
-                                        </div>
-                                    </div>
-                                    @endif
-                                </div>
+                                                            @if(($available ?? 0) > 0)
+                                                                <div class="alert alert-success border-0 shadow-sm mb-0" role="alert">
+                                                                    <i class="bi bi-check-circle-fill me-2"></i>
+                                                                    <strong>Available</strong> - Ready to sell
+                                                                </div>
+                                                            @else
+                                                                <div class="alert alert-danger border-0 shadow-sm mb-0" role="alert">
+                                                                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                                                    <strong>Out of Stock</strong>
+                                                                </div>
+                                                            @endif
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-lg-8">
+                                                        <div class="p-4">
+                                                            <div class="info-section mb-4">
+                                                                <div class="section-header d-flex align-items-center mb-1">
+                                                                    <div class="icon-box bg-primary bg-opacity-10 text-primary rounded-circle me-3"
+                                                                        style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                                                                        <i class="bi bi-info-circle-fill"></i>
+                                                                    </div>
+                                                                    <h6 class="fw-bold mb-0 text-dark">Basic Information</h6>
+                                                                </div>
+                                                                <div class="info-grid">
+                                                                    <div class="row g-3">
+                                                                        <div class="col-md-6">
+                                                                            <div class="info-item p-3 bg-light rounded-3">
+                                                                                <small class="text-muted d-block mb-1">Product Name</small>
+                                                                                <span class="fw-semibold text-dark">{{ $viewProduct->name
+                                                                                    }}</span>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-md-6">
+                                                                            <div class="info-item p-3 bg-light rounded-3">
+                                                                                <small class="text-muted d-block mb-1">Product Code</small>
+                                                                                <span class="fw-semibold text-dark font-monospace">{{
+                                    $viewProduct->code }}</span>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-md-6">
+                                                                            <div class="info-item p-3 bg-light rounded-3">
+                                                                                <small class="text-muted d-block mb-1">Model</small>
+                                                                                <span class="fw-semibold text-dark">{{ $viewProduct->model ??
+                                    '-' }}</span>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-md-6">
+                                                                            <div class="info-item p-3 bg-light rounded-3">
+                                                                                <small class="text-muted d-block mb-1">Brand</small>
+                                                                                <span class="fw-semibold text-dark">{{ $viewProduct->brand ??
+                                    '-' }}</span>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-md-12">
+                                                                            <div class="info-item p-3 bg-light rounded-3">
+                                                                                <small class="text-muted d-block mb-1">Category</small>
+                                                                                <span class="fw-semibold text-dark">{{ $viewProduct->category ??
+                                    '-' }}</span>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="info-section mb-4">
+                                                                <div class="section-header d-flex align-items-center mb-1">
+                                                                    <div class="icon-box bg-success bg-opacity-10 text-success rounded-circle me-3"
+                                                                        style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                                                                        <i class="bi bi-currency-dollar"></i>
+                                                                    </div>
+                                                                    <h6 class="fw-bold mb-0 text-dark">Pricing Information</h6>
+                                                                </div>
+                                                                @if(!$viewProduct || !$viewProduct->hasVariants())
+                                                                    <div class="row g-3">
+                                                                        <div class="col-md-4">
+                                                                            <div class="price-card text-center p-3 border rounded-3 h-100">
+                                                                                <small class="text-muted d-block mb-2">Supplier Price</small>
+                                                                                <h4 class="fw-bold text-secondary mb-0">
+                                                                                    Rs.{{ number_format($viewProduct->price->supplier_price ?? 0, 2) }}
+                                                                                </h4>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-md-4">
+                                                                            <div
+                                                                                class="price-card text-center p-3 border border-success rounded-3 bg-success bg-opacity-10 h-100">
+                                                                                <small class="text-success d-block mb-2 fw-semibold">Retail
+                                                                                    Price</small>
+                                                                                <h4 class="fw-bold text-success mb-0">
+                                                                                    Rs.{{ number_format($viewProduct->price->retail_price ?? 0, 2) }}
+                                                                                </h4>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-md-4">
+                                                                            <div class="price-card text-center p-3 border rounded-3 h-100">
+                                                                                <small class="text-muted d-block mb-2">Wholesale Price</small>
+                                                                                <h4 class="fw-bold text-secondary mb-0">
+                                                                                    Rs.{{ number_format($viewProduct->price->wholesale_price ?? 0, 2) }}
+                                                                                </h4>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                @else
+                                                                    <div class="card mb-1">
+                                                                        <div class="card-header bg-light">
+                                                                            <h6 class="mb-0 fw-semibold">Variant Prices & Stock</h6>
+                                                                        </div>
+                                                                        <div class="card-body p-0">
+                                                                            <div class="table-responsive view">
+                                                                                <table class="table table-hover mb-0">
+                                                                                    <thead class="table-light">
+                                                                                        <tr>
+                                                                                            <th>Value</th>
+                                                                                            <th>Cost</th>
+                                                                                            <th>Retail</th>
+                                                                                            <th>Wholesale</th>
+                                                                                            <th>Available</th>
+                                                                                        </tr>
+                                                                                    </thead>
+                                                                                    <tbody>
+                                                                                        @php
+                                                                                            // Prefer values prepared by the component (which now preserves DB order)
+                                                                                            $variantValues = $viewProduct->sorted_variant_values ?? [];
+
+                                                                                            if (empty($variantValues)) {
+                                                                                                if ($viewProduct->variant && is_array($viewProduct->variant->variant_values)) {
+                                                                                                    // Use the variant values as stored in DB (preserve order)
+                                                                                                    $variantValues = $viewProduct->variant->variant_values;
+                                                                                                } elseif (isset($viewProduct->prices) && $viewProduct->prices->isNotEmpty()) {
+                                                                                                    // Keep the order provided by the prices collection
+                                                                                                    $variantValues = $viewProduct->prices->pluck('variant_value')->unique()->toArray();
+                                                                                                } else {
+                                                                                                    $variantValues = [];
+                                                                                                }
+                                                                                            }
+                                                                                        @endphp
+
+                                                                                        @foreach($variantValues as $value)
+                                                                                            @php
+                                                                                                $price = $viewProduct->prices->firstWhere('variant_value', $value) ?? null;
+                                                                                                $stock = $viewProduct->stocks->firstWhere('variant_value', $value) ?? null;
+                                                                                            @endphp
+                                                                                            <tr>
+                                                                                                <td>{{ $value }}</td>
+                                                                                                <td>Rs.{{ number_format($price->supplier_price ?? 0, 2) }}
+                                                                                                </td>
+                                                                                                <td>Rs.{{ number_format($price->retail_price ?? 0, 2) }}
+                                                                                                </td>
+                                                                                                <td>Rs.{{ number_format($price->wholesale_price ?? 0, 2) }}
+                                                                                                </td>
+                                                                                                <td>{{ $stock->available_stock ?? 0 }}</td>
+                                                                                            </tr>
+                                                                                        @endforeach
+                                                                                    </tbody>
+                                                                                </table>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                @endif
+                                                            </div>
+
+                                                            <div class="info-section mb-4">
+                                                                <div class="section-header d-flex align-items-center mb-1">
+                                                                    <div class="icon-box bg-warning bg-opacity-10 text-warning rounded-circle me-3"
+                                                                        style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                                                                        <i class="bi bi-boxes"></i>
+                                                                    </div>
+                                                                    <h6 class="fw-bold mb-0 text-dark">Stock Information</h6>
+                                                                </div>
+                                                                <div class="row g-3">
+                                                                    <div class="col-md-6">
+                                                                        <div class="stock-card p-3 border rounded-3 text-center">
+                                                                            <i class="bi bi-box-seam text-success fs-3 mb-2"></i>
+                                                                            <h5 class="fw-bold mb-1">
+                                                                                {{ $available ?? ($viewProduct->stock->available_stock ?? 0) }}
+                                                                            </h5>
+                                                                            <small class="text-muted">Available Stock</small>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-md-6">
+                                                                        <div class="stock-card p-3 border rounded-3 text-center">
+                                                                            <i class="bi bi-exclamation-triangle text-danger fs-3 mb-2"></i>
+                                                                            <h5 class="fw-bold mb-1">
+                                                                                {{ $damaged ?? ($viewProduct->stock->damage_stock ?? 0) }}</h5>
+                                                                            <small class="text-muted">Damaged Stock</small>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            @if($viewProduct->description)
+                                                                <div class="info-section">
+                                                                    <div class="section-header d-flex align-items-center mb-1">
+                                                                        <div class="icon-box bg-info bg-opacity-10 text-info rounded-circle me-3"
+                                                                            style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                                                                            <i class="bi bi-card-text"></i>
+                                                                        </div>
+                                                                        <h6 class="fw-bold mb-0 text-dark">Description</h6>
+                                                                    </div>
+                                                                    <div class="p-3 bg-light rounded-3">
+                                                                        <p class="mb-0 text-muted">{{ $viewProduct->description }}</p>
+                                                                    </div>
+                                                                </div>
+                                                            @endif
+                                                        </div>
+                                                    </div>
+                                @endif
                             </div>
-                        </div>
-                        @endif
+
                         @else
-                        <div class="text-center py-5">
-                            <i class="bi bi-exclamation-circle text-muted" style="font-size: 4rem;"></i>
-                            <p class="text-muted mt-3 fs-5">Product details not found.</p>
-                        </div>
+                            <div class="text-center py-5">
+                                <i class="bi bi-exclamation-circle text-muted" style="font-size: 4rem;"></i>
+                                <p class="text-muted mt-3 fs-5">Product details not found.</p>
+                            </div>
                         @endif
                     </div>
 
@@ -1130,9 +1259,9 @@
                     <div class="modal-header">
                         <h5 class="modal-title fw-bold">
                             @if($barcodeMode === 'edit')
-                            <i class="bi bi-pencil-square text-white me-2"></i> Update Product (Barcode Found)
+                                <i class="bi bi-pencil-square text-white me-2"></i> Update Product (Barcode Found)
                             @else
-                            <i class="bi bi-plus-circle text-white me-2"></i> Create New Product
+                                <i class="bi bi-plus-circle text-white me-2"></i> Create New Product
                             @endif
                         </h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -1149,23 +1278,43 @@
                                 <div class="row">
                                     <div class="col-md-8">
                                         <div class="mb-1">
-                                            <label for="barcode_input" class="form-label fw-semibold">Scan or Enter Barcode:</label>
+                                            <label for="barcode_input" class="form-label fw-semibold">Scan or Enter
+                                                Barcode:</label>
                                             <div class="input-group">
                                                 <span class="input-group-text"><i class="bi bi-upc-scan"></i></span>
-                                                <input type="text" class="form-control form-control-lg" id="barcode_input"
-                                                    wire:model.live.debounce.500ms="barcode"
+                                                <input type="text" class="form-control form-control-lg"
+                                                    id="barcode_input" wire:model.live.debounce.500ms="barcode"
                                                     placeholder="Scan barcode or type to auto-lookup..." autofocus>
+                                                <button type="button" class="btn btn-outline-success btn-lg"
+                                                    wire:click="generateBarcode" wire:loading.attr="disabled"
+                                                    wire:target="generateBarcode"
+                                                    title="Generate a unique barcode automatically">
+                                                    <span wire:loading wire:target="generateBarcode">
+                                                        <i class="spinner-border spinner-border-sm"></i>
+                                                    </span>
+                                                    <span wire:loading.remove wire:target="generateBarcode">
+                                                        <i class="bi bi-plus-circle me-1"></i> Generate
+                                                    </span>
+                                                </button>
                                             </div>
                                             @error('barcode')
-                                            <span class="text-danger small">* {{ $message }}</span>
+                                                <span class="text-danger small">* {{ $message }}</span>
                                             @enderror
-                                            @if($barcodeMode === 'edit')
-                                            <div class="alert alert-info mt-2 mb-0 py-2">
-                                                <i class="bi bi-info-circle me-1"></i>
-                                                <strong>Update Mode:</strong> This barcode matches an existing product. Changes will update the existing record.
-                                            </div>
+                                            @if($barcodeGenerated)
+                                                <div class="alert alert-success mt-2 mb-0 py-2">
+                                                    <i class="bi bi-check-circle me-1"></i>
+                                                    <strong>Auto-Generated:</strong> This barcode was generated
+                                                    automatically and will be marked for printing.
+                                                </div>
+                                            @elseif($barcodeMode === 'edit')
+                                                <div class="alert alert-info mt-2 mb-0 py-2">
+                                                    <i class="bi bi-info-circle me-1"></i>
+                                                    <strong>Update Mode:</strong> This barcode matches an existing product.
+                                                    Changes will update the existing record.
+                                                </div>
                                             @else
-                                            <small class="text-muted">Scan a barcode to auto-load existing product or create new</small>
+                                                <small class="text-muted">Scan a barcode to auto-load existing product or
+                                                    create new. Use "Generate" if no barcode exists.</small>
                                             @endif
                                         </div>
                                     </div>
@@ -1174,7 +1323,8 @@
                                             <label for="purchaseDate" class="form-label fw-semibold">
                                                 <i class="bi bi-calendar-event me-1"></i> Purchase Date:
                                             </label>
-                                            <input type="date" class="form-control" id="purchaseDate" wire:model="purchaseDate">
+                                            <input type="date" class="form-control" id="purchaseDate"
+                                                wire:model="purchaseDate">
                                             <small class="text-muted">Date for purchase record (auto-created)</small>
                                         </div>
                                     </div>
@@ -1194,7 +1344,7 @@
                                             <label for="name" class="form-label fw-semibold">Name:</label>
                                             <input type="text" class="form-control" id="name" wire:model="name">
                                             @error('name')
-                                            <span class="text-danger small">* {{ $message }}</span>
+                                                <span class="text-danger small">* {{ $message }}</span>
                                             @enderror
                                         </div>
                                     </div>
@@ -1216,15 +1366,15 @@
                                             <select class="form-select" id="category" wire:model="category">
                                                 <option value="">Select Category</option>
                                                 @foreach ($categories as $category)
-                                                <option value="{{ $category->id }}" {{ $category->id == 'Default
-                                                    Category' ? 'selected' : '' }}>
-                                                    {{ $category->category_name }}
-                                                    @if($category->id == 'Default Category') (Default) @endif
-                                                </option>
+                                                    <option value="{{ $category->id }}" {{ $category->id == 'Default
+                                                        Category' ? 'selected' : '' }}>
+                                                        {{ $category->category_name }}
+                                                        @if($category->id == 'Default Category') (Default) @endif
+                                                    </option>
                                                 @endforeach
                                             </select>
                                             @error('category')
-                                            <span class="text-danger small">* {{ $message }}</span>
+                                                <span class="text-danger small">* {{ $message }}</span>
                                             @enderror
                                         </div>
                                     </div>
@@ -1234,15 +1384,15 @@
                                             <select class="form-select" id="supplier" wire:model="supplier">
                                                 <option value="">Select Supplier</option>
                                                 @foreach ($suppliers as $supplier)
-                                                <option value="{{ $supplier->id }}" {{ $supplier->id == 'Default
-                                                    Supplier' ? 'selected' : '' }}>
-                                                    {{ $supplier->name }}
-                                                    @if($supplier->id == 'Default Supplier') (Default) @endif
-                                                </option>
+                                                    <option value="{{ $supplier->id }}" {{ $supplier->id == 'Default
+                                                        Supplier' ? 'selected' : '' }}>
+                                                        {{ $supplier->name }}
+                                                        @if($supplier->id == 'Default Supplier') (Default) @endif
+                                                    </option>
                                                 @endforeach
                                             </select>
                                             @error('supplier')
-                                            <span class="text-danger small">* {{ $message }}</span>
+                                                <span class="text-danger small">* {{ $message }}</span>
                                             @enderror
                                         </div>
                                     </div>
@@ -1250,38 +1400,6 @@
                             </div>
                         </div>
 
-                        <div class="card mb-4">
-                            <div class="card-header">
-                                <h5 class="card-title mb-0">
-                                    <i class="bi bi-card-text text-primary me-2"></i> Product Information
-                                </h5>
-                            </div>
-                            <div class="card-body p-4">
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        <div class="mb-1">
-                                            <label for="image" class="form-label fw-semibold">Image:</label>
-                                            <input type="text" class="form-control" id="image" wire:model="image">
-                                            @error('image')
-                                            <span class="text-danger small">* {{ $message }}</span>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <div class="mb-1">
-                                            <label for="description" class="form-label fw-semibold">Description:</label>
-                                            <textarea class="form-control" id="description" rows="3"
-                                                wire:model="description"></textarea>
-                                            @error('description')
-                                            <span class="text-danger small">* {{ $message }}</span>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
 
                         <div class="card mb-4">
                             <div class="card-header">
@@ -1309,9 +1427,9 @@
                                         </div>
                                         <small class="text-muted d-block mt-2">
                                             @if($pricing_mode === 'single')
-                                            Single price applies to all units of this product
+                                                Single price applies to all units of this product
                                             @else
-                                            Different prices for each variant (e.g., size, color)
+                                                Different prices for each variant (e.g., size, color)
                                             @endif
                                         </small>
                                     </div>
@@ -1328,202 +1446,195 @@
                                             <div class="input-group">
                                                 <span class="input-group-text">Rs.</span>
                                                 <input type="number" step="0.01" class="form-control"
-                                                    id="supplier_price" wire:model.live="supplier_price">
+                                                    id="supplier_price" wire:model="supplier_price">
                                             </div>
-                                            @error('supplier_price')
-                                            <span class="text-danger small">* {{ $message }}</span>
-                                            @enderror
                                         </div>
                                     </div>
                                     <div class="col-md-4">
                                         <div class="mb-1">
                                             <label for="retail_price" class="form-label fw-semibold">
                                                 <i class="bi bi-shop text-success"></i> Retail Price:
-                                                <small class="text-muted">(auto: cost × 1.8)</small>
                                             </label>
                                             <div class="input-group">
                                                 <span class="input-group-text">Rs.</span>
                                                 <input type="number" step="0.01" class="form-control" id="retail_price"
                                                     wire:model="retail_price">
                                             </div>
-                                            @error('retail_price')
-                                            <span class="text-danger small">* {{ $message }}</span>
-                                            @enderror
                                         </div>
                                     </div>
                                     <div class="col-md-4">
                                         <div class="mb-1">
                                             <label for="wholesale_price" class="form-label fw-semibold">
                                                 <i class="bi bi-boxes text-info"></i> Wholesale Price:
-                                                <small class="text-muted">(auto: cost × 1.5)</small>
                                             </label>
                                             <div class="input-group">
                                                 <span class="input-group-text">Rs.</span>
                                                 <input type="number" step="0.01" class="form-control" id="wholesale_price"
                                                     wire:model="wholesale_price">
                                             </div>
-                                            @error('wholesale_price')
-                                            <span class="text-danger small">* {{ $message }}</span>
-                                            @enderror
                                         </div>
                                     </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        <div class="mb-1">
-                                            <label for="available_stock" class="form-label fw-semibold">Available
-                                                Stock:</label>
-                                            <input type="number" class="form-control" id="available_stock"
-                                                wire:model="available_stock" min="0" value="0">
-                                            @if($barcodeMode === 'edit')
-                                            <small class="text-info"><i class="bi bi-info-circle me-1"></i>Enter quantity to ADD to existing stock</small>
-                                            @endif
-                                            @error('available_stock')
-                                            <span class="text-danger small">* {{ $message }}</span>
-                                            @enderror
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="mb-1">
+                                                <label for="available_stock" class="form-label fw-semibold">Available
+                                                    Stock:</label>
+                                                <input type="number" class="form-control" id="available_stock"
+                                                    wire:model="available_stock" min="0" value="0">
+                                                @if($barcodeMode === 'edit')
+                                                    <small class="text-info"><i class="bi bi-info-circle me-1"></i>Enter
+                                                        quantity to ADD to existing stock</small>
+                                                @endif
+                                                @error('available_stock')
+                                                    <span class="text-danger small">* {{ $message }}</span>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="mb-1">
+                                                <label for="damage_stock" class="form-label fw-semibold">Damage
+                                                    Stock:</label>
+                                                <input type="number" class="form-control" id="damage_stock"
+                                                    wire:model="damage_stock" min="0" value="0">
+                                                @if($barcodeMode === 'edit')
+                                                    <small class="text-info"><i class="bi bi-info-circle me-1"></i>Enter
+                                                        quantity to ADD to existing damage stock</small>
+                                                @endif
+                                                @error('damage_stock')
+                                                    <span class="text-danger small">* {{ $message }}</span>
+                                                @enderror
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
-                                        <div class="mb-1">
-                                            <label for="damage_stock" class="form-label fw-semibold">Damage
-                                                Stock:</label>
-                                            <input type="number" class="form-control" id="damage_stock"
-                                                wire:model="damage_stock" min="0" value="0">
-                                            @if($barcodeMode === 'edit')
-                                            <small class="text-info"><i class="bi bi-info-circle me-1"></i>Enter quantity to ADD to existing damage stock</small>
-                                            @endif
-                                            @error('damage_stock')
-                                            <span class="text-danger small">* {{ $message }}</span>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                </div>
                                 @else
-                                <!-- Variant-Based Pricing Mode -->
-                                <div class="alert alert-info border-info">
-                                    <i class="bi bi-info-circle me-2"></i>
-                                    <strong>Note:</strong> Select an existing variant type to manage prices and stock for each value.
-                                    <a href="{{ route('admin.manage-variants') }}" target="_blank" class="alert-link">
-                                        <i class="bi bi-plus-circle me-1"></i>Manage Variants
-                                    </a>
-                                </div>
+                                                <!-- Variant-Based Pricing Mode -->
+                                                <div class="alert alert-info border-info">
+                                                    <i class="bi bi-info-circle me-2"></i>
+                                                    <strong>Note:</strong> Select an existing variant type to manage prices and stock
+                                                    for each value.
+                                                    <a href="{{ route('admin.manage-variants') }}" target="_blank" class="alert-link">
+                                                        <i class="bi bi-plus-circle me-1"></i>Manage Variants
+                                                    </a>
+                                                </div>
 
-                                <!-- Select Existing Variant -->
-                                <div class="row mb-4">
-                                    <div class="col-md-12">
-                                        <label class="form-label fw-semibold">
-                                            <i class="bi bi-folder2-open text-primary me-2"></i>Select Variant Type:
-                                        </label>
-                                        <select class="form-select form-select-lg"
-                                            wire:model="variant_id" wire:change="selectVariant($event.target.value)">
-                                            <option value="">-- Choose a variant --</option>
-                                            @foreach($availableVariants as $variant)
-                                            <option value="{{ $variant['id'] }}">
-                                                {{ $variant['variant_name'] }} ({{ count($variant['variant_values'] ?? []) }} values)
-                                            </option>
-                                            @endforeach
-                                        </select>
-                                        @error('variant_id')
-                                        <span class="text-danger small">* {{ $message }}</span>
-                                        @enderror
-                                    </div>
-                                </div>
+                                                <!-- Select Existing Variant -->
+                                                <div class="row mb-4">
+                                                    <div class="col-md-12">
+                                                        <label class="form-label fw-semibold">
+                                                            <i class="bi bi-folder2-open text-primary me-2"></i>Select Variant Type:
+                                                        </label>
+                                                        <select class="form-select form-select-lg" wire:model="variant_id"
+                                                            wire:change="selectVariant($event.target.value)">
+                                                            <option value="">-- Choose a variant --</option>
+                                                            @foreach($availableVariants as $variant)
+                                                                <option value="{{ $variant['id'] }}">
+                                                                    {{ $variant['variant_name'] }}
+                                                                    ({{ count($variant['variant_values'] ?? []) }} values)
+                                                                </option>
+                                                            @endforeach
+                                                        </select>
+                                                        @error('variant_id')
+                                                            <span class="text-danger small">* {{ $message }}</span>
+                                                        @enderror
+                                                    </div>
+                                                </div>
 
-                                <!-- Pricing Table for Each Value (shown when variant is selected) -->
-                                @if(!empty($variant_id) && count($variant_prices) > 0)
-                                <div class="card">
-                                    <div class="card-header">
-                                        <h6 class="mb-0">
-                                            <i class="bi bi-cash-coin me-2"></i>Pricing & Stock for Each Value
-                                        </h6>
-                                    </div>
-                                    <div class="card-body p-0">
-                                        <div class="table-responsive">
-                                            <table class="table table-bordered table-hover mb-0">
-                                                <thead class="table-light">
-                                                    <tr>
-                                                        <th class="text-center">Value</th>
-                                                        <th class="text-center">Cost Price</th>
-                                                        <th class="text-center">Retail</th>
-                                                        <th class="text-center">Wholesale</th>
-                                                        <th class="text-center">Stock</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    @php
-                                                    // Preserve the order of variant price keys as provided (DB order)
-                                                    $variantPriceKeys = array_values(array_keys($variant_prices ?? []));
-                                                    @endphp
+                                                <!-- Pricing Table for Each Value (shown when variant is selected) -->
+                                                @if(!empty($variant_id) && count($variant_prices) > 0)
+                                                    <div class="card">
+                                                        <div class="card-header">
+                                                            <h6 class="mb-0">
+                                                                <i class="bi bi-cash-coin me-2"></i>Pricing & Stock for Each Value
+                                                            </h6>
+                                                        </div>
+                                                        <div class="card-body p-0">
+                                                            <div class="table-responsive">
+                                                                <table class="table table-bordered table-hover mb-0">
+                                                                    <thead class="table-light">
+                                                                        <tr>
+                                                                            <th class="text-center">Value</th>
+                                                                            <th class="text-center">Cost Price</th>
+                                                                            <th class="text-center">Retail</th>
+                                                                            <th class="text-center">Wholesale</th>
+                                                                            <th class="text-center">Stock</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        @php
+                                                                            // Preserve the order of variant price keys as provided (DB order)
+                                                                            $variantPriceKeys = array_values(array_keys($variant_prices ?? []));
+                                                                        @endphp
 
-                                                    @foreach($variantPriceKeys as $value)
-                                                    @php $prices = $variant_prices[$value] ?? []; @endphp
-                                                    <tr wire:key="variant-price-{{ $value }}">
-                                                        <td class="text-center align-middle">
-                                                            <strong class="text-primary">{{ $variant_key_map[$value] ?? $value }}</strong>
-                                                        </td>
-                                                        <td>
-                                                            <div class="input-group input-group-sm">
-                                                                <span class="input-group-text">Rs.</span>
-                                                                <input type="number" step="0.01" class="form-control"
-                                                                    wire:model.defer="variant_prices.{{ $value }}.supplier_price"
-                                                                    placeholder="0.00" id="supplier_{{ $value }}">
+                                                                        @foreach($variantPriceKeys as $value)
+                                                                            @php $prices = $variant_prices[$value] ?? []; @endphp
+                                                                            <tr wire:key="variant-price-{{ $value }}">
+                                                                                <td class="text-center align-middle">
+                                                                                    <strong
+                                                                                        class="text-primary">{{ $variant_key_map[$value] ?? $value }}</strong>
+                                                                                </td>
+                                                                                <td>
+                                                                                    <div class="input-group input-group-sm">
+                                                                                        <span class="input-group-text">Rs.</span>
+                                                                                        <input type="number" step="0.01" class="form-control"
+                                                                                            wire:model.defer="variant_prices.{{ $value }}.supplier_price"
+                                                                                            placeholder="0.00" id="supplier_{{ $value }}">
+                                                                                    </div>
+                                                                                    @error("variant_prices.{$value}.supplier_price")
+                                                                                        <span class="text-danger small">* {{ $message }}</span>
+                                                                                    @enderror
+                                                                                </td>
+                                                                                <td>
+                                                                                    <div class="input-group input-group-sm">
+                                                                                        <span class="input-group-text">Rs.</span>
+                                                                                        <input type="number" step="0.01" class="form-control"
+                                                                                            wire:model.defer="variant_prices.{{ $value }}.retail_price"
+                                                                                            placeholder="0.00" id="retail_{{ $loop->index }}">
+                                                                                    </div>
+                                                                                    @error("variant_prices.{$value}.retail_price")
+                                                                                        <span class="text-danger small">* {{ $message }}</span>
+                                                                                    @enderror
+                                                                                </td>
+                                                                                <td>
+                                                                                    <div class="input-group input-group-sm">
+                                                                                        <span class="input-group-text">Rs.</span>
+                                                                                        <input type="number" step="0.01" class="form-control"
+                                                                                            wire:model.defer="variant_prices.{{ $value }}.wholesale_price"
+                                                                                            placeholder="0.00" id="wholesale_{{ $value }}">
+                                                                                    </div>
+                                                                                    @error("variant_prices.{$value}.wholesale_price")
+                                                                                        <span class="text-danger small">* {{ $message }}</span>
+                                                                                    @enderror
+                                                                                </td>
+                                                                                <td>
+                                                                                    <input type="number" class="form-control form-control-sm"
+                                                                                        wire:model.defer="variant_prices.{{ $value }}.stock"
+                                                                                        placeholder="0" id="stock_{{ $loop->index }}">
+                                                                                    @error("variant_prices.{$value}.stock")
+                                                                                        <span class="text-danger small">* {{ $message }}</span>
+                                                                                    @enderror
+                                                                                </td>
+                                                                            </tr>
+                                                                        @endforeach
+                                                                    </tbody>
+                                                                </table>
                                                             </div>
-                                                            @error("variant_prices.{$value}.supplier_price")
-                                                            <span class="text-danger small">* {{ $message }}</span>
-                                                            @enderror
-                                                        </td>
-                                                        <td>
-                                                            <div class="input-group input-group-sm">
-                                                                <span class="input-group-text">Rs.</span>
-                                                                <input type="number" step="0.01" class="form-control"
-                                                                    wire:model.defer="variant_prices.{{ $value }}.retail_price"
-                                                                    placeholder="0.00" id="retail_{{ $loop->index }}">
+                                                        </div>
+                                                    </div>
+                                                @elseif(!empty($variant_id))
+                                                                <div class="alert alert-warning">
+                                                                    <i class="bi bi-exclamation-triangle me-2"></i>
+                                                                    Loading variant data or the selected variant has no values.
+                                                                </div>
                                                             </div>
-                                                            @error("variant_prices.{$value}.retail_price")
-                                                            <span class="text-danger small">* {{ $message }}</span>
-                                                            @enderror
-                                                        </td>
-                                                        <td>
-                                                            <div class="input-group input-group-sm">
-                                                                <span class="input-group-text">Rs.</span>
-                                                                <input type="number" step="0.01" class="form-control"
-                                                                    wire:model.defer="variant_prices.{{ $value }}.wholesale_price"
-                                                                    placeholder="0.00" id="wholesale_{{ $value }}">
-                                                            </div>
-                                                            @error("variant_prices.{$value}.wholesale_price")
-                                                            <span class="text-danger small">* {{ $message }}</span>
-                                                            @enderror
-                                                        </td>
-                                                        <td>
-                                                            <input type="number" class="form-control form-control-sm"
-                                                                wire:model.defer="variant_prices.{{ $value }}.stock"
-                                                                placeholder="0" id="stock_{{ $loop->index }}">
-                                                            @error("variant_prices.{$value}.stock")
-                                                            <span class="text-danger small">* {{ $message }}</span>
-                                                            @enderror
-                                                        </td>
-                                                    </tr>
-                                                    @endforeach
-                                                </tbody>
-                                            </table>
+                                                        </div>
+                                                    </div>
+                                                @elseif(!empty($variant_id))
+                                        <div class="alert alert-warning">
+                                            <i class="bi bi-exclamation-triangle me-2"></i>
+                                            Loading variant data...
                                         </div>
-                                    </div>
-                                </div>
-                                @elseif(!empty($variant_id))
-                                <div class="alert alert-warning">
-                                    <i class="bi bi-exclamation-triangle me-2"></i>
-                                    Loading variant data or the selected variant has no values.
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    @elseif(!empty($variant_id))
-                    <div class="alert alert-warning">
-                        <i class="bi bi-exclamation-triangle me-2"></i>
-                        Loading variant data...
-                    </div>
-                    @endif
-                    @endif
+                                    @endif
+                                @endif
                 </div>
             </div>
         </div>
@@ -1586,8 +1697,7 @@
                         <h6 class="card-title mb-0">
                             <i class="bi bi-table me-2"></i>Excel Format Example
                         </h6>
-                        <button type="button" class="btn btn-sm btn-outline-success"
-                            wire:click="downloadTemplate">
+                        <button type="button" class="btn btn-sm btn-outline-success" wire:click="downloadTemplate">
                             <i class="bi bi-download me-1"></i>Download Template
                         </button>
                     </div>
@@ -1651,9 +1761,9 @@
                         accept=".xlsx,.xls,.csv">
 
                     @error('importFile')
-                    <span class="text-danger small mt-1 d-block">
-                        <i class="bi bi-exclamation-circle me-1"></i>{{ $message }}
-                    </span>
+                        <span class="text-danger small mt-1 d-block">
+                            <i class="bi bi-exclamation-circle me-1"></i>{{ $message }}
+                        </span>
                     @enderror
 
                     <div class="form-text">
@@ -1662,10 +1772,10 @@
                     </div>
 
                     @if($importFile)
-                    <div class="alert alert-success mt-3 mb-0">
-                        <i class="bi bi-check-circle me-2"></i>
-                        File selected: <strong>{{ $importFile->getClientOriginalName() }}</strong>
-                    </div>
+                        <div class="alert alert-success mt-3 mb-0">
+                            <i class="bi bi-check-circle me-2"></i>
+                            File selected: <strong>{{ $importFile->getClientOriginalName() }}</strong>
+                        </div>
                     @endif
                 </div>
 
@@ -1679,8 +1789,8 @@
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                     <i class="bi bi-x-lg me-2"></i>Cancel
                 </button>
-                <button type="button" class="btn btn-success" wire:click="importProducts" @if(!$importFile)
-                    disabled @endif>
+                <button type="button" class="btn btn-success" wire:click="importProducts" @if(!$importFile) disabled
+                @endif>
                     <span wire:loading wire:target="importProducts">
                         <i class="spinner-border spinner-border-sm me-2"></i>Importing...
                     </span>
@@ -1719,7 +1829,7 @@
                                     <label for="editCode" class="form-label fw-semibold">Code:</label>
                                     <input type="text" class="form-control" id="editCode" wire:model="editCode">
                                     @error('editCode')
-                                    <span class="text-danger small">* {{ $message }}</span>
+                                        <span class="text-danger small">* {{ $message }}</span>
                                     @enderror
                                 </div>
                             </div>
@@ -1729,7 +1839,7 @@
                                     <label for="editName" class="form-label fw-semibold">Name:</label>
                                     <input type="text" class="form-control" id="editName" wire:model="editName">
                                     @error('editName')
-                                    <span class="text-danger small">* {{ $message }}</span>
+                                        <span class="text-danger small">* {{ $message }}</span>
                                     @enderror
                                 </div>
                             </div>
@@ -1737,10 +1847,9 @@
                             <div class="col-md-4">
                                 <div class="mb-1">
                                     <label for="editModel" class="form-label fw-semibold">Model:</label>
-                                    <input type="text" class="form-control" id="editModel"
-                                        wire:model="editModel">
+                                    <input type="text" class="form-control" id="editModel" wire:model="editModel">
                                     @error('editModel')
-                                    <span class="text-danger small">* {{ $message }}</span>
+                                        <span class="text-danger small">* {{ $message }}</span>
                                     @enderror
                                 </div>
                             </div>
@@ -1762,12 +1871,13 @@
                                     <select class="form-select" id="editCategory" wire:model="editCategory">
                                         <option value="">Select Category</option>
                                         @foreach ($categories as $category)
-                                        <option value="{{ $category->id }}" {{ $category->id == 1 ? 'selected' :
-                                                    '' }}>{{ $category->category_name }}</option>
+                                                                            <option value="{{ $category->id }}" {{ $category->id == 1 ? 'selected' :
+                                            '' }}>
+                                                                                {{ $category->category_name }}</option>
                                         @endforeach
                                     </select>
                                     @error('editCategory')
-                                    <span class="text-danger small">* {{ $message }}</span>
+                                        <span class="text-danger small">* {{ $message }}</span>
                                     @enderror
                                 </div>
                             </div>
@@ -1777,12 +1887,13 @@
                                     <select class="form-select" id="editBrand" wire:model="editBrand">
                                         <option value="">Select Brand</option>
                                         @foreach ($brands as $brand)
-                                        <option value="{{ $brand->id }}" {{ $brand->id == 1 ? 'selected' : ''
-                                                    }}>{{ $brand->brand_name }}</option>
+                                            <option value="{{ $brand->id }}" {{ $brand->id == 1 ? 'selected' : ''
+                                                        }}>
+                                                {{ $brand->brand_name }}</option>
                                         @endforeach
                                     </select>
                                     @error('editBrand')
-                                    <span class="text-danger small">* {{ $message }}</span>
+                                        <span class="text-danger small">* {{ $message }}</span>
                                     @enderror
                                 </div>
                             </div>
@@ -1801,10 +1912,9 @@
                             <div class="col-md-4">
                                 <div class="mb-1">
                                     <label for="editImage" class="form-label fw-semibold">Image:</label>
-                                    <input type="text" class="form-control" id="editImage"
-                                        wire:model="editImage">
+                                    <input type="text" class="form-control" id="editImage" wire:model="editImage">
                                     @error('editImage')
-                                    <span class="text-danger small">* {{ $message }}</span>
+                                        <span class="text-danger small">* {{ $message }}</span>
                                     @enderror
                                 </div>
                             </div>
@@ -1812,12 +1922,11 @@
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="mb-1">
-                                    <label for="editDescription"
-                                        class="form-label fw-semibold">Description:</label>
+                                    <label for="editDescription" class="form-label fw-semibold">Description:</label>
                                     <textarea class="form-control" id="editDescription" rows="3"
                                         wire:model="editDescription"></textarea>
                                     @error('editDescription')
-                                    <span class="text-danger small">* {{ $message }}</span>
+                                        <span class="text-danger small">* {{ $message }}</span>
                                     @enderror
                                 </div>
                             </div>
@@ -1841,254 +1950,248 @@
                                     <div class="input-group">
                                         <span class="input-group-text">Rs.</span>
                                         <input type="number" step="0.01" class="form-control"
-                                            id="editSupplierPrice" wire:model.live="editSupplierPrice">
+                                            id="editSupplierPrice" wire:model="editSupplierPrice">
                                     </div>
-                                    @error('editSupplierPrice')
-                                    <span class="text-danger small">* {{ $message }}</span>
-                                    @enderror
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="mb-1">
                                     <label for="editRetailPrice" class="form-label fw-semibold">Retail
                                         Price:
-                                        <small class="text-muted">(auto: cost × 1.8)</small>
                                     </label>
                                     <div class="input-group">
                                         <span class="input-group-text">Rs.</span>
                                         <input type="number" step="0.01" class="form-control"
                                             id="editRetailPrice" wire:model="editRetailPrice">
                                     </div>
-                                    @error('editRetailPrice')
-                                    <span class="text-danger small">* {{ $message }}</span>
-                                    @enderror
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="mb-1">
                                     <label for="editWholesalePrice" class="form-label fw-semibold">Wholesale
                                         Price:
-                                        <small class="text-muted">(auto: cost × 1.5)</small>
                                     </label>
                                     <div class="input-group">
                                         <span class="input-group-text">Rs.</span>
                                         <input type="number" step="0.01" class="form-control"
                                             id="editWholesalePrice" wire:model="editWholesalePrice">
                                     </div>
-                                    @error('editWholesalePrice')
-                                    <span class="text-danger small">* {{ $message }}</span>
-                                    @enderror
                                 </div>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-4">
-                                <div class="mb-1">
-                                    <label for="editStatus" class="form-label fw-semibold">Status:</label>
-                                    <select class="form-select" id="editStatus" wire:model="editStatus">
-                                        <option value="active">Active</option>
-                                        <option value="inactive">Inactive</option>
-                                    </select>
-                                    @error('editStatus')
-                                    <span class="text-danger small">* {{ $message }}</span>
-                                    @enderror
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="mb-1">
+                                        <label for="editStatus" class="form-label fw-semibold">Status:</label>
+                                        <select class="form-select" id="editStatus" wire:model="editStatus">
+                                            <option value="active">Active</option>
+                                            <option value="inactive">Inactive</option>
+                                        </select>
+                                        @error('editStatus')
+                                            <span class="text-danger small">* {{ $message }}</span>
+                                        @enderror
+                                    </div>
                                 </div>
                             </div>
-                        </div>
                         @else
 
-                        <div class="alert alert-info border-info">
-                            <i class="bi bi-info-circle me-2"></i>
-                            <strong>Note:</strong> Select an existing variant type to edit prices and stock for each value.
-                        </div>
-
-                        {{-- Variant selector (show when there are available variants) --}}
-                        @if(!empty($availableVariants))
-                        <div class="row mb-4">
-                            <div class="col-md-12">
-                                <label class="form-label fw-semibold">
-                                    <i class="bi bi-folder2-open text-primary me-2"></i>Select Variant Type:
-                                </label>
-                                <select class="form-select form-select-lg"
-                                    wire:model.live="variant_id" wire:change="selectVariant($event.target.value)">
-                                    <option value="">-- Choose a variant --</option>
-                                    @foreach($availableVariants as $variant)
-                                    <option value="{{ $variant['id'] }}">
-                                        {{ $variant['variant_name'] }} ({{ count($variant['variant_values'] ?? []) }} values)
-                                    </option>
-                                    @endforeach
-                                </select>
-                                @error('variant_id')
-                                <span class="text-danger small">* {{ $message }}</span>
-                                @enderror
-                            </div>
-                        </div>
-                        @endif
-
-                        {{-- If the product has exactly one variant value, show inline editable inputs immediately --}}
-                        @if(count($variant_prices) === 1)
-                        @php
-                        $variantPriceKeys = array_keys($variant_prices ?? []);
-                        $singleKey = $variantPriceKeys[0] ?? null;
-                        $singlePrices = $singleKey ? ($variant_prices[$singleKey] ?? []) : [];
-                        $variantName = '';
-                        foreach($availableVariants as $v) {
-                        if(($v['id'] ?? null) == $variant_id) { $variantName = $v['variant_name']; break; }
-                        }
-                        @endphp
-
-                        <div class="row mb-3">
-                            <div class="col-md-12">
-                                <label class="form-label fw-semibold">
-                                    <i class="bi bi-folder2-open text-primary me-2"></i>Variant Type:
-                                    <strong class="ms-2">{{ $variantName ?: 'Variant' }}</strong>
-                                </label>
-                            </div>
-                        </div>
-
-                        <div class="row g-3 mb-3">
-                            <div class="col-md-4">
-                                <label class="form-label fw-semibold">Cost Price:</label>
-                                <div class="input-group">
-                                    <span class="input-group-text">Rs.</span>
-                                    <input type="number" step="0.01" class="form-control"
-                                        wire:model.defer="variant_prices.{{ $singleKey }}.supplier_price"
-                                        placeholder="0.00">
-                                </div>
-                                @error("variant_prices.{$singleKey}.supplier_price")
-                                <span class="text-danger small">* {{ $message }}</span>
-                                @enderror
+                            <div class="alert alert-info border-info">
+                                <i class="bi bi-info-circle me-2"></i>
+                                <strong>Note:</strong> Select an existing variant type to edit prices and stock for each
+                                value.
                             </div>
 
-                            <div class="col-md-4">
-                                <label class="form-label fw-semibold">Retail Price:</label>
-                                <div class="input-group">
-                                    <span class="input-group-text">Rs.</span>
-                                    <input type="number" step="0.01" class="form-control"
-                                        wire:model.defer="variant_prices.{{ $singleKey }}.retail_price"
-                                        placeholder="0.00">
-                                </div>
-                                @error("variant_prices.{$singleKey}.retail_price")
-                                <span class="text-danger small">* {{ $message }}</span>
-                                @enderror
-                            </div>
-
-                            <div class="col-md-4">
-                                <label class="form-label fw-semibold">Wholesale Price:</label>
-                                <div class="input-group">
-                                    <span class="input-group-text">Rs.</span>
-                                    <input type="number" step="0.01" class="form-control"
-                                        wire:model.defer="variant_prices.{{ $singleKey }}.wholesale_price"
-                                        placeholder="0.00">
-                                </div>
-                                @error("variant_prices.{$singleKey}.wholesale_price")
-                                <span class="text-danger small">* {{ $message }}</span>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold">Available Stock:</label>
-                                <input type="number" class="form-control"
-                                    wire:model.defer="variant_prices.{{ $singleKey }}.stock" placeholder="0">
-                                @error("variant_prices.{$singleKey}.stock")
-                                <span class="text-danger small">* {{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold">Damage Stock:</label>
-                                <input type="number" class="form-control"
-                                    wire:model.defer="variant_prices.{{ $singleKey }}.damage_stock" placeholder="0">
-                                @error("variant_prices.{$singleKey}.damage_stock")
-                                <span class="text-danger small">* {{ $message }}</span>
-                                @enderror
-                            </div>
-                        </div>
-
-                        @elseif(!empty($variant_id) && count($variant_prices) > 0)
-                        <div class="card">
-                            <div class="card-header bg-light">
-                                <h6 class="mb-0">Edit Variant Pricing & Stock</h6>
-                            </div>
-                            <div class="card-body p-0">
-                                <div class="table-responsive">
-                                    <table class="table table-bordered table-hover mb-0">
-                                        <thead class="table-light">
-                                            <tr>
-                                                <th class="text-center">Value</th>
-                                                <th class="text-center">Cost Price</th>
-                                                <th class="text-center">Retail</th>
-                                                <th class="text-center">Wholesale</th>
-                                                <th class="text-center">Stock</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @php
-                                            // Preserve the order of variant price keys as provided (DB order)
-                                            $variantPriceKeys = array_values(array_keys($variant_prices ?? []));
-                                            @endphp
-
-                                            @foreach($variantPriceKeys as $value)
-                                            @php $prices = $variant_prices[$value] ?? []; @endphp
-                                            <tr wire:key="edit-variant-price-{{ $value }}">
-                                                <td class="text-center align-middle">
-                                                    <strong class="text-primary">{{ $variant_key_map[$value] ?? $value }}</strong>
-                                                </td>
-                                                <td>
-                                                    <div class="input-group input-group-sm">
-                                                        <span class="input-group-text">Rs.</span>
-                                                        <input type="number" step="0.01" class="form-control"
-                                                            wire:model.defer="variant_prices.{{ $value }}.supplier_price"
-                                                            placeholder="0.00" id="edit_supplier_{{ $value }}">
-                                                    </div>
-                                                    @error("variant_prices.{$value}.supplier_price")
-                                                    <span class="text-danger small">* {{ $message }}</span>
-                                                    @enderror
-                                                </td>
-                                                <td>
-                                                    <div class="input-group input-group-sm">
-                                                        <span class="input-group-text">Rs.</span>
-                                                        <input type="number" step="0.01" class="form-control"
-                                                            wire:model.defer="variant_prices.{{ $value }}.retail_price"
-                                                            placeholder="0.00" id="edit_retail_{{ $loop->index }}">
-                                                    </div>
-                                                    @error("variant_prices.{$value}.retail_price")
-                                                    <span class="text-danger small">* {{ $message }}</span>
-                                                    @enderror
-                                                </td>
-                                                <td>
-                                                    <div class="input-group input-group-sm">
-                                                        <span class="input-group-text">Rs.</span>
-                                                        <input type="number" step="0.01" class="form-control"
-                                                            wire:model.defer="variant_prices.{{ $value }}.wholesale_price"
-                                                            placeholder="0.00" id="edit_wholesale_{{ $value }}">
-                                                    </div>
-                                                    @error("variant_prices.{$value}.wholesale_price")
-                                                    <span class="text-danger small">* {{ $message }}</span>
-                                                    @enderror
-                                                </td>
-                                                <td>
-                                                    <input type="number" class="form-control form-control-sm"
-                                                        wire:model.defer="variant_prices.{{ $value }}.stock"
-                                                        placeholder="0" id="edit_stock_{{ $loop->index }}">
-                                                    @error("variant_prices.{$value}.stock")
-                                                    <span class="text-danger small">* {{ $message }}</span>
-                                                    @enderror
-                                                </td>
-                                            </tr>
+                            {{-- Variant selector (show when there are available variants) --}}
+                            @if(!empty($availableVariants))
+                                <div class="row mb-4">
+                                    <div class="col-md-12">
+                                        <label class="form-label fw-semibold">
+                                            <i class="bi bi-folder2-open text-primary me-2"></i>Select Variant Type:
+                                        </label>
+                                        <select class="form-select form-select-lg" wire:model.live="variant_id"
+                                            wire:change="selectVariant($event.target.value)">
+                                            <option value="">-- Choose a variant --</option>
+                                            @foreach($availableVariants as $variant)
+                                                <option value="{{ $variant['id'] }}">
+                                                    {{ $variant['variant_name'] }} ({{ count($variant['variant_values'] ?? []) }}
+                                                    values)
+                                                </option>
                                             @endforeach
-                                        </tbody>
-                                    </table>
+                                        </select>
+                                        @error('variant_id')
+                                            <span class="text-danger small">* {{ $message }}</span>
+                                        @enderror
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
-                        @elseif(!empty($variant_id))
-                        <div class="alert alert-warning">
-                            <i class="bi bi-exclamation-triangle me-2"></i>
-                            Loading variant data...
-                        </div>
-                        @endif
+                            @endif
+
+                            {{-- If the product has exactly one variant value, show inline editable inputs immediately --}}
+                            @if(count($variant_prices) === 1)
+                                @php
+                                    $variantPriceKeys = array_keys($variant_prices ?? []);
+                                    $singleKey = $variantPriceKeys[0] ?? null;
+                                    $singlePrices = $singleKey ? ($variant_prices[$singleKey] ?? []) : [];
+                                    $variantName = '';
+                                    foreach ($availableVariants as $v) {
+                                        if (($v['id'] ?? null) == $variant_id) {
+                                            $variantName = $v['variant_name'];
+                                            break;
+                                        }
+                                    }
+                                @endphp
+
+                                <div class="row mb-3">
+                                    <div class="col-md-12">
+                                        <label class="form-label fw-semibold">
+                                            <i class="bi bi-folder2-open text-primary me-2"></i>Variant Type:
+                                            <strong class="ms-2">{{ $variantName ?: 'Variant' }}</strong>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="row g-3 mb-3">
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-semibold">Cost Price:</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">Rs.</span>
+                                            <input type="number" step="0.01" class="form-control"
+                                                wire:model.defer="variant_prices.{{ $singleKey }}.supplier_price"
+                                                placeholder="0.00">
+                                        </div>
+                                        @error("variant_prices.{$singleKey}.supplier_price")
+                                            <span class="text-danger small">* {{ $message }}</span>
+                                        @enderror
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-semibold">Retail Price:</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">Rs.</span>
+                                            <input type="number" step="0.01" class="form-control"
+                                                wire:model.defer="variant_prices.{{ $singleKey }}.retail_price"
+                                                placeholder="0.00">
+                                        </div>
+                                        @error("variant_prices.{$singleKey}.retail_price")
+                                            <span class="text-danger small">* {{ $message }}</span>
+                                        @enderror
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-semibold">Wholesale Price:</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">Rs.</span>
+                                            <input type="number" step="0.01" class="form-control"
+                                                wire:model.defer="variant_prices.{{ $singleKey }}.wholesale_price"
+                                                placeholder="0.00">
+                                        </div>
+                                        @error("variant_prices.{$singleKey}.wholesale_price")
+                                            <span class="text-danger small">* {{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">Available Stock:</label>
+                                        <input type="number" class="form-control"
+                                            wire:model.defer="variant_prices.{{ $singleKey }}.stock" placeholder="0">
+                                        @error("variant_prices.{$singleKey}.stock")
+                                            <span class="text-danger small">* {{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">Damage Stock:</label>
+                                        <input type="number" class="form-control"
+                                            wire:model.defer="variant_prices.{{ $singleKey }}.damage_stock" placeholder="0">
+                                        @error("variant_prices.{$singleKey}.damage_stock")
+                                            <span class="text-danger small">* {{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                            @elseif(!empty($variant_id) && count($variant_prices) > 0)
+                                <div class="card">
+                                    <div class="card-header bg-light">
+                                        <h6 class="mb-0">Edit Variant Pricing & Stock</h6>
+                                    </div>
+                                    <div class="card-body p-0">
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered table-hover mb-0">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th class="text-center">Value</th>
+                                                        <th class="text-center">Cost Price</th>
+                                                        <th class="text-center">Retail</th>
+                                                        <th class="text-center">Wholesale</th>
+                                                        <th class="text-center">Stock</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @php
+                                                        // Preserve the order of variant price keys as provided (DB order)
+                                                        $variantPriceKeys = array_values(array_keys($variant_prices ?? []));
+                                                    @endphp
+
+                                                    @foreach($variantPriceKeys as $value)
+                                                        @php $prices = $variant_prices[$value] ?? []; @endphp
+                                                        <tr wire:key="edit-variant-price-{{ $value }}">
+                                                            <td class="text-center align-middle">
+                                                                <strong
+                                                                    class="text-primary">{{ $variant_key_map[$value] ?? $value }}</strong>
+                                                            </td>
+                                                            <td>
+                                                                <div class="input-group input-group-sm">
+                                                                    <span class="input-group-text">Rs.</span>
+                                                                    <input type="number" step="0.01" class="form-control"
+                                                                        wire:model.defer="variant_prices.{{ $value }}.supplier_price"
+                                                                        placeholder="0.00" id="edit_supplier_{{ $value }}">
+                                                                </div>
+                                                                @error("variant_prices.{$value}.supplier_price")
+                                                                    <span class="text-danger small">* {{ $message }}</span>
+                                                                @enderror
+                                                            </td>
+                                                            <td>
+                                                                <div class="input-group input-group-sm">
+                                                                    <span class="input-group-text">Rs.</span>
+                                                                    <input type="number" step="0.01" class="form-control"
+                                                                        wire:model.defer="variant_prices.{{ $value }}.retail_price"
+                                                                        placeholder="0.00" id="edit_retail_{{ $loop->index }}">
+                                                                </div>
+                                                                @error("variant_prices.{$value}.retail_price")
+                                                                    <span class="text-danger small">* {{ $message }}</span>
+                                                                @enderror
+                                                            </td>
+                                                            <td>
+                                                                <div class="input-group input-group-sm">
+                                                                    <span class="input-group-text">Rs.</span>
+                                                                    <input type="number" step="0.01" class="form-control"
+                                                                        wire:model.defer="variant_prices.{{ $value }}.wholesale_price"
+                                                                        placeholder="0.00" id="edit_wholesale_{{ $value }}">
+                                                                </div>
+                                                                @error("variant_prices.{$value}.wholesale_price")
+                                                                    <span class="text-danger small">* {{ $message }}</span>
+                                                                @enderror
+                                                            </td>
+                                                            <td>
+                                                                <input type="number" class="form-control form-control-sm"
+                                                                    wire:model.defer="variant_prices.{{ $value }}.stock"
+                                                                    placeholder="0" id="edit_stock_{{ $loop->index }}">
+                                                                @error("variant_prices.{$value}.stock")
+                                                                    <span class="text-danger small">* {{ $message }}</span>
+                                                                @enderror
+                                                            </td>
+                                                        </tr>
+                                                    @endforeach
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            @elseif(!empty($variant_id))
+                                <div class="alert alert-warning">
+                                    <i class="bi bi-exclamation-triangle me-2"></i>
+                                    Loading variant data...
+                                </div>
+                            @endif
 
                         @endif
                     </div>
@@ -2123,100 +2226,100 @@
             </div>
             <div class="modal-body p-4">
                 @if($adjustmentProductId)
-                <div class="card mb-4">
-                    <div class="card-header bg-light">
-                        <h6 class="card-title mb-0">
-                            <i class="bi bi-box me-2"></i> Product Information
-                        </h6>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <strong>Product:</strong> {{ $adjustmentProductName }}
-                            </div>
-                            <div class="col-md-3">
-                                <strong>Available Stock:</strong>
-                                <span class="badge bg-success">{{ $adjustmentAvailableStock }}</span>
-                            </div>
-                            <div class="col-md-3">
-                                <strong>Damage Stock:</strong>
-                                <span class="badge bg-danger">{{ $adjustmentDamageStock }}</span>
-                            </div>
+                    <div class="card mb-4">
+                        <div class="card-header bg-light">
+                            <h6 class="card-title mb-0">
+                                <i class="bi bi-box me-2"></i> Product Information
+                            </h6>
                         </div>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-header bg-light">
-                        <h6 class="card-title mb-0">
-                            <i class="bi bi-gear me-2"></i> Adjustment Details
-                        </h6>
-                    </div>
-                    <div class="card-body">
-                        <div class="alert alert-info border-0 mb-1">
-                            <i class="bi bi-info-circle me-2"></i>
-                            <strong>Note:</strong>
-                            <ul class="mb-0 mt-2">
-                                <li><strong>Add Damage:</strong> Increases damage stock and decreases available stock from batches (FIFO)</li>
-                                <li><strong>Adjust Available:</strong> Increases available stock and adds to oldest batch</li>
-                            </ul>
-                        </div>
-
-                        <div class="row">
-                            {{-- Damage Stock Input --}}
-                            <div class="col-md-6">
-                                <div class="mb-1">
-                                    <label for="damageQuantity" class="form-label fw-semibold">
-                                        <i class="bi bi-exclamation-triangle text-danger me-1"></i> Damage Quantity:
-                                    </label>
-                                    <input type="number" class="form-control" id="damageQuantity"
-                                        wire:model="damageQuantity" min="1"
-                                        placeholder="Enter damage quantity">
-                                    @error('damageQuantity')
-                                    <span class="text-danger small">* {{ $message }}</span>
-                                    @enderror
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <strong>Product:</strong> {{ $adjustmentProductName }}
                                 </div>
-                                <button type="button" class="btn btn-danger w-100" wire:click="addDamageStock">
-                                    <span wire:loading.remove wire:target="addDamageStock">
-                                        <i class="bi bi-exclamation-triangle me-2"></i>Add Damage Stock
-                                    </span>
-                                    <span wire:loading wire:target="addDamageStock">
-                                        <i class="spinner-border spinner-border-sm me-2"></i>Processing...
-                                    </span>
-                                </button>
-                                <small class="text-muted d-block mt-2">
-                                    Deducts from available stock using FIFO and updates prices
-                                </small>
-                            </div>
-
-                            {{-- Available Stock Input --}}
-                            <div class="col-md-6">
-                                <div class="mb-1">
-                                    <label for="availableQuantity" class="form-label fw-semibold">
-                                        <i class="bi bi-box-seam text-success me-1"></i> Available Quantity:
-                                    </label>
-                                    <input type="number" class="form-control" id="availableQuantity"
-                                        wire:model="availableQuantity" min="1"
-                                        placeholder="Enter quantity to add">
-                                    @error('availableQuantity')
-                                    <span class="text-danger small">* {{ $message }}</span>
-                                    @enderror
+                                <div class="col-md-3">
+                                    <strong>Available Stock:</strong>
+                                    <span class="badge bg-success">{{ $adjustmentAvailableStock }}</span>
                                 </div>
-                                <button type="button" class="btn btn-success w-100" wire:click="adjustAvailableStock">
-                                    <span wire:loading.remove wire:target="adjustAvailableStock">
-                                        <i class="bi bi-plus-circle me-2"></i>Adjust Available Stock
-                                    </span>
-                                    <span wire:loading wire:target="adjustAvailableStock">
-                                        <i class="spinner-border spinner-border-sm me-2"></i>Processing...
-                                    </span>
-                                </button>
-                                <small class="text-muted d-block mt-2">
-                                    Increases available stock and adds to batch
-                                </small>
+                                <div class="col-md-3">
+                                    <strong>Damage Stock:</strong>
+                                    <span class="badge bg-danger">{{ $adjustmentDamageStock }}</span>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+
+                    <div class="card">
+                        <div class="card-header bg-light">
+                            <h6 class="card-title mb-0">
+                                <i class="bi bi-gear me-2"></i> Adjustment Details
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="alert alert-info border-0 mb-1">
+                                <i class="bi bi-info-circle me-2"></i>
+                                <strong>Note:</strong>
+                                <ul class="mb-0 mt-2">
+                                    <li><strong>Add Damage:</strong> Increases damage stock and decreases available stock
+                                        from batches (FIFO)</li>
+                                    <li><strong>Adjust Available:</strong> Increases available stock and adds to oldest
+                                        batch</li>
+                                </ul>
+                            </div>
+
+                            <div class="row">
+                                {{-- Damage Stock Input --}}
+                                <div class="col-md-6">
+                                    <div class="mb-1">
+                                        <label for="damageQuantity" class="form-label fw-semibold">
+                                            <i class="bi bi-exclamation-triangle text-danger me-1"></i> Damage Quantity:
+                                        </label>
+                                        <input type="number" class="form-control" id="damageQuantity"
+                                            wire:model="damageQuantity" min="1" placeholder="Enter damage quantity">
+                                        @error('damageQuantity')
+                                            <span class="text-danger small">* {{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                    <button type="button" class="btn btn-danger w-100" wire:click="addDamageStock">
+                                        <span wire:loading.remove wire:target="addDamageStock">
+                                            <i class="bi bi-exclamation-triangle me-2"></i>Add Damage Stock
+                                        </span>
+                                        <span wire:loading wire:target="addDamageStock">
+                                            <i class="spinner-border spinner-border-sm me-2"></i>Processing...
+                                        </span>
+                                    </button>
+                                    <small class="text-muted d-block mt-2">
+                                        Deducts from available stock using FIFO and updates prices
+                                    </small>
+                                </div>
+
+                                {{-- Available Stock Input --}}
+                                <div class="col-md-6">
+                                    <div class="mb-1">
+                                        <label for="availableQuantity" class="form-label fw-semibold">
+                                            <i class="bi bi-box-seam text-success me-1"></i> Available Quantity:
+                                        </label>
+                                        <input type="number" class="form-control" id="availableQuantity"
+                                            wire:model="availableQuantity" min="1" placeholder="Enter quantity to add">
+                                        @error('availableQuantity')
+                                            <span class="text-danger small">* {{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                    <button type="button" class="btn btn-success w-100" wire:click="adjustAvailableStock">
+                                        <span wire:loading.remove wire:target="adjustAvailableStock">
+                                            <i class="bi bi-plus-circle me-2"></i>Adjust Available Stock
+                                        </span>
+                                        <span wire:loading wire:target="adjustAvailableStock">
+                                            <i class="spinner-border spinner-border-sm me-2"></i>Processing...
+                                        </span>
+                                    </button>
+                                    <small class="text-muted d-block mt-2">
+                                        Increases available stock and adds to batch
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 @endif
             </div>
             <div class="modal-footer">
@@ -2246,54 +2349,56 @@
             <div class="modal-body p-0">
                 @if($historyProductId)
 
-                <!-- Tabs -->
-                <div class="border-bottom bg-light">
-                    <ul class="nav nav-tabs border-0 px-3" role="tablist">
-                        <li class="nav-item">
-                            <button class="nav-link {{ $historyTab === 'sales' ? 'active' : '' }}"
-                                wire:click="switchHistoryTab('sales')" type="button">
-                                Sales <span class="badge bg-primary ms-1">{{ count($salesHistory ?? []) }}</span>
-                            </button>
-                        </li>
-                        <li class="nav-item">
-                            <button class="nav-link {{ $historyTab === 'purchases' ? 'active' : '' }}"
-                                wire:click="switchHistoryTab('purchases')" type="button">
-                                Purchases <span class="badge bg-success ms-1">{{ count($purchasesHistory ?? []) }}</span>
-                            </button>
-                        </li>
-                        <li class="nav-item">
-                            <button class="nav-link {{ $historyTab === 'returns' ? 'active' : '' }}"
-                                wire:click="switchHistoryTab('returns')" type="button">
-                                Returns <span class="badge bg-warning ms-1">{{ count($returnsHistory ?? []) }}</span>
-                            </button>
-                        </li>
-                        <li class="nav-item">
-                            <button class="nav-link {{ $historyTab === 'quotations' ? 'active' : '' }}"
-                                wire:click="switchHistoryTab('quotations')" type="button">
-                                Quotations <span class="badge bg-info ms-1">{{ count($quotationsHistory ?? []) }}</span>
-                            </button>
-                        </li>
-                    </ul>
-                </div>
+                    <!-- Tabs -->
+                    <div class="border-bottom bg-light">
+                        <ul class="nav nav-tabs border-0 px-3" role="tablist">
+                            <li class="nav-item">
+                                <button class="nav-link {{ $historyTab === 'sales' ? 'active' : '' }}"
+                                    wire:click="switchHistoryTab('sales')" type="button">
+                                    Sales <span class="badge bg-primary ms-1">{{ count($salesHistory ?? []) }}</span>
+                                </button>
+                            </li>
+                            <li class="nav-item">
+                                <button class="nav-link {{ $historyTab === 'purchases' ? 'active' : '' }}"
+                                    wire:click="switchHistoryTab('purchases')" type="button">
+                                    Purchases <span
+                                        class="badge bg-success ms-1">{{ count($purchasesHistory ?? []) }}</span>
+                                </button>
+                            </li>
+                            <li class="nav-item">
+                                <button class="nav-link {{ $historyTab === 'returns' ? 'active' : '' }}"
+                                    wire:click="switchHistoryTab('returns')" type="button">
+                                    Returns <span class="badge bg-warning ms-1">{{ count($returnsHistory ?? []) }}</span>
+                                </button>
+                            </li>
+                            <li class="nav-item">
+                                <button class="nav-link {{ $historyTab === 'quotations' ? 'active' : '' }}"
+                                    wire:click="switchHistoryTab('quotations')" type="button">
+                                    Quotations <span class="badge bg-info ms-1">{{ count($quotationsHistory ?? []) }}</span>
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
 
-                <!-- Tab Content -->
-                <div class="tab-content p-4" wire:key="tab-{{ $historyTab }}" style="max-height: 500px; overflow-y: auto;">
-                    @if($historyTab === 'sales')
-                    @include('livewire.admin.partials.sales-history')
-                    @elseif($historyTab === 'purchases')
-                    @include('livewire.admin.partials.purchases-history')
-                    @elseif($historyTab === 'returns')
-                    @include('livewire.admin.partials.returns-history')
-                    @elseif($historyTab === 'quotations')
-                    @include('livewire.admin.partials.quotations-history')
-                    @endif
-                </div>
+                    <!-- Tab Content -->
+                    <div class="tab-content p-4" wire:key="tab-{{ $historyTab }}"
+                        style="max-height: 500px; overflow-y: auto;">
+                        @if($historyTab === 'sales')
+                            @include('livewire.admin.partials.sales-history')
+                        @elseif($historyTab === 'purchases')
+                            @include('livewire.admin.partials.purchases-history')
+                        @elseif($historyTab === 'returns')
+                            @include('livewire.admin.partials.returns-history')
+                        @elseif($historyTab === 'quotations')
+                            @include('livewire.admin.partials.quotations-history')
+                        @endif
+                    </div>
 
                 @else
-                <div class="text-center py-5">
-                    <i class="bi bi-exclamation-circle text-muted" style="font-size: 3rem;"></i>
-                    <p class="text-muted mt-3 fs-5">Product not found or not loaded.</p>
-                </div>
+                    <div class="text-center py-5">
+                        <i class="bi bi-exclamation-circle text-muted" style="font-size: 3rem;"></i>
+                        <p class="text-muted mt-3 fs-5">Product not found or not loaded.</p>
+                    </div>
                 @endif
             </div>
 
@@ -2312,122 +2417,229 @@
 </div>
 
 @push('scripts')
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const tabs = document.querySelectorAll('.content-tab');
-        tabs.forEach(tab => {
-            tab.addEventListener('click', function() {
-                tabs.forEach(t => t.classList.remove('active'));
-                this.classList.add('active');
-                document.querySelectorAll('.tab-content').forEach(content => {
-                    content.classList.remove('active');
-                });
-                const tabId = this.getAttribute('data-tab');
-                const targetElement = document.getElementById(tabId);
-                if (targetElement) {
-                    targetElement.classList.add('active');
-                }
-            });
-        });
-
-        // Auto-focus barcode input when Create Product modal opens
-        const createModal = document.getElementById('createProductModal');
-        if (createModal) {
-            createModal.addEventListener('shown.bs.modal', function() {
-                const barcodeInput = document.getElementById('barcode_input');
-                if (barcodeInput) {
-                    setTimeout(() => barcodeInput.focus(), 100);
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script>
+        function renderBarcodes() {
+            document.querySelectorAll('svg.product-barcode[data-barcode]').forEach(function (svg) {
+                if (svg.childNodes.length === 0) {
+                    try {
+                        JsBarcode(svg, svg.dataset.barcode, {
+                            format: 'CODE128',
+                            width: 1.2,
+                            height: 35,
+                            displayValue: true,
+                            fontSize: 12,
+                            margin: 2,
+                            background: 'transparent',
+                            lineColor: '#1a1a2e'
+                        });
+                    } catch (e) {
+                        svg.innerHTML = '<text x="0" y="15" font-size="12" fill="#666">' + svg.dataset.barcode + '</text>';
+                    }
                 }
             });
         }
 
-        Livewire.on('refreshPage', () => {
-            setTimeout(() => {
-                window.location.reload();
-            }, 1500); // Refresh after 1.5 seconds to show success message
+        document.addEventListener('DOMContentLoaded', function () {
+            renderBarcodes();
         });
 
-        // Close modals when Livewire operations complete
-        Livewire.on('closeModal', (modalId) => {
-            const modal = bootstrap.Modal.getInstance(document.getElementById(modalId));
-            if (modal) {
-                modal.hide();
-            }
+        document.addEventListener('livewire:navigated', function () {
+            renderBarcodes();
         });
 
-        // Real-time validation for stock adjustment
-        Livewire.on('adjustmentValidation', (data) => {
-            if (data.error) {
-                Swal.fire('Error!', data.error, 'error');
-            }
-        });
-
-        // Handle history tab switching - with console logging
-        Livewire.on('historyTabSwitched', (data) => {
-            console.log('✅ Tab switched to:', data);
-
-            // Log the current state
-            const modal = document.getElementById('productHistoryModal');
-            if (modal) {
-                const activeTabs = modal.querySelectorAll('.tab-pane.show.active');
-                console.log('📊 Active tab panes:', activeTabs.length);
-                activeTabs.forEach(tab => {
-                    console.log('  - Tab ID:', tab.id);
-                });
-
-                const allTabs = modal.querySelectorAll('.tab-pane');
-                console.log('📋 Total tab panes:', allTabs.length);
-            }
-        });
-
-        // Show history modal when event is dispatched
-        Livewire.on('show-history-modal', () => {
-            console.log('📂 Opening product history modal...');
-            const historyModalEl = document.getElementById('productHistoryModal');
-            if (historyModalEl) {
-                const historyModal = new bootstrap.Modal(historyModalEl, {
-                    backdrop: 'static',
-                    keyboard: false
-                });
-                historyModal.show();
-                console.log('✅ Modal opened successfully');
-            } else {
-                console.error('❌ Product History Modal element not found!');
-            }
-        });
-
-        // Error handler for Livewire
-        Livewire.on('swal:modal', (data) => {
-            console.error('❌ Livewire Error:', data);
-            if (data && data.length > 0) {
-                const params = data[0];
-                Swal.fire({
-                    icon: params.type || 'error',
-                    title: params.title || 'Error',
-                    text: params.text || 'An error occurred',
-                });
-            }
-        });
-
-        // Log when modal is actually shown
-        const historyModal = document.getElementById('productHistoryModal');
-        if (historyModal) {
-            historyModal.addEventListener('shown.bs.modal', function() {
-                console.log('📊 Product History Modal is now visible');
-            });
-
-            historyModal.addEventListener('hidden.bs.modal', function() {
-                console.log('🔒 Product History Modal closed');
+        if (typeof Livewire !== 'undefined') {
+            Livewire.hook('morph.updated', () => {
+                setTimeout(renderBarcodes, 50);
+                setTimeout(renderQRCodes, 100);
             });
         }
 
-        // Global error handler
-        window.addEventListener('error', function(event) {
-            console.error('🚨 Global Error:', event.error);
+        // ── QR Code Generation ──
+        function renderQRCodes() {
+            document.querySelectorAll('.product-qrcode').forEach(function (el) {
+                if (el.dataset.rendered === 'true') return;
+                if (el.querySelector('canvas') || el.querySelector('img')) return;
+                const url = el.dataset.url;
+                if (!url) return;
+
+                try {
+                    new QRCode(el, {
+                        text: url,
+                        width: 56,
+                        height: 56,
+                        colorDark: '#161b97',
+                        colorLight: '#ffffff',
+                        correctLevel: QRCode.CorrectLevel.M
+                    });
+                    el.dataset.rendered = 'true';
+                } catch (e) {
+                    console.error('QR render failed:', e);
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            setTimeout(renderQRCodes, 200);
         });
 
-        console.log('✅ Product History scripts loaded successfully');
-    });
-</script>
+        document.addEventListener('livewire:navigated', function () {
+            setTimeout(renderQRCodes, 200);
+        });
+
+        // Click to enlarge QR code in a modal
+        document.addEventListener('click', function (e) {
+            const qrCell = e.target.closest('.qr-code-cell');
+            if (!qrCell) return;
+
+            const productId = qrCell.dataset.productId;
+            const url = qrCell.dataset.url;
+
+            // Create modal overlay
+            const overlay = document.createElement('div');
+            overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:9999;display:flex;align-items:center;justify-content:center;';
+            overlay.innerHTML = `
+                <div style="background:white;border-radius:16px;padding:30px;text-align:center;max-width:340px;width:90%;box-shadow:0 20px 40px rgba(0,0,0,0.3);">
+                    <h5 style="font-weight:800;color:#161b97;margin-bottom:4px;font-size:1rem;">Scan to Upload Image</h5>
+                    <p style="color:#64748b;font-size:0.75rem;margin-bottom:16px;">Product #${productId}</p>
+                    <div id="qr-modal-container" style="display:inline-block;margin:0 auto;"></div>
+                    <p style="color:#94a3b8;font-size:0.65rem;margin-top:12px;word-break:break-all;">${url}</p>
+                    <button onclick="this.closest('div').parentElement.remove()" style="margin-top:16px;background:#161b97;color:white;border:none;padding:10px 30px;border-radius:10px;font-weight:700;font-size:0.8rem;cursor:pointer;">Close</button>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+            overlay.addEventListener('click', function (ev) {
+                if (ev.target === overlay) overlay.remove();
+            });
+
+            // Render large QR in modal
+            const modalContainer = document.getElementById('qr-modal-container');
+            new QRCode(modalContainer, {
+                text: url,
+                width: 200,
+                height: 200,
+                colorDark: '#161b97',
+                colorLight: '#ffffff',
+                correctLevel: QRCode.CorrectLevel.M
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const tabs = document.querySelectorAll('.content-tab');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function () {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    document.querySelectorAll('.tab-content').forEach(content => {
+                        content.classList.remove('active');
+                    });
+                    const tabId = this.getAttribute('data-tab');
+                    const targetElement = document.getElementById(tabId);
+                    if (targetElement) {
+                        targetElement.classList.add('active');
+                    }
+                });
+            });
+
+            // Auto-focus barcode input when Create Product modal opens
+            const createModal = document.getElementById('createProductModal');
+            if (createModal) {
+                createModal.addEventListener('shown.bs.modal', function () {
+                    const barcodeInput = document.getElementById('barcode_input');
+                    if (barcodeInput) {
+                        setTimeout(() => barcodeInput.focus(), 100);
+                    }
+                });
+            }
+
+            Livewire.on('refreshPage', () => {
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1500); // Refresh after 1.5 seconds to show success message
+            });
+
+            // Close modals when Livewire operations complete
+            Livewire.on('closeModal', (modalId) => {
+                const modal = bootstrap.Modal.getInstance(document.getElementById(modalId));
+                if (modal) {
+                    modal.hide();
+                }
+            });
+
+            // Real-time validation for stock adjustment
+            Livewire.on('adjustmentValidation', (data) => {
+                if (data.error) {
+                    Swal.fire('Error!', data.error, 'error');
+                }
+            });
+
+            // Handle history tab switching - with console logging
+            Livewire.on('historyTabSwitched', (data) => {
+                console.log('✅ Tab switched to:', data);
+
+                // Log the current state
+                const modal = document.getElementById('productHistoryModal');
+                if (modal) {
+                    const activeTabs = modal.querySelectorAll('.tab-pane.show.active');
+                    console.log('📊 Active tab panes:', activeTabs.length);
+                    activeTabs.forEach(tab => {
+                        console.log('  - Tab ID:', tab.id);
+                    });
+
+                    const allTabs = modal.querySelectorAll('.tab-pane');
+                    console.log('📋 Total tab panes:', allTabs.length);
+                }
+            });
+
+            // Show history modal when event is dispatched
+            Livewire.on('show-history-modal', () => {
+                console.log('📂 Opening product history modal...');
+                const historyModalEl = document.getElementById('productHistoryModal');
+                if (historyModalEl) {
+                    const historyModal = new bootstrap.Modal(historyModalEl, {
+                        backdrop: 'static',
+                        keyboard: false
+                    });
+                    historyModal.show();
+                    console.log('✅ Modal opened successfully');
+                } else {
+                    console.error('❌ Product History Modal element not found!');
+                }
+            });
+
+            // Error handler for Livewire
+            Livewire.on('swal:modal', (data) => {
+                console.error('❌ Livewire Error:', data);
+                if (data && data.length > 0) {
+                    const params = data[0];
+                    Swal.fire({
+                        icon: params.type || 'error',
+                        title: params.title || 'Error',
+                        text: params.text || 'An error occurred',
+                    });
+                }
+            });
+
+            // Log when modal is actually shown
+            const historyModal = document.getElementById('productHistoryModal');
+            if (historyModal) {
+                historyModal.addEventListener('shown.bs.modal', function () {
+                    console.log('📊 Product History Modal is now visible');
+                });
+
+                historyModal.addEventListener('hidden.bs.modal', function () {
+                    console.log('🔒 Product History Modal closed');
+                });
+            }
+
+            // Global error handler
+            window.addEventListener('error', function (event) {
+                console.error('🚨 Global Error:', event.error);
+            });
+
+            console.log('✅ Product History scripts loaded successfully');
+        });
+    </script>
 @endpush
 </div>

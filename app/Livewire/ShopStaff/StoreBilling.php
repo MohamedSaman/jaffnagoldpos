@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire\Admin;
+namespace App\Livewire\ShopStaff;
 
 use Livewire\Component;
 use Livewire\Attributes\Layout;
@@ -27,7 +27,6 @@ use Illuminate\Support\Facades\Log;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 #[Title('POS')]
-#[Layout('components.layouts.app')]
 class StoreBilling extends Component
 {
     use WithFileUploads;
@@ -134,6 +133,8 @@ class StoreBilling extends Component
     public $walkingCustomerName = '';
     public $walkingCustomerPhone = '';
 
+    public $warrantyThreshold = 1000;
+
     // Payment Modal Properties
     public $amountReceived = 0;
     public $paymentNotes = '';
@@ -141,8 +142,6 @@ class StoreBilling extends Component
     // Edit Mode Properties
     public $editingSaleId = null;
     public $editingSale = null;
-
-    public $warrantyThreshold = 1000;
 
     public function mount()
     {
@@ -391,11 +390,6 @@ class StoreBilling extends Component
         $this->loadProducts();
         $this->tempChequeDate = now()->format('Y-m-d');
         $this->loadWarrantySettings();
-    }
-
-    public function loadWarrantySettings()
-    {
-        $this->warrantyThreshold = Setting::where('key', 'warranty_min_amount')->value('value') ?? 1000;
     }
 
     /**
@@ -919,7 +913,7 @@ class StoreBilling extends Component
 
     public function getGrandTotalProperty()
     {
-        return $this->subtotalAfterItemDiscounts - $this->additionalDiscountAmount;
+        return (float)($this->subtotalAfterItemDiscounts ?? 0) - (float)($this->additionalDiscountAmount ?? 0);
     }
 
     public function getTotalPaidAmountProperty()
@@ -1087,6 +1081,26 @@ class StoreBilling extends Component
             } elseif ($this->paymentMethod === 'multiple') {
                 $this->cashAmount = $this->grandTotal;
             }
+        }
+    }
+
+    // Ensure amountReceived is always numeric
+    public function updatedAmountReceived($value)
+    {
+        if ($value === '' || !is_numeric($value)) {
+            $this->amountReceived = 0;
+        } else {
+            $this->amountReceived = (float)$value;
+        }
+    }
+
+    // Ensure bankTransferAmount is always numeric
+    public function updatedBankTransferAmount($value)
+    {
+        if ($value === '' || !is_numeric($value)) {
+            $this->bankTransferAmount = 0;
+        } else {
+            $this->bankTransferAmount = (float)$value;
         }
     }
 
@@ -1737,8 +1751,8 @@ class StoreBilling extends Component
             $discountPrice = ($product['price'] * $discountPercentage) / 100;
 
             $newItem = [
-                'key' => uniqid('cart_'),
-                'id' => $cartId,
+                'key' => uniqid('cart_'),  // Add unique key to maintain state
+                'id' => $cartId, // unique id (if variant: productId::variantValue, if batches: add batch info)
                 'product_id' => $baseProductId,
                 'variant_id' => $variantId,
                 'variant_value' => $variantValue,
@@ -3340,7 +3354,7 @@ class StoreBilling extends Component
 
     public function render()
     {
-        return view('livewire.admin.store-billing', [
+        return view('livewire.shop-staff.store-billing', [
             'subtotal' => $this->subtotal,
             'totalDiscount' => $this->totalDiscount,
             'subtotalAfterItemDiscounts' => $this->subtotalAfterItemDiscounts,
@@ -3353,5 +3367,13 @@ class StoreBilling extends Component
             'products' => $this->products,
             'categories' => $this->categories,
         ]);
+    }
+
+    /**
+     * Redirect to dashboard
+     */
+    public function goToDashboard()
+    {
+        return redirect()->route('dashboard');
     }
 }

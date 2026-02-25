@@ -98,6 +98,7 @@ use App\Livewire\DeliveryMan\DeliveryManPaymentCollection;
 use App\Livewire\DeliveryMan\DeliveryManPaymentList;
 use App\Livewire\ShopStaff\ShopStaffDashboard;
 use App\Livewire\ShopStaff\ShopStaffProductList;
+use App\Livewire\ShopStaff\StoreBilling as ShopStaffStoreBilling;
 
 /*
 |--------------------------------------------------------------------------
@@ -110,8 +111,15 @@ use App\Livewire\ShopStaff\ShopStaffProductList;
 |
 */
 
+use App\Http\Controllers\ProductImageController;
+
 // Public routes
 Route::get('/', CustomLogin::class)->name('welcome')->middleware('guest');
+
+// Product Image Upload (public - accessible from phone via QR code scan)
+Route::get('/product-image/{identifier}', [ProductImageController::class, 'show'])->name('product-image.show');
+Route::post('/product-image/{identifier}/upload', [ProductImageController::class, 'upload'])->name('product-image.upload');
+Route::get('/product-image-serve/{filename}', [ProductImageController::class, 'serveImage'])->name('product-image.serve');
 
 // Custom logout route
 Route::post('/logout', function (Request $request) {
@@ -173,6 +181,7 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
         Route::get('/dashboard', AdminDashboard::class)->name('dashboard');
         Route::get('/Product-list', Products::class)->name('Productes');
         Route::get('/manage-variants', \App\Livewire\Admin\ProductVariants::class)->name('manage-variants');
+        Route::get('/barcode-print', \App\Livewire\Admin\BarcodePrint::class)->name('barcode-print');
         Route::get('/add-Product-brand', ProductBrandlist::class)->name('Product-brand');
         Route::get('/Product-category', ProductCategorylist::class)->name('Product-category');
         Route::get('/billing-page', BillingPage::class)->name('billing-page');
@@ -551,4 +560,5 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',
     ->group(function () {
         Route::get('/dashboard', ShopStaffDashboard::class)->name('dashboard');
         Route::get('/products', ShopStaffProductList::class)->name('products');
+        Route::get('/store-billing', ShopStaffStoreBilling::class)->name('store-billing');
     });

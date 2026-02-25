@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Delivery Label - {{ $sale->deliverySale->delivery_barcode ?? 'N/A' }}</title>
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bree+Serif&family=Fjalla+One&display=swap" rel="stylesheet">
 
     <style>
         * {
@@ -15,14 +18,14 @@
         }
 
         @page {
-            size: 4in 6in;
-            margin: 0;
+            size: 6in 4in;
+            margin: 1px;
         }
 
         body {
-            width: 4in;
-            height: 6in;
-            font-family: sans-serif;
+            width: 6in;
+            height: 4in;
+            font-family: "Bree Serif", serif;
             color: #000;
             overflow: hidden;
             -webkit-print-color-adjust: exact;
@@ -30,12 +33,8 @@
         }
 
         .label-wrapper {
-            position: absolute;
-            width: 5.6in;
-            height: 3in;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) rotate(-90deg);
+            width: 6in;
+            height: 4in;
         }
 
         .label-border {
@@ -50,33 +49,40 @@
         .header {
             display: flex;
             justify-content: space-between;
+            align-items: center;
             padding: 6px 10px;
             border-bottom: 2px solid #000;
         }
 
         .company-name {
-            font-size: 18px;
+            flex: 1;
+            font-size: 30px;
             font-weight: 900;
             line-height: 1.1;
+            text-align: center;
         }
 
         .company-name span {
-            font-size: 12px;
+            font-size: 16px;
             font-weight: 600;
+            display: block;
             text-align: center;
+            letter-spacing: 4px;
         }
 
         .meta {
             text-align: right;
             font-weight: 800;
+            position: absolute;
+            right: 10px;
         }
 
         .meta .method {
-            font-size: 16px;
+            font-size: 18px;
         }
 
         .meta .date {
-            font-size: 12px;
+            font-size: 14px;
             margin-top: 2px;
         }
 
@@ -84,6 +90,10 @@
         .row {
             display: flex;
             width: 100%;
+        }
+
+        .row-grow {
+            flex: 1;
         }
 
         .customer-section {
@@ -94,15 +104,17 @@
         }
 
         .to-label {
-            font-size: 15px;
+            font-size: 14px;
             font-weight: bold;
-            margin-bottom: 4px;
+            margin-bottom: 0px;
         }
 
-        .address {
-            font-size: 14px;
-            line-height: 1.3;
-            white-space: pre-wrap;
+        .customer-line {
+            font-size: 17px;
+            font-weight: 500;
+            line-height: 1.6;
+            display: block;
+            margin-left: 28px;
         }
 
         .barcode-section {
@@ -117,12 +129,11 @@
 
         .barcode-section svg {
             width: 100%;
-            height: 45px;
+            height: 70px;
         }
 
         .barcode-text {
-            font-size: 10px;
-            font-weight: 700;
+            font-size: 12px;
             margin-top: 3px;
         }
 
@@ -139,7 +150,7 @@
 
         .price-row {
             background: #d1d1d1;
-            font-size: 24px;
+            font-size: 42px;
             font-weight: 900;
         }
 
@@ -155,8 +166,8 @@
         }
 
         .icon-box {
-            width: 30px;
-            height: 30px;
+            width: 40px;
+            height: 40px;
             border: 2px solid #000;
             display: flex;
             align-items: center;
@@ -165,12 +176,12 @@
 
         /* COD black label style */
         .cod-box {
-            width: 45px;
-            height: 30px;
+            width: 70px;
+            height: 48px;
             background: #000;
             color: #fff;
             font-weight: 900;
-            font-size: 12px;
+            font-size: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -178,13 +189,14 @@
 
         /* FOOTER */
         .footer {
-            padding: 6px;
-            font-size: 10px;
-            font-weight: 600;
+            padding: 4px 10px;
+            font-size: 16px;
+            font-weight: 700;
             text-align: center;
             display: flex;
             flex-direction: column;
             justify-content: center;
+            line-height: 1.4;
         }
     </style>
 </head>
@@ -209,15 +221,23 @@
             </div>
 
             <!-- CUSTOMER + BARCODE -->
-            <div class="row">
+            <div class="row row-grow">
                 <div class="customer-section">
-                    <div class="to-label">
-                        TO : {{ $sale->deliverySale->customer_details ?? $sale->customer->address ?? '' }}
-
-                    </div>
-                    <div class="address">
-
-                    </div>
+                    <div class="to-label">TO :</div>
+                    @php
+                    $details = $sale->deliverySale->customer_details ?? $sale->customer->address ?? '';
+                    // Try to split by common delimiters: pipe, comma, period+space, or newlines
+                    $parts = preg_split('/\s*[\|]\s*|\n|\r\n/', $details);
+                    // If only one part, try splitting by period followed by space and digits (phone after name)
+                    if (count($parts) <= 1) {
+                        $parts=preg_split('/(?<=\D)[\.\,]\s*(?=\d)/', $details);
+                        }
+                        @endphp
+                        @foreach($parts as $part)
+                        @if(trim($part))
+                        <span class="customer-line">{{ trim($part) }}</span>
+                        @endif
+                        @endforeach
                 </div>
 
                 <div class="barcode-section">
@@ -310,8 +330,10 @@
 
             <!-- FOOTER -->
             <div class="footer">
-                <div>076 1919 650 | 077 5287 556</div>
                 <div>NO: 237 KKS ROAD, JAFFNA | NO: 37 NEW MARKET JAFFNA</div>
+                <div>076 1919 650 | 077 5287 556</div>
+                <div>Return will be accepted within 3 days</div>
+                <div>Thank you for your purchase!</div>
             </div>
 
         </div>
@@ -321,7 +343,7 @@
         JsBarcode("#barcode", "{{ $sale->deliverySale->delivery_barcode ?? 'N/A' }}", {
             format: "CODE128",
             width: 2,
-            height: 50,
+            height: 70,
             displayValue: false,
             margin: 0
         });

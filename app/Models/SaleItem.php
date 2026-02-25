@@ -23,7 +23,9 @@ class SaleItem extends Model
         'discount_type',
         'discount_percentage',
         'variant_id',
-        'variant_value'
+        'variant_value',
+        'has_warranty',
+        'warranty_duration'
     ];
 
     protected $casts = [
