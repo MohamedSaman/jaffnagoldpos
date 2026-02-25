@@ -24,6 +24,9 @@ class GRN extends Component
 
 
     public $selectedPO = null;
+    public $selectedSupplier = null;
+    public $selectedReceivedDate = null;
+    public $groupedPOs = [];
     public $grnItems = [];
     public $searchProduct = '';
     public $searchResults = [];
@@ -67,40 +70,51 @@ class GRN extends Component
             'total' => PurchaseOrder::whereIn('status', ['complete', 'received'])->count()
         ];
     }
-    public function viewGRN($orderId)
+    public function viewGRN($supplierId, $receivedDate)
     {
-        $this->selectedPO = PurchaseOrder::with(['supplier', 'items' => function ($query) {
-            $query->with(['product', 'variant'])->where('status', 'received');
-        }])->find($orderId);
+        $this->selectedReceivedDate = $receivedDate;
+        $this->groupedPOs = PurchaseOrder::where('supplier_id', $supplierId)
+            ->where('received_date', $receivedDate)
+            ->whereIn('status', ['complete', 'received'])
+            ->with(['supplier', 'items' => function ($query) {
+                $query->with(['product', 'variant'])->where('status', 'received');
+            }])
+            ->get();
 
-        if (!$this->selectedPO) {
-            $this->dispatch('alert', ['message' => 'Order not found!', 'type' => 'error']);
+        if ($this->groupedPOs->isEmpty()) {
+            $this->dispatch('alert', ['message' => 'Orders not found!', 'type' => 'error']);
             return;
         }
+
+        $this->selectedPO = $this->groupedPOs->first();
+        $this->selectedSupplier = $this->selectedPO->supplier;
 
         $this->grnItems = [];
         $this->searchResults = ['unplanned' => []];
 
-        foreach ($this->selectedPO->items as $item) {
-            $productName = $item->product->name;
-            if ($item->variant_id && $item->variant_value) {
-                $variantName = $item->variant ? $item->variant->variant_name : 'Variant';
-                $productName .= ' - ' . $variantName . ': ' . $item->variant_value;
-            }
+        foreach ($this->groupedPOs as $po) {
+            foreach ($po->items as $item) {
+                $productName = $item->product->name;
+                if ($item->variant_id && $item->variant_value) {
+                    $variantName = $item->variant ? $item->variant->variant_name : 'Variant';
+                    $productName .= ' - ' . $variantName . ': ' . $item->variant_value;
+                }
 
-            $this->grnItems[] = [
-                'id' => $item->id,
-                'product_id' => $item->product_id,
-                'variant_id' => $item->variant_id,
-                'variant_value' => $item->variant_value,
-                'name' => $productName,
-                'ordered_qty' => $item->quantity,
-                'received_qty' => $item->received_quantity ?? $item->quantity,
-                'unit_price' => $item->unit_price,
-                'discount' => $item->discount,
-                'discount_type' => $item->discount_type ?? 'rs',
-                'status' => $item->status ?? 'received',
-            ];
+                $this->grnItems[] = [
+                    'id' => $item->id,
+                    'order_code' => $po->order_code,
+                    'product_id' => $item->product_id,
+                    'variant_id' => $item->variant_id,
+                    'variant_value' => $item->variant_value,
+                    'name' => $productName,
+                    'ordered_qty' => $item->quantity,
+                    'received_qty' => $item->received_quantity ?? $item->quantity,
+                    'unit_price' => $item->unit_price,
+                    'discount' => $item->discount,
+                    'discount_type' => $item->discount_type ?? 'rs',
+                    'status' => $item->status ?? 'received',
+                ];
+            }
         }
 
         // Dispatch event to open modal after data is loaded
@@ -713,7 +727,11 @@ class GRN extends Component
     public function render()
     {
         $query = PurchaseOrder::whereIn('status', ['complete', 'received'])
-            ->with(['supplier', 'items.product', 'items.variant']);
+            ->select('received_date', 'supplier_id')
+            ->selectRaw('SUM(total_amount) as total_sum')
+            ->selectRaw('COUNT(*) as po_count')
+            ->groupBy('received_date', 'supplier_id')
+            ->with(['supplier']);
 
         // Apply search filter if search term exists
         if (!empty($this->search)) {
@@ -726,7 +744,7 @@ class GRN extends Component
             });
         }
 
-        $purchaseOrders = $query->latest()->paginate($this->perPage);
+        $purchaseOrders = $query->latest('received_date')->paginate($this->perPage);
 
         return view('livewire.admin.g-r-n', [
             'purchaseOrders' => $purchaseOrders,

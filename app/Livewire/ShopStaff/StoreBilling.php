@@ -113,7 +113,7 @@ class StoreBilling extends Component
     public $additionalDiscountType = 'fixed'; // 'fixed' or 'percentage'
 
     // Price Type Selection
-    public $priceType = 'wholesale'; // 'retail', 'wholesale', or 'distribute'
+    public $priceType = 'retail'; // 'retail', 'wholesale', or 'distribute'
 
     // View Type Selection
     public $productViewType = 'grid'; // 'grid' or 'list'
@@ -156,12 +156,6 @@ class StoreBilling extends Component
                 $this->customerId = $this->editingSale->customer_id;
                 $this->selectedCustomer = $this->editingSale->customer;
                 $this->notes = $this->editingSale->notes ?? '';
-
-                // Load additional discount from sale
-                if ($this->editingSale->additional_discount_type) {
-                    $this->additionalDiscountType = $this->editingSale->additional_discount_type;
-                    $this->additionalDiscount = $this->editingSale->additional_discount_percentage ?? 0;
-                }
 
                 // Load payment data from existing payments
                 if ($this->editingSale->payments && $this->editingSale->payments->count() > 0) {
@@ -265,6 +259,8 @@ class StoreBilling extends Component
                         'quantity' => $item->quantity,
                         'price' => $item->unit_price,
                         'discount' => $item->discount_per_unit ?? 0,
+                        'discount_type' => $item->discount_type ?? 'fixed',
+                        'discount_percentage' => $item->discount_percentage ?? 0,
                         'total' => $item->total,
                         'variant_value' => $item->variant_value ?? '',
                         'variant_id' => $item->variant_id ?? null,
@@ -276,6 +272,17 @@ class StoreBilling extends Component
                         'distributor_price' => 0,
                         'sale_item_id' => $item->id,
                     ];
+                }
+
+                // Load additional discount from sale (after cart is populated)
+                if ($this->editingSale->additional_discount_type === 'percentage') {
+                    $this->additionalDiscountType = 'percentage';
+                    $this->additionalDiscount = $this->editingSale->additional_discount_percentage ?? 0;
+                } else {
+                    $this->additionalDiscountType = 'fixed';
+                    // Recover fixed additional discount: Total Discount - Sum of Item Discounts
+                    $totalItemDiscount = collect($this->cart)->sum(fn($i) => $i['discount'] * $i['quantity']);
+                    $this->additionalDiscount = max(0, floatval($this->editingSale->discount_amount) - $totalItemDiscount);
                 }
             }
         }

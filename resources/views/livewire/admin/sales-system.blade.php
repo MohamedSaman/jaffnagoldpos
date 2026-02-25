@@ -64,14 +64,14 @@
                             <span class="fw-bold small">Product Search / Scan Barcode</span>
                         </div>
                         <div class="price-type-selection">
-                            <select class="form-select form-select-sm border-gold fw-bold text-dark" wire:model.live="priceType" style="font-size: 0.75rem; width: 120px; background-color: #f8f9fa;">
+                            <select class="form-select form-select-sm border-gold fw-bold text-dark" wire:model.live="priceType" style="font-size: 0.75rem; width: 150px; background-color: #f8f9fa;">
                                 <option value="retail">Retail (10%)</option>
                                 <option value="wholesale">Wholesale (25%)</option>
                             </select>
                         </div>
                     </div>
                     <div class="search-input-wrapper">
-                        <i class="bi bi-upc-scan search-icon"></i>
+                        
                         <input type="text"
                             class="form-control premium-search-input"
                             wire:model.live="search"
@@ -547,18 +547,19 @@
 
     .search-icon {
         position: absolute;
-        left: 15px;
+        left: 18px;
         top: 50%;
         transform: translateY(-50%);
         color: var(--primary-blue);
-        font-size: 1rem;
+        font-size: 1.1rem;
+        z-index: 10;
     }
 
     .premium-search-input {
-        padding: 12px 40px 12px 45px !important;
+        padding: 12px 45px 12px 55px !important;
         border: 2px solid #eee;
         border-radius: 10px;
-        font-size: 0.9rem !important;
+        font-size: 0.95rem !important;
         transition: all 0.3s;
         background: #fbfbfb;
     }

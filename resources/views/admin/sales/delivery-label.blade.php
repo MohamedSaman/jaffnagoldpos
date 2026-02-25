@@ -208,7 +208,7 @@
             <!-- HEADER -->
             <div class="header">
                 <div class="company-name">
-                    JAFFNA GOLD <br><span>COVERING</span>
+                    JAFFNA GOLD COVERING <br><span>World Wide Delivery</span>
                 </div>
                 <div class="meta">
                     <div class="method">

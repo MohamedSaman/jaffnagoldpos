@@ -1210,26 +1210,26 @@
                         </ul>
                     </div>
                 </li>
-                <!-- <li class="nav-item">
+                <li class="nav-item">
                     <a class="nav-link dropdown-toggle" href="#purchaseSubmenu" data-bs-toggle="collapse" role="button"
                         aria-expanded="false" aria-controls="purchaseSubmenu">
                         <i class="bi bi-truck"></i><span>Purchase</span>
                     </a>
                     <div class="collapse" id="purchaseSubmenu">
                         <ul class="nav flex-column ms-3">
-                            <li class="nav-item">
+                            <!-- <li class="nav-item">
                                 <a class="nav-link py-2" href="{{ route('admin.purchase-order-list') }}">
                                     <i class="bi bi-journal-bookmark"></i> <span>Purchase Order</span>
                                 </a>
-                            </li>
+                            </li> -->
                             <li class="nav-item">
                                 <a class="nav-link py-2" href="{{ route('admin.grn') }}">
-                                    <i class="bi bi-boxes"></i><span>GRN</span>
+                                    <i class="bi bi-boxes"></i><span>Purchase List</span>
                                 </a>
                             </li>
                         </ul>
                     </div>
-                </li> -->
+                </li>
                 <li class="nav-item">
                     <a class="nav-link dropdown-toggle" href="#paymentSubmenu" data-bs-toggle="collapse" role="button"
                         aria-expanded="false" aria-controls="paymentSubmenu">
@@ -1328,7 +1328,7 @@
                 </li>
                 <!-- //add financing -->
                 
-                <!-- <li class="nav-item">
+                <li class="nav-item">
                     <a class="nav-link dropdown-toggle" href="#staffSubmenu" data-bs-toggle="collapse" role="button"
                         aria-expanded="false" aria-controls="staffSubmenu">
                         <i class="bi bi-file-earmark-text"></i> <span>Staff Management</span>
@@ -1356,11 +1356,11 @@
                                 </a>
                             </li>--}}
                             
-                            <li class="nav-item">
+                            <!-- <li class="nav-item">
                                 <a class="nav-link py-2 {{ request()->routeIs('admin.payment-approval') ? 'active' : '' }}" href="{{ route('admin.payment-approval') }}">
                                     <i class="bi bi-wallet2"></i> <span>Staff Payment List</span>
                                 </a>
-                            </li>
+                            </li> -->
                             <li class="nav-item">
                                 <a class="nav-link py-2 {{ request()->routeIs('admin.staff-expense-approval') ? 'active' : '' }}" href="{{ route('admin.staff-expense-approval') }}">
                                     <i class="bi bi-receipt"></i> <span>Staff Expenses</span>
@@ -1374,7 +1374,7 @@
                             
                         </ul>
                     </div>
-                </li> -->
+                </li>
                 
                 
                 <li>

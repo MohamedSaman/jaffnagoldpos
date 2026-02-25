@@ -86,40 +86,37 @@
                     <table class="table table-hover mb-0">
                         <thead class="table" style="color: black !important;">
                             <tr>
-                                <th class="ps-4">PO Number</th>
+                                <th class="ps-4">Received Date</th>
                                 <th>Supplier</th>
-                                <th>Order Date</th>
+                                <th class="text-center">Combined Orders</th>
+                                <th class="text-end pe-4">Total Amount</th>
                                 <th>Status</th>
+                                <th class="text-center">Action</th>
                                 
                               
                             </tr>
                         </thead>
                         <tbody>
                             @foreach($purchaseOrders as $po)
-                            @php
-                            // Calculate GRN progress
-                            $totalItems = $po->items->count();
-                            $receivedItems = $po->items->where('status', 'received')->count();
-                            $notReceivedItems = $po->items->where('status', 'notreceived')->count();
-
-                            $progressPercentage = $totalItems > 0 ? ($receivedItems / $totalItems) * 100 : 0;
-                            @endphp
-                            <tr>
-                                <td class="ps-4" wire:click="viewGRN({{ $po->id }})">
-                                    <span class="fw-medium text-dark">{{ $po->order_code }}</span>
+                            <tr class="cursor-pointer" wire:click="viewGRN({{ $po->supplier_id }}, '{{ $po->received_date }}')">
+                                <td class="ps-4">
+                                    <span class="fw-medium text-dark">{{ \Carbon\Carbon::parse($po->received_date)->format('M d, Y') }}</span>
                                 </td>
-                                <td wire:click="viewGRN({{ $po->id }})">{{ $po->supplier->name }}</td>
-                                <td wire:click="viewGRN({{ $po->id }})">{{ $po->order_date }}</td>
-                                <td wire:click="viewGRN({{ $po->id }})">
-                                    @if($po->status == 'complete')
-                                        <span class="badge bg-success">Fully Received</span>
-                                    @elseif($po->status == 'received')
-                                        <span class="badge bg-warning">Awaiting Receipt</span>
-                                    @else
-                                        <span class="badge bg-info">{{ ucfirst($po->status) }}</span>
-                                    @endif
+                                <td>{{ $po->supplier->name }}</td>
+                                <td class="text-center">
+                                    <span class="badge bg-secondary">{{ $po->po_count }} Orders</span>
                                 </td>
-                                
+                                <td class="text-end pe-4">
+                                    <span class="fw-bold">Rs. {{ number_format($po->total_sum, 2) }}</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-success">Received</span>
+                                </td>
+                                <td class="text-center text-nowrap">
+                                    <button class="btn btn-sm btn-outline-primary" wire:click.stop="viewGRN({{ $po->supplier_id }}, '{{ $po->received_date }}')">
+                                        <i class="bi bi-eye"></i> View
+                                    </button>
+                                </td>
                             </tr>
                             @endforeach
                         </tbody>
@@ -142,21 +139,27 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title fw-bold">
-                        <i class="bi bi-eye text-white me-2"></i> GRN Details - {{ $selectedPO?->order_code }}
+                        <i class="bi bi-eye text-white me-2"></i> GRN Details - {{ $selectedSupplier?->name }} ({{ \Carbon\Carbon::parse($selectedReceivedDate)->format('M d, Y') }})
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    @if($selectedPO)
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <p><strong>Supplier:</strong> {{ $selectedPO->supplier->name }}</p>
-                            <p><strong>Order Date:</strong> {{ $selectedPO->order_date }}</p>
+                    @if($selectedSupplier)
+                    <div class="row mb-3 bg-light p-3 rounded">
+                        <div class="col-md-4">
+                            <p class="mb-1 text-muted small uppercase fw-bold">Supplier</p>
+                            <p class="mb-0 fw-bold">{{ $selectedSupplier->name }}</p>
                         </div>
-                        <div class="col-md-6">
-                            <p><strong>Received Date:</strong> {{ $selectedPO->received_date ?? 'N/A' }}</p>
-                            <p><strong>Status:</strong>
-                                <span class="badge bg-success">{{ ucfirst($selectedPO->status) }}</span>
+                        <div class="col-md-4 text-center">
+                            <p class="mb-1 text-muted small uppercase fw-bold">Received Date</p>
+                            <p class="mb-0 fw-bold">{{ \Carbon\Carbon::parse($selectedReceivedDate)->format('M d, Y') }}</p>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <p class="mb-1 text-muted small uppercase fw-bold">Combined Orders</p>
+                            <p class="mb-0">
+                                @foreach($groupedPOs as $po)
+                                    <span class="badge bg-primary">{{ $po->order_code }}</span>
+                                @endforeach
                             </p>
                         </div>
                     </div>
@@ -166,6 +169,7 @@
                         <table class="table table-bordered table-hover">
                             <thead class="table-light">
                                 <tr>
+                                    <th>PO #</th>
                                     <th>Product</th>
                                     <th>Ordered Qty</th>
                                     <th>Received Qty</th>
@@ -182,6 +186,7 @@
                                     @elseif(strtolower($item['status'] ?? '') === 'notreceived') table-danger
                                     @endif
                                 ">
+                                    <td><span class="badge bg-light text-dark fw-bold">{{ $item['order_code'] }}</span></td>
                                     <td>{{ $item['name'] }}</td>
                                     <td>{{ $item['ordered_qty'] ?? 0 }}</td>
                                     <td>{{ $item['received_qty'] ?? 0 }}</td>
@@ -221,7 +226,7 @@
                             </tbody>
                             <tfoot>
                                 <tr class="table-secondary fw-bold">
-                                    <td colspan="5" class="text-end">Grand Total:</td>
+                                    <td colspan="6" class="text-end">Grand Total:</td>
                                     <td>
                                         @php
                                             $grandTotal = 0;

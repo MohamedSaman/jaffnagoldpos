@@ -64,7 +64,7 @@ class SalesSystem extends Component
     public $additionalDiscountType = 'fixed'; // 'fixed' or 'percentage'
 
     // Price Type Selection
-    public $priceType = 'wholesale'; // 'retail', 'wholesale', or 'distribute'
+    public $priceType = 'retail'; // 'retail', 'wholesale', or 'distribute'
 
     // Modals
     public $showSaleModal = false;
@@ -112,37 +112,38 @@ class SalesSystem extends Component
     // Computed Properties for Totals
     public function getSubtotalProperty()
     {
-        return collect($this->cart)->sum('total');
+        return (float) collect($this->cart)->sum('total');
     }
 
     public function getTotalDiscountProperty()
     {
-        return collect($this->cart)->sum(function ($item) {
-            return ($item['discount'] * $item['quantity']);
+        return (float) collect($this->cart)->sum(function ($item) {
+            return (float) ($item['discount'] * $item['quantity']);
         });
     }
 
     public function getSubtotalAfterItemDiscountsProperty()
     {
-        return $this->subtotal;
+        return (float) $this->subtotal;
     }
 
     public function getAdditionalDiscountAmountProperty()
     {
-        if (empty($this->additionalDiscount) || $this->additionalDiscount <= 0) {
-            return 0;
+        $discount = (float) ($this->additionalDiscount ?: 0);
+        if ($discount <= 0) {
+            return 0.0;
         }
 
         if ($this->additionalDiscountType === 'percentage') {
-            return ($this->subtotalAfterItemDiscounts * $this->additionalDiscount) / 100;
+            return (float) ($this->subtotalAfterItemDiscounts * $discount) / 100;
         }
 
-        return min($this->additionalDiscount, $this->subtotalAfterItemDiscounts);
+        return (float) min($discount, $this->subtotalAfterItemDiscounts);
     }
 
     public function getGrandTotalProperty()
     {
-        return $this->subtotalAfterItemDiscounts - $this->additionalDiscountAmount + ($this->deliveryCharge ?? 0);
+        return (float) $this->subtotalAfterItemDiscounts - (float) $this->additionalDiscountAmount + (float) ($this->deliveryCharge ?? 0);
     }
 
     // When customer is selected from dropdown
@@ -187,11 +188,11 @@ class SalesSystem extends Component
             }
 
             // Update item discount using new percentage
-            $discountAmount = ($newPrice * $discountPercentage) / 100;
-            $this->cart[$index]['discount'] = round($discountAmount, 2);
+            $discountAmount = ((float)$newPrice * (float)$discountPercentage) / 100;
+            $this->cart[$index]['discount'] = (float) round($discountAmount, 2);
             $this->cart[$index]['discount_type'] = 'percentage';
-            $this->cart[$index]['discount_percentage'] = $discountPercentage;
-            $this->cart[$index]['total'] = ($newPrice - $this->cart[$index]['discount']) * $this->cart[$index]['quantity'];
+            $this->cart[$index]['discount_percentage'] = (float) $discountPercentage;
+            $this->cart[$index]['total'] = (float) (((float)$newPrice - (float)$this->cart[$index]['discount']) * (int)$this->cart[$index]['quantity']);
         }
     }
 
@@ -424,7 +425,7 @@ class SalesSystem extends Component
             }
 
             $this->cart[$existingIndex]['quantity'] += 1;
-            $this->cart[$existingIndex]['total'] = ($this->cart[$existingIndex]['price'] - $this->cart[$existingIndex]['discount']) * $this->cart[$existingIndex]['quantity'];
+            $this->cart[$existingIndex]['total'] = (float) (((float)$this->cart[$existingIndex]['price'] - (float)$this->cart[$existingIndex]['discount']) * (int)$this->cart[$existingIndex]['quantity']);
         } else {
             // Apply automatic discount percentage based on priceType
             $discountPercentage = 0;
@@ -444,11 +445,11 @@ class SalesSystem extends Component
                 'model' => $product['model'],
                 'price' => $product['price'],
                 'quantity' => 1,
-                'discount' => round($discountPrice, 2),
+                'discount' => (float) round($discountPrice, 2),
                 'discount_type' => 'percentage',
-                'discount_percentage' => $discountPercentage,
-                'total' => $product['price'] - round($discountPrice, 2),
-                'stock' => $product['stock'],
+                'discount_percentage' => (float) $discountPercentage,
+                'total' => (float) ((float)$product['price'] - (float)round($discountPrice, 2)),
+                'stock' => (int) $product['stock'],
                 'variant_id' => $product['variant_id'] ?? null,
                 'variant_value' => $product['variant_value'] ?? null,
             ];
@@ -474,8 +475,8 @@ class SalesSystem extends Component
             return;
         }
 
-        $this->cart[$index]['quantity'] = $quantity;
-        $this->cart[$index]['total'] = ($this->cart[$index]['price'] - $this->cart[$index]['discount']) * $quantity;
+        $this->cart[$index]['quantity'] = (int) $quantity;
+        $this->cart[$index]['total'] = (float) (((float)$this->cart[$index]['price'] - (float)$this->cart[$index]['discount']) * (int)$quantity);
     }
 
     // Increment Quantity
@@ -490,7 +491,7 @@ class SalesSystem extends Component
         }
 
         $this->cart[$index]['quantity'] += 1;
-        $this->cart[$index]['total'] = ($this->cart[$index]['price'] - $this->cart[$index]['discount']) * $this->cart[$index]['quantity'];
+        $this->cart[$index]['total'] = (float) (((float)$this->cart[$index]['price'] - (float)$this->cart[$index]['discount']) * (int)$this->cart[$index]['quantity']);
     }
 
     // Decrement Quantity
@@ -498,7 +499,7 @@ class SalesSystem extends Component
     {
         if ($this->cart[$index]['quantity'] > 1) {
             $this->cart[$index]['quantity'] -= 1;
-            $this->cart[$index]['total'] = ($this->cart[$index]['price'] - $this->cart[$index]['discount']) * $this->cart[$index]['quantity'];
+            $this->cart[$index]['total'] = (float) (((float)$this->cart[$index]['price'] - (float)$this->cart[$index]['discount']) * (int)$this->cart[$index]['quantity']);
         }
     }
 
@@ -507,20 +508,40 @@ class SalesSystem extends Component
     {
         if ($price < 0) $price = 0;
 
-        $this->cart[$index]['price'] = $price;
-        $this->cart[$index]['total'] = ($price - $this->cart[$index]['discount']) * $this->cart[$index]['quantity'];
+        $this->cart[$index]['price'] = (float) $price;
+        $this->cart[$index]['total'] = (float) (((float)$price - (float)$this->cart[$index]['discount']) * (int)$this->cart[$index]['quantity']);
     }
 
     // Update Discount
     public function updateDiscount($index, $discount)
     {
-        if ($discount < 0) $discount = 0;
-        if ($discount > $this->cart[$index]['price']) {
-            $discount = $this->cart[$index]['price'];
+        $isPercentage = false;
+        
+        if (is_string($discount) && str_ends_with(trim($discount), '%')) {
+            $isPercentage = true;
+            $discountValue = (float) str_replace('%', '', $discount);
+        } else {
+            $discountValue = (float) $discount;
         }
 
-        $this->cart[$index]['discount'] = $discount;
-        $this->cart[$index]['total'] = ($this->cart[$index]['price'] - $discount) * $this->cart[$index]['quantity'];
+        if ($discountValue < 0) $discountValue = 0;
+
+        if ($isPercentage) {
+            if ($discountValue > 100) $discountValue = 100;
+            $amount = ($this->cart[$index]['price'] * $discountValue) / 100;
+            $this->cart[$index]['discount'] = round($amount, 2);
+            $this->cart[$index]['discount_percentage'] = $discountValue;
+            $this->cart[$index]['discount_type'] = 'percentage';
+        } else {
+            if ($discountValue > $this->cart[$index]['price']) {
+                $discountValue = $this->cart[$index]['price'];
+            }
+            $this->cart[$index]['discount'] = $discountValue;
+            $this->cart[$index]['discount_percentage'] = $this->cart[$index]['price'] > 0 ? round(($discountValue / $this->cart[$index]['price']) * 100, 2) : 0;
+            $this->cart[$index]['discount_type'] = 'fixed';
+        }
+
+        $this->cart[$index]['total'] = ($this->cart[$index]['price'] - $this->cart[$index]['discount']) * $this->cart[$index]['quantity'];
     }
 
     // Remove from Cart

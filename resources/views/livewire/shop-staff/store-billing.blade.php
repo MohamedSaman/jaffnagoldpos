@@ -983,7 +983,7 @@
 
         {{-- Invoice Content --}}
         <div class="p-2 bg-white flex justify-center" id="printableInvoice">
-            <div class="receipt-container" style="width: 76mm; padding: 0 3mm; background: white; color: #000; font-family: 'Merchant Copy', 'Courier New', Courier, monospace; line-height: 1.2; font-size: 12px; box-sizing: border-box;">
+            <div class="receipt-container" style="width: 76mm; padding: 0 3mm; background: white; color: #000; line-height: 1.2; font-size: 12px; box-sizing: border-box;">
                 <!-- Thermal Receipt Header -->
                 <div style="text-align:center; font-weight:bold; padding-top: 3mm;">
                     <div style="border-top: 2px solid #000; border-bottom: 2px solid #000; padding: 5px 0; margin-bottom: 5px; font-size: 16px; text-transform: uppercase;">
@@ -1029,10 +1029,10 @@
                 <div style="font-size: 11px;">
                     @foreach($createdSale->items as $item)
                     <div style="display: flex; margin-bottom: 2px;">
-                        <span style="flex: 2;">
+                        <span style="flex: 2;font-weight: bold">
                             {{ $item->product_name }}
                             @if($item->has_warranty)
-                            <div style="font-size: 8px; font-weight: bold; font-style: italic; color: #161b97; margin-top: 1px;">- {{ $item->warranty_duration }} Warranty</div>
+                            <div style="font-size: 9px; font-weight: bold; font-style: italic; color: #000000ff; margin-top: 1px;">({{ $item->warranty_duration }} Warranty)</div>
                             @endif
                         </span>
                         <span style="flex: 0.5; text-align: center; font-weight: bold;">{{ $item->quantity }}</span>
@@ -1040,7 +1040,7 @@
                     </div>
                     @if($item->discount_per_unit > 0)
                     <div style="display: flex; font-size: 9px; color: #444; margin-top: -1px; margin-bottom: 3px;">
-                        <span style="flex: 2; padding-left: 10px;">
+                        <span style="flex: 2;font-weight: bold padding-left: 5px;">
                             Disc: {{ number_format($item->discount_per_unit, 0) }} 
                             @if($item->discount_percentage > 0) ({{ number_format($item->discount_percentage, 0) }}%) @endif
                         </span>
@@ -1120,7 +1120,7 @@
                 </div>
 
                 {{-- Receipt Barcode --}}
-                <div class="flex justify-center my-2" wire:ignore
+                <div style="display: flex; justify-content: center; margin: 8px 0;" wire:ignore
                      x-data="{ 
                         saleId: '{{ $createdSale->invoice_number ?? $createdSale->sale_id }}',
                         init() {
@@ -1154,6 +1154,7 @@
                 <!-- Footer -->
                 <div style="text-align: center; font-size: 11px; margin-top: 10px;">
                     <div style="font-weight: bold;">Thank You for Your Visit!</div>
+                    <div style="font-weight: bold;">Return will be accepted within 3 days</div>
                     <div style="font-weight: bold;">Visit Us Again</div>
                     <div style="border-top: 1px solid #000; margin-top: 8px; padding-top: 2px;"></div>
                     <div style="border-top: 1px solid #000; margin-top: 2px;"></div>
@@ -1326,7 +1327,7 @@
                         padding: 0;
                         width: 80mm;
                         background: #fff;
-                        font-family: 'Merchant Copy', 'Courier New', Courier, monospace; 
+                        font-family: Arial, sans-serif; 
                         font-size: 11px;
                         color: #000;
                         font-weight: bold;
@@ -1334,7 +1335,7 @@
                     .receipt-container {
                         width: 80mm;
                         margin: 0;
-                        padding: 3mm 3mm 4mm 3mm;
+                        padding: 3mm ;
                         box-sizing: border-box;
                     }
                     @media print {
