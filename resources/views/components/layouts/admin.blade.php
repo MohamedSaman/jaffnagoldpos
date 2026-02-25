@@ -1049,8 +1049,8 @@
         <!-- Sidebar -->
         <div class="sidebar">
             <div class="sidebar-header">
-                <div class="sidebar-title">
-                    <img src="{{ asset('images/jg.png') }}" alt="Logo" width="60">
+                <img src="{{ asset('images/jg.png') }}" alt="Logo" width="60">
+                <div class="sidebar-title"> 
                     <div>JAFFNA GOLD</div>
                 </div>
             </div>
