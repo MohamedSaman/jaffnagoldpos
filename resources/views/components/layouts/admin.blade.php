@@ -1049,9 +1049,7 @@
         <!-- Sidebar -->
         <div class="sidebar">
             <div class="sidebar-header">
-                <img src="{{ asset('images/jg.png') }}" alt="Logo" width="60" class="logo-img me-3">
                 <div class="sidebar-title">
-
                     <img src="{{ asset('images/jg.png') }}" alt="Logo" width="60">
                     <div>JAFFNA GOLD</div>
                 </div>
@@ -1148,7 +1146,7 @@
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link py-2" href="{{ route('admin.sales-list') }}">
-                                    <i class="bi bi-table"></i> <span>List Sales</span>
+                                    <i class="bi bi-table"></i> <span>Delivery Sales</span>
                                 </a>
                             </li>
                             <!-- <li class="nav-item">
