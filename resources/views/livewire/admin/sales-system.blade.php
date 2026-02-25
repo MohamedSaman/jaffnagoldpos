@@ -293,10 +293,10 @@
                                     <i class="bi bi-mailbox2"></i>
                                     <span>Post Delivery</span>
                                 </div>
-                                <div class="selection-item {{ $deliveryMethod === 'Domestic' ? 'active' : '' }}" 
-                                    wire:click="$set('deliveryMethod', 'Domestic')">
+                                <div class="selection-item {{ $deliveryMethod === 'Domex' ? 'active' : '' }}" 
+                                    wire:click="$set('deliveryMethod', 'Domex')">
                                     <i class="bi bi-house-heart"></i>
-                                    <span>Domestic</span>
+                                    <span>Domex</span>
                                 </div>
                             </div>
                         </div>

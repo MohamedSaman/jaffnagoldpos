@@ -441,6 +441,18 @@
                         <i class="bi bi-cart-plus"></i> <span>Store Billing</span>
                     </a>
                 </li>
+
+                <li>
+                    <a class="nav-link {{ request()->routeIs('shop-staff.sales') ? 'active' : '' }}" href="{{ route('shop-staff.sales') }}">
+                        <i class="bi bi-receipt"></i> <span>Sale List</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a class="nav-link {{ request()->routeIs('shop-staff.expenses') ? 'active' : '' }}" href="{{ route('shop-staff.expenses') }}">
+                        <i class="bi bi-wallet2"></i> <span>Daily Expenses</span>
+                    </a>
+                </li>
                 
                 @php
                     $staffType = auth()->user()->staff_type ?? 'shop_staff';
@@ -455,18 +467,9 @@
                 {{-- Products Section --}}
                 @if($permissionModel->hasPermission($staffType, 'view_products'))
                 <li class="nav-item">
-                    <a class="nav-link dropdown-toggle" href="#productsSubmenu" data-bs-toggle="collapse" role="button" aria-expanded="true" aria-controls="productsSubmenu">
-                        <i class="bi bi-basket3"></i> <span>Products</span>
+                    <a class="nav-link py-2 {{ request()->routeIs('shop-staff.products') ? 'active' : '' }}" href="{{ route('shop-staff.products') }}">
+                        <i class="bi bi-list-ul"></i> <span>View Products</span>
                     </a>
-                    <div class="collapse show" id="productsSubmenu">
-                        <ul class="nav flex-column ms-3">
-                            <li class="nav-item">
-                                <a class="nav-link py-2 {{ request()->routeIs('shop-staff.products') ? 'active' : '' }}" href="{{ route('shop-staff.products') }}">
-                                    <i class="bi bi-list-ul"></i> <span>View Products</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
                 </li>
                 @endif
             </ul>

@@ -1,232 +1,211 @@
-<div class="container-fluid py-4">
-    {{-- Header --}}
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h3 class="fw-bold text-dark mb-2">
-                <i class="bi bi-receipt text-success me-2"></i> Supplier Payment List
+<div class="container-fluid py-4 min-vh-100 bg-light-soft">
+    {{-- Header Section --}}
+    <div class="row align-items-center mb-4">
+        <div class="col-md-6">
+            <h3 class="fw-bold text-dark mb-1">
+                <i class="bi bi-receipt-cutoff text-success me-2"></i> Supplier Receipt Hub
             </h3>
-            <p class="text-muted mb-0">View all supplier receipts and payment allocations</p>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a href="#" class="text-decoration-none">Admin</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Supplier Payments</li>
+                </ol>
+            </nav>
         </div>
-    </div>
-
-    {{-- Search Order Section --}}
-    <div class="card mb-4 border-primary border-2">
-        <div class="card-body">
-            <div class="row g-3 align-items-center">
-                <div class="col-md-8">
-                    <div class="input-group input-group-lg">
-                        <span class="input-group-text bg-primary text-white">
-                            <i class="bi bi-search"></i>
-                        </span>
-                        <input 
-                            type="text" 
-                            class="form-control" 
-                            placeholder="Search by order number..." 
-                            wire:model.live="searchOrderNumber"
-                        >
-                        @if($searchOrderNumber)
-                        <button 
-                            class="btn btn-outline-secondary" 
-                            type="button"
-                            wire:click="clearSearch"
-                        >
-                            <i class="bi bi-x-circle me-1"></i> Clear
-                        </button>
-                        @endif
-                    </div>
+        <div class="col-md-6 text-md-end">
+            <div class="d-inline-flex align-items-center bg-white p-2 rounded-3 shadow-sm border">
+                <div class="pe-3 border-end me-3 text-start">
+                    <small class="text-muted d-block lh-1 mb-1">Total Purchases</small>
+                    <span class="fw-bold text-dark">LKR {{ number_format($groupedPayments->sum('total_purchase_amount'), 2) }}</span>
+                </div>
+                <div class="text-start">
+                    <small class="text-muted d-block lh-1 mb-1">Settled Cash</small>
+                    <span class="fw-bold text-success">LKR {{ number_format($groupedPayments->sum('total_cash_paid'), 2) }}</span>
                 </div>
             </div>
         </div>
     </div>
 
-    {{-- Order Search Results --}}
-    @if($searchOrderNumber && $searchedOrder)
-    <div class="card mb-4 border-success border-2">
-        <div class="card-header bg-success text-white">
-            <h5 class="mb-0">
-                <i class="bi bi-check-circle me-2"></i> Order Details - {{ $searchedOrder->order_code }}
-            </h5>
+    {{-- Flash Messages --}}
+    @if(session()->has('success'))
+    <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm mb-4" role="alert">
+        <div class="d-flex align-items-center">
+            <i class="bi bi-check-circle-fill fs-5 me-2"></i>
+            <div>{{ session('success') }}</div>
         </div>
-        <div class="card-body">
-            <div class="row g-3 mb-3">
-                <div class="col-md-3">
-                    <small class="text-muted d-block">Order Code</small>
-                    <strong class="text-primary">{{ $searchedOrder->order_code }}</strong>
-                </div>
-                <div class="col-md-3">
-                    <small class="text-muted d-block">Order Date</small>
-                    <strong>{{ $searchedOrder->order_date ? date('M d, Y', strtotime($searchedOrder->order_date)) : '-' }}</strong>
-                </div>
-                <div class="col-md-3">
-                    <small class="text-muted d-block">Total Amount</small>
-                    <strong>Rs.{{ number_format($searchedOrder->total_amount ?? 0, 2) }}</strong>
-                </div>
-                
-            </div>
-            <hr>
-            <div class="mb-3">
-                <small class="text-muted d-block mb-1">Supplier</small>
-                <h5 class="mb-0 text-dark">
-                    <i class="bi bi-building me-2"></i>{{ $searchedOrder->supplier->name }}
-                </h5>
-            </div>
-
-            {{-- Payment Details for Order --}}
-            <div class="mt-4">
-                <h6 class="fw-bold mb-3 text-primary">
-                    <i class="bi bi-receipt-cutoff me-2"></i> Payment Details
-                </h6>
-
-                @if(count($orderPayments) > 0)
-                    @foreach($orderPayments as $index => $payment)
-                    <div class="card mb-3 shadow-sm border-start border-4 border-success">
-                        <div class="card-header bg-light">
-                            <div class="row align-items-center">
-                                <div class="col-md-8">
-                                    <div class="d-flex align-items-center">
-                                        <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
-                                            <strong>#{{ $index + 1 }}</strong>
-                                        </div>
-                                        <div>
-                                            <h6 class="mb-0 fw-bold">Receipt #{{ $payment->id }}</h6>
-                                            <small class="text-muted">
-                                                <i class="bi bi-calendar3 me-1"></i>
-                                                {{ $payment->payment_date ? date('M d, Y', strtotime($payment->payment_date)) : '-' }}
-                                            </small>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-4 text-end">
-                                    <div class="fs-4 fw-bold text-success">Rs.{{ number_format($payment->amount, 2) }}</div>
-                                    <span class="badge bg-secondary">
-                                        <i class="bi bi-{{ $payment->payment_method === 'cash' ? 'cash' : ($payment->payment_method === 'cheque' ? 'receipt' : 'bank') }} me-1"></i>
-                                        {{ ucfirst(str_replace('_', ' ', $payment->payment_method)) }}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            @if($payment->payment_method === 'cheque' && $payment->cheque_number)
-                            <div class="alert alert-info mb-3">
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        <small class="text-muted d-block">Cheque Number</small>
-                                        <strong>{{ $payment->cheque_number }}</strong>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <small class="text-muted d-block">Bank Name</small>
-                                        <strong>{{ $payment->bank_name ?? '-' }}</strong>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <small class="text-muted d-block">Cheque Date</small>
-                                        <strong>{{ $payment->cheque_date ? date('M d, Y', strtotime($payment->cheque_date)) : '-' }}</strong>
-                                    </div>
-                                </div>
-                            </div>
-                            @elseif($payment->payment_method === 'bank_transfer')
-                            <div class="alert alert-info mb-3">
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <small class="text-muted d-block">Bank Name</small>
-                                        <strong>{{ $payment->bank_name ?? '-' }}</strong>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <small class="text-muted d-block">Reference</small>
-                                        <strong>{{ $payment->bank_transaction ?? $payment->reference ?? '-' }}</strong>
-                                    </div>
-                                </div>
-                            </div>
-                            @endif
-
-                            @if($payment->allocations && count($payment->allocations) > 0)
-                            <div class="table-responsive allocation-table">
-                                <table class="table table-sm table-bordered mb-0">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th>Order Code</th>
-                                            <th class="text-end">Allocated Amount</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach($payment->allocations->where('purchase_order_id', $searchedOrder->id) as $alloc)
-                                        <tr>
-                                            <td>{{ $searchedOrder->order_code }}</td>
-                                            <td class="text-end fw-bold text-success">Rs.{{ number_format($alloc->allocated_amount, 2) }}</td>
-                                        </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
-                            @endif
-
-                            @if($payment->notes)
-                            <div class="mt-3">
-                                <small class="text-muted d-block">Notes:</small>
-                                <div class="alert alert-light mb-0">{{ $payment->notes }}</div>
-                            </div>
-                            @endif
-                        </div>
-                    </div>
-                    @endforeach
-
-                    <div class="alert alert-success">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <strong>Total Payments: </strong>{{ count($orderPayments) }}
-                            </div>
-                            <div class="col-md-6 text-end">
-                                <strong>Total Amount Paid: </strong>Rs.{{ number_format(collect($orderPayments)->sum('amount'), 2) }}
-                            </div>
-                        </div>
-                    </div>
-                @else
-                    <div class="alert alert-warning">
-                        <i class="bi bi-exclamation-triangle me-2"></i>
-                        <strong>No payments yet</strong>
-                        <p class="mb-0 mt-2">This order has not received any payments yet.</p>
-                    </div>
-                @endif
-            </div>
-        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
-    @elseif($searchOrderNumber && !$searchedOrder)
-    <div class="alert alert-danger">
-        <i class="bi bi-x-circle me-2"></i>
-        <strong>Order not found!</strong> No order found with code: "{{ $searchOrderNumber }}"
+    @endif
+    @if(session()->has('error'))
+    <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm mb-4" role="alert">
+        <div class="d-flex align-items-center">
+            <i class="bi bi-exclamation-triangle-fill fs-5 me-2"></i>
+            <div>{{ session('error') }}</div>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
     @endif
 
-    {{-- Supplier List Table - Only show when not searching --}}
-    @if(!$searchOrderNumber)
-    <div class="card mb-4">
-        <div class="card-header d-flex justify-content-between align-items-center bg-light">
-            <h5 class="fw-bold mb-0">
-                <i class="bi bi-people me-2"></i> Suppliers with Payments
-            </h5>
-            <span class="badge bg-primary">{{ $suppliers->total() }} suppliers</span>
+    {{-- Filters Card --}}
+    <div class="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden">
+        <div class="card-body p-4">
+            <div class="row g-3 align-items-end">
+                <div class="col-lg-4 col-md-6">
+                    <label class="form-label fw-bold text-dark-50 small mb-2 text-uppercase">
+                        <i class="bi bi-search me-1"></i> Supplier Lookup
+                    </label>
+                    <div class="input-group input-group-modern">
+                        <span class="input-group-text bg-white border-end-0">
+                            <i class="bi bi-building text-muted"></i>
+                        </span>
+                        <input 
+                            type="text" 
+                            class="form-control border-start-0 ps-0" 
+                            placeholder="Enter supplier name..." 
+                            wire:model.live.debounce.300ms="filterSupplier"
+                        >
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <label class="form-label fw-bold text-dark-50 small mb-2 text-uppercase">
+                        <i class="bi bi-calendar-event me-1"></i> Start Date
+                    </label>
+                    <input 
+                        type="date" 
+                        class="form-control form-control-modern" 
+                        wire:model.live="filterDateFrom"
+                    >
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <label class="form-label fw-bold text-dark-50 small mb-2 text-uppercase">
+                        <i class="bi bi-calendar-check me-1"></i> End Date
+                    </label>
+                    <input 
+                        type="date" 
+                        class="form-control form-control-modern" 
+                        wire:model.live="filterDateTo"
+                    >
+                </div>
+                <div class="col-lg-2 col-md-6 text-end">
+                    @if($filterSupplier || $filterDateFrom || $filterDateTo)
+                    <button class="btn btn-soft-danger w-100 fw-bold py-2" wire:click="clearFilters">
+                        <i class="bi bi-x-circle me-1"></i> Reset
+                    </button>
+                    @else
+                    <div class="btn btn-soft-primary w-100 disabled border-0 py-2">
+                        <i class="bi bi-funnel me-1"></i> Filter
+                    </div>
+                    @endif
+                </div>
+            </div>
         </div>
-        <div class="card-body p-0 overflow-auto">
+    </div>
+
+    {{-- Data Table Section --}}
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+            <h5 class="fw-bold mb-0 text-dark">
+                <i class="bi bi-list-ul text-primary me-2"></i> Purchase Records
+            </h5>
+            <div class="d-flex align-items-center">
+                <span class="badge bg-soft-primary text-primary px-3 py-2 rounded-pill">
+                    {{ $groupedPayments->total() }} Entries
+                </span>
+            </div>
+        </div>
+        <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-hover mb-0">
-                    <thead class="table-light">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light-soft text-dark-50 small text-uppercase fw-bold letter-spacing-1">
                         <tr>
-                            <th class="ps-4">Supplier Name</th>
-                            <th class="text-center">Total Paid</th>
-                            <th class="text-center">No. of Receipts</th>
+                            <th class="ps-4 py-3" style="width: 60px;">ID</th>
+                            <th>Supplier & Entity</th>
+                            <th class="text-center">Arrival Date</th>
+                            <th class="text-center">Units</th>
+                            <th class="text-end">Grand Total</th>
+                            <th class="text-end">Settled Cash</th>
+                            <th class="text-center">Status</th>
+                            <th class="text-center pe-4">Actions</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        @forelse($suppliers as $supplier)
-                        <tr wire:key="supplier-{{ $supplier->id }}" style="cursor:pointer" wire:click="showSupplierPayments({{ $supplier->id }})">
-                            <td class="ps-4 fw-semibold">{{ $supplier->name }}</td>
-                            <td class="text-center">Rs.{{ number_format($supplier->total_paid, 2) }}</td>
-                            <td class="text-center">{{ $supplier->receipts_count }}</td>
+                    <tbody class="border-top-0">
+                        @forelse($groupedPayments as $index => $group)
+                        <tr>
+                            <td class="ps-4 text-muted small">#{{ $groupedPayments->firstItem() + $index }}</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-sm bg-soft-primary text-primary rounded-circle me-3 d-flex align-items-center justify-content-center">
+                                        <i class="bi bi-building fs-5"></i>
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold text-dark">{{ $group->supplier_name }}</div>
+                                        <div class="text-muted small">ID: {{ $group->supplier_id }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <div class="fw-semibold text-dark">{{ date('d M Y', strtotime($group->received_date)) }}</div>
+                                <div class="text-muted small">{{ date('l', strtotime($group->received_date)) }}</div>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge bg-light text-dark border px-2 py-1">{{ $group->order_count }} Orders</span>
+                            </td>
+                            <td class="text-end fw-bold text-dark">
+                                Rs. {{ number_format($group->total_purchase_amount, 2) }}
+                            </td>
+                            <td class="text-end">
+                                @if($group->total_cash_paid > 0)
+                                <div class="fw-bold text-success">Rs. {{ number_format($group->total_cash_paid, 2) }}</div>
+                                @else
+                                <div class="text-muted small">Unsettled</div>
+                                @endif
+                            </td>
+                            <td class="text-center">
+                                @if($group->total_cash_paid >= $group->total_purchase_amount)
+                                    <span class="badge bg-soft-success text-success px-3 py-2 rounded-pill d-inline-flex align-items-center">
+                                        <i class="bi bi-check-circle-fill me-1"></i> Fully Paid
+                                    </span>
+                                @elseif($group->total_cash_paid > 0)
+                                    <span class="badge bg-soft-warning text-warning px-3 py-2 rounded-pill d-inline-flex align-items-center">
+                                        <i class="bi bi-clock-history me-1"></i> Partial
+                                    </span>
+                                @else
+                                    <span class="badge bg-soft-danger text-danger px-3 py-2 rounded-pill d-inline-flex align-items-center">
+                                        <i class="bi bi-exclamation-circle me-1"></i> Pending
+                                    </span>
+                                @endif
+                            </td>
+                            <td class="text-center pe-4">
+                                <div class="dropdown">
+                                    <button class="btn btn-link link-dark text-decoration-none p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="bi bi-three-dots-vertical fs-5"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-3 p-2">
+                                        <li>
+                                            <a class="dropdown-item py-2 px-3 d-flex align-items-center rounded-2" href="javascript:void(0)" wire:click="showGroupDetail({{ $group->supplier_id }}, '{{ $group->received_date }}')">
+                                                <i class="bi bi-journal-text me-2 text-primary"></i> <span>View Purchases</span>
+                                            </a>
+                                        </li>
+                                        @if($group->total_cash_paid < $group->total_purchase_amount)
+                                        <li><hr class="dropdown-divider mx-2"></li>
+                                        <li>
+                                            <a class="dropdown-item py-2 px-3 d-flex align-items-center rounded-2 bg-soft-success text-success" href="javascript:void(0)" wire:click="openConfirmPay({{ $group->supplier_id }}, '{{ $group->received_date }}')">
+                                                <i class="bi bi-cash-coin me-2"></i> <span>Settle Payment</span>
+                                            </a>
+                                        </li>
+                                        @endif
+                                    </ul>
+                                </div>
+                            </td>
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="3" class="text-center text-muted py-4">
-                                <i class="bi bi-x-circle display-4 d-block mb-2"></i>
-                                No supplier payments found.
+                            <td colspan="8" class="text-center py-5">
+                                <div class="py-4">
+                                    <i class="bi bi-inbox text-muted display-1 opacity-25"></i>
+                                    <h5 class="mt-3 text-muted fw-normal">No receipt records match your criteria.</h5>
+                                    <button class="btn btn-soft-primary mt-3 btn-sm" wire:click="clearFilters">Clear all filters</button>
+                                </div>
                             </td>
                         </tr>
                         @endforelse
@@ -234,209 +213,178 @@
                 </table>
             </div>
 
-            {{-- Pagination --}}
-            @if($suppliers->hasPages())
-            <div class="card-footer">
-                <div class="d-flex justify-content-center">
-                    {{ $suppliers->links('livewire.custom-pagination') }}
-                </div>
+            {{-- Optimized Pagination --}}
+            @if($groupedPayments->hasPages())
+            <div class="px-4 py-3 bg-light-soft border-top d-flex justify-content-center">
+                {{ $groupedPayments->links('livewire.custom-pagination') }}
             </div>
             @endif
         </div>
     </div>
-    @endif
 
-    {{-- Payment Details Modal --}}
-    @if($showPaymentModal && $selectedSupplier)
-    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
-        <div class="modal-dialog modal-xl">
-            <div class="modal-content">
-                <div class="modal-header bg-gradient-primary text-white">
-                    <div>
-                        <h5 class="modal-title fw-bold mb-1">
-                            <i class="bi bi-receipt-cutoff me-2"></i> Payment History
-                        </h5>
-                        <small class="opacity-75">{{ $selectedSupplier->name }}</small>
+    {{-- Group Detail Modal --}}
+    @if($showDetailModal)
+    <div class="modal fade show d-block" tabindex="-1" role="dialog" style="background-color: rgba(0,0,0,0.6); z-index: 1050;">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="modal-header border-0 bg-primary text-white p-4">
+                    <div class="d-flex align-items-center">
+                        <div class="avatar-md bg-white text-primary rounded-circle d-flex align-items-center justify-content-center me-3 shadow-sm">
+                            <i class="bi bi-journal-check fs-2"></i>
+                        </div>
+                        <div>
+                            <h4 class="modal-title fw-bold mb-0">Purchases Statement</h4>
+                            <p class="mb-0 opacity-75 small">{{ $selectedGroupSupplier }} • {{ date('M d, Y', strtotime($selectedGroupDate)) }}</p>
+                        </div>
                     </div>
-                    <button type="button" class="btn-close btn-close-white" wire:click="closePaymentModal"></button>
+                    <button type="button" class="btn-close btn-close-white" wire:click="closeDetailModal"></button>
                 </div>
                 <div class="modal-body p-0">
-                    {{-- Supplier Info Card --}}
-                    <div class="bg-light border-bottom p-3">
-                        <div class="row g-3">
-                            <div class="col-md-4">
-                                <div class="d-flex align-items-center">
-                                    <i class="bi bi-person-circle text-primary me-2" style="font-size: 1.5rem;"></i>
-                                    <div>
-                                        <small class="text-muted d-block">Supplier Name</small>
-                                        <strong>{{ $selectedSupplier->name }}</strong>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="d-flex align-items-center">
-                                    <i class="bi bi-telephone text-success me-2" style="font-size: 1.5rem;"></i>
-                                    <div>
-                                        <small class="text-muted d-block">Mobile</small>
-                                        <strong>{{ $selectedSupplier->mobile }}</strong>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="d-flex align-items-center">
-                                    <i class="bi bi-envelope text-info me-2" style="font-size: 1.5rem;"></i>
-                                    <div>
-                                        <small class="text-muted d-block">Email</small>
-                                        <strong>{{ $selectedSupplier->email }}</strong>
-                                    </div>
-                                </div>
-                            </div>
+                    {{-- Detail Summary Header --}}
+                    <div class="bg-light-soft px-4 py-3 border-bottom d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="text-muted small text-uppercase fw-bold letter-spacing-1 text-start">Summary Overview</span>
                         </div>
-                        <div class="row mt-3">
-                            <div class="col-md-6">
-                                <div class="card bg-white border-0 shadow-sm">
-                                    <div class="card-body py-2">
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <span class="text-muted">Total Payments Made</span>
-                                            <span class="badge bg-primary rounded-pill">{{ count($payments) }} receipts</span>
-                                        </div>
-                                    </div>
-                                </div>
+                        <div class="d-flex gap-3">
+                            <div class="text-end">
+                                <small class="text-muted d-block lh-1 mb-1">Total Due</small>
+                                <span class="fw-bold text-danger">Rs. {{ number_format(collect($selectedGroupOrderSummary)->sum('due_amount'), 2) }}</span>
                             </div>
-                            <div class="col-md-6">
-                                <div class="card bg-success text-white border-0 shadow-sm">
-                                    <div class="card-body py-2">
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <span>Total Amount Paid</span>
-                                            <strong class="fs-5">Rs.{{ number_format($payments->sum('amount'), 2) }}</strong>
-                                        </div>
-                                    </div>
-                                </div>
+                            <div class="text-end border-start ps-3">
+                                <small class="text-muted d-block lh-1 mb-1">Collection Total</small>
+                                <h5 class="fw-bold text-dark mb-0">Rs. {{ number_format(collect($selectedGroupOrderSummary)->sum('total_amount'), 2) }}</h5>
                             </div>
                         </div>
                     </div>
 
-                    {{-- Payment List --}}
-                    <div class="p-3">
-                        @forelse($payments as $index => $payment)
-                        <div class="card mb-3 shadow-sm border-start border-4 border-primary">
-                            <div class="card-header bg-white">
+                    <div class="p-4">
+                        <div class="table-responsive rounded-3 border">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="bg-light small font-weight-bold text-muted">
+                                    <tr>
+                                        <th class="ps-3 py-3">Product Item</th>
+                                        <th class="text-center">Order Reference</th>
+                                        <th class="text-center">Quantity</th>
+                                        <th class="text-end">Unit Price</th>
+                                        <th class="text-end">Line Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @php $grandTotal = 0; @endphp
+                                    @foreach($selectedGroupItems as $item)
+                                    @php $grandTotal += $item['total']; @endphp
+                                    <tr>
+                                        <td class="ps-3">
+                                            <div class="d-flex align-items-center">
+                                                <div class="avatar-sm bg-soft-secondary text-secondary rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                                                    <i class="bi bi-box-seam"></i>
+                                                </div>
+                                                <div>
+                                                    <div class="fw-bold text-dark mb-0 small">{{ $item['product_name'] }}</div>
+                                                    <div class="text-muted" style="font-size: 0.7rem;">Code: {{ $item['product_code'] }}</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge bg-light text-dark border small">#{{ $item['order_code'] }}</span>
+                                        </td>
+                                        <td class="text-center fw-semibold text-dark">{{ $item['quantity'] }}</td>
+                                        <td class="text-end text-muted small">Rs. {{ number_format($item['unit_price'], 2) }}</td>
+                                        <td class="text-end fw-bold text-dark">Rs. {{ number_format($item['total'], 2) }}</td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                                <tfoot class="bg-light-soft">
+                                    <tr>
+                                        <td colspan="4" class="text-end fw-bold text-dark py-3">Item Subtotal:</td>
+                                        <td class="text-end fw-bold text-primary py-3">Rs. {{ number_format($grandTotal, 2) }}</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+
+                        {{-- Cash Details for this group --}}
+                        <div class="card mt-4 border-0 bg-soft-success shadow-sm rounded-4">
+                            <div class="card-body p-4">
                                 <div class="row align-items-center">
-                                    <div class="col-md-8">
-                                        <div class="d-flex align-items-center">
-                                            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
-                                                <strong>#{{ $index + 1 }}</strong>
-                                            </div>
-                                            <div>
-                                                <h6 class="mb-0 fw-bold">Receipt #{{ $payment->id }}</h6>
-                                                <small class="text-muted">
-                                                    <i class="bi bi-calendar3 me-1"></i>
-                                                    {{ $payment->payment_date ? date('M d, Y', strtotime($payment->payment_date)) : '-' }}
-                                                </small>
-                                            </div>
+                                    <div class="col-auto">
+                                        <div class="avatar-lg bg-success text-white rounded-4 d-flex align-items-center justify-content-center shadow">
+                                            <i class="bi bi-wallet2 fs-2"></i>
                                         </div>
                                     </div>
-                                    <div class="col-md-4 text-end">
-                                        <div class="fs-4 fw-bold text-success">Rs.{{ number_format($payment->amount, 2) }}</div>
-                                        <span class="badge bg-secondary">
-                                            <i class="bi bi-{{ $payment->payment_method === 'cash' ? 'cash' : ($payment->payment_method === 'cheque' ? 'receipt' : 'bank') }} me-1"></i>
-                                            {{ ucfirst(str_replace('_', ' ', $payment->payment_method)) }}
-                                        </span>
+                                    <div class="col">
+                                        <h6 class="text-success-dark fw-bold mb-1">CASH SETTLEMENT TRACKER</h6>
+                                        <p class="text-success-dark opacity-75 mb-0 small">The amount shown here represents the total cash physical units processed for this daily batch.</p>
+                                    </div>
+                                    <div class="col-auto text-end">
+                                        <span class="text-success-dark small d-block mb-1 text-end">Total Processed Cash</span>
+                                        <h3 class="fw-bold text-success-dark mb-0">Rs. {{ number_format($selectedGroupTotalCash, 2) }}</h3>
                                     </div>
                                 </div>
                             </div>
-                            <div class="card-body">
-                                {{-- Payment Method Details --}}
-                                @if($payment->payment_method === 'cheque')
-                                <div class="alert alert-info mb-3">
-                                    <div class="row">
-                                        <div class="col-md-4">
-                                            <small class="text-muted d-block">Cheque Number</small>
-                                            <strong>{{ $payment->cheque_number }}</strong>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <small class="text-muted d-block">Bank Name</small>
-                                            <strong>{{ $payment->bank_name }}</strong>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <small class="text-muted d-block">Cheque Date</small>
-                                            <strong>{{ $payment->cheque_date ? date('M d, Y', strtotime($payment->cheque_date)) : '-' }}</strong>
-                                        </div>
-                                    </div>
-                                </div>
-                                @elseif($payment->payment_method === 'bank_transfer')
-                                <div class="alert alert-info mb-3">
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <small class="text-muted d-block">Bank Name</small>
-                                            <strong>{{ $payment->bank_name }}</strong>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <small class="text-muted d-block">Transaction Reference</small>
-                                            <strong>{{ $payment->bank_transaction }}</strong>
-                                        </div>
-                                    </div>
-                                </div>
-                                @endif
-
-                                {{-- Allocated Orders --}}
-                                <div class="mb-2">
-                                    <strong class="text-muted d-block mb-2">
-                                        <i class="bi bi-box-seam me-1"></i> Allocated to Orders:
-                                    </strong>
-                                    @if($payment->allocations && count($payment->allocations) > 0)
-                                    <div class="table-responsive allocation-table">
-                                        <table class="table table-sm table-bordered mb-0">
-                                            <thead class="table-light">
-                                                <tr>
-                                                    <th>Order ID</th>
-                                                    <th>Order Code</th>
-                                                    <th class="text-end">Allocated Amount</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @foreach($payment->allocations as $alloc)
-                                                <tr>
-                                                    <td><span class="badge bg-dark">#{{ $alloc->purchase_order_id }}</span></td>
-                                                    <td>{{ $alloc->order ? $alloc->order->order_code : 'N/A' }}</td>
-                                                    <td class="text-end fw-bold text-success">Rs.{{ number_format($alloc->allocated_amount, 2) }}</td>
-                                                </tr>
-                                                @endforeach
-                                                <tr class="table-active">
-                                                    <td colspan="2" class="text-end"><strong>Total Allocated:</strong></td>
-                                                    <td class="text-end fw-bold text-primary">Rs.{{ number_format($payment->allocations->sum('allocated_amount'), 2) }}</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                    @else
-                                    <div class="alert alert-warning mb-0">
-                                        <i class="bi bi-exclamation-triangle me-1"></i> No order allocation found for this payment
-                                    </div>
-                                    @endif
-                                </div>
-
-                                {{-- Notes --}}
-                                @if($payment->notes)
-                                <div class="mt-3">
-                                    <small class="text-muted d-block">Notes:</small>
-                                    <div class="alert alert-light mb-0">{{ $payment->notes }}</div>
-                                </div>
-                                @endif
-                            </div>
                         </div>
-                        @empty
-                        <div class="text-center py-5">
-                            <i class="bi bi-inbox text-muted" style="font-size: 4rem;"></i>
-                            <p class="text-muted mt-3">No payments found for this supplier.</p>
-                        </div>
-                        @endforelse
                     </div>
                 </div>
-                <div class="modal-footer bg-light">
-                    <button type="button" class="btn btn-secondary" wire:click="closePaymentModal">
-                        <i class="bi bi-x-circle me-1"></i> Close
+                <div class="modal-footer border-top-0 p-4">
+                    <button type="button" class="btn btn-soft-secondary px-4 fw-bold" wire:click="closeDetailModal">
+                        <i class="bi bi-x me-1"></i> Close View
                     </button>
+                    @php $groupDue = collect($selectedGroupOrderSummary)->sum('due_amount'); @endphp
+                    @if($groupDue > 0)
+                    <button type="button" class="btn btn-primary px-4 fw-bold shadow-sm" wire:click="openConfirmPay({{ $confirmPaySupplierId ?? $selectedGroupOrderSummary[0]['id'] }}, '{{ $selectedGroupDate }}')" wire:click="closeDetailModal">
+                        <i class="bi bi-cash-coin me-1"></i> Settle Balance
+                    </button>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
+
+    {{-- Confirm Pay Modal --}}
+    @if($showConfirmPayModal)
+    <div class="modal fade show d-block" tabindex="-1" role="dialog" style="background-color: rgba(0,0,0,0.6); z-index: 1100;">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="modal-header border-0 bg-success text-white py-3 px-4">
+                    <h5 class="modal-title fw-bold">
+                        <i class="bi bi-shield-check me-2"></i> Payment Authorization
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" wire:click="closeConfirmPay"></button>
+                </div>
+                <div class="modal-body p-5 text-center">
+                    <div class="avatar-xl bg-soft-success text-success rounded-circle d-flex align-items-center justify-content-center mx-auto mb-4 animate-bounce">
+                        <i class="bi bi-cash-stack fs-1"></i>
+                    </div>
+                    <h4 class="fw-bold text-dark mb-2">Authorize Settlement?</h4>
+                    <p class="text-muted mb-4 px-3">You are about to record a full cash settlement for <strong>{{ $confirmPayOrderCount }}</strong> orders from <strong>{{ $confirmPaySupplierName }}</strong>.</p>
+                    
+                    <div class="card bg-light border-0 rounded-4 mb-4">
+                        <div class="card-body p-4">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted text-start">Processing Amount:</span>
+                                <span class="fw-bold text-dark">Rs. {{ number_format($confirmPayAmount, 2) }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-0">
+                                <span class="text-muted text-start">Reference Date:</span>
+                                <span class="fw-bold text-dark text-end">{{ date('d M Y', strtotime($confirmPayDate)) }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <button type="button" class="btn btn-soft-secondary w-100 py-2 fw-bold" wire:click="closeConfirmPay">Cancel</button>
+                        </div>
+                        <div class="col-6">
+                            <button type="button" class="btn btn-success w-100 py-2 fw-bold shadow-sm" wire:click="confirmMarkAsPaid" wire:loading.attr="disabled">
+                                <span wire:loading.remove wire:target="confirmMarkAsPaid">Process Now</span>
+                                <span wire:loading wire:target="confirmMarkAsPaid">
+                                    <span class="spinner-border spinner-border-sm me-1"></span>
+                                </span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -444,53 +392,49 @@
     @endif
 
     <style>
-        .sticky-top {
-            position: sticky;
-            z-index: 10;
+        .letter-spacing-1 { letter-spacing: 0.05rem; }
+        .bg-light-soft { background-color: #f8f9fc; }
+        .bg-soft-primary { background-color: rgba(13, 110, 253, 0.1); }
+        .bg-soft-success { background-color: rgba(25, 135, 84, 0.1); }
+        .bg-soft-warning { background-color: rgba(255, 193, 7, 0.1); }
+        .bg-soft-danger { background-color: rgba(220, 53, 69, 0.1); }
+        .bg-soft-secondary { background-color: rgba(108, 117, 125, 0.1); }
+        .btn-soft-primary { background-color: rgba(13, 110, 253, 0.1); color: #0d6efd; border: none; }
+        .btn-soft-primary:hover { background-color: #0d6efd; color: #fff; }
+        .btn-soft-danger { background-color: rgba(220, 53, 69, 0.1); color: #dc3545; border: none; }
+        .btn-soft-danger:hover { background-color: #dc3545; color: #fff; }
+        .btn-soft-secondary { background-color: rgba(108, 117, 125, 0.1); color: #6c757d; border: none; }
+        .btn-soft-secondary:hover { background-color: #6c757d; color: #fff; }
+        
+        .form-control-modern { border: 1px solid #e1e9f1; padding: 0.75rem 1rem; border-radius: 0.75rem; background-color: #fff; transition: all 0.2s; }
+        .form-control-modern:focus { background-color: #fff; border-color: #0d6efd; box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.05); }
+        .input-group-modern .form-control { border-radius: 0 0.75rem 0.75rem 0; padding: 0.75rem 1rem 0.75rem 0; border: 1px solid #e1e9f1; border-left: none; }
+        .input-group-modern .input-group-text { border-radius: 0.75rem 0 0 0.75rem; border: 1px solid #e1e9f1; border-right: none; }
+        
+        .avatar-sm { width: 40px; height: 40px; }
+        .avatar-md { width: 56px; height: 56px; }
+        .avatar-lg { width: 64px; height: 64px; }
+        .avatar-xl { width: 96px; height: 96px; }
+        
+        .text-success-dark { color: #0f5132; }
+        .text-dark-50 { color: #6c7a91; }
+        
+        .rounded-4 { border-radius: 1.2rem !important; }
+        
+        .dropdown-item:hover { background-color: #f8f9fa; }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
         }
+        .animate-bounce { animation: bounce 2s infinite; }
 
-        .table th {
-            font-weight: 600;
-        }
-
-        .badge {
-            font-size: 0.75em;
-        }
-
-        .modal.show {
-            display: block !important;
-        }
-
-        .btn-group-sm>.btn {
-            padding: 0.25rem 0.5rem;
-        }
-
-        .input-group-lg .form-control {
-            font-size: 1.25rem;
-            font-weight: 600;
-        }
-
-        .allocation-table {
-            min-height: 100px; !important
-            overflow-y: auto; !important
-        }
-
-        .allocation-table::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .allocation-table::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 10px;
-        }
-
-        .allocation-table::-webkit-scrollbar-thumb {
-            background: #888;
-            border-radius: 10px;
-        }
-
-        .allocation-table::-webkit-scrollbar-thumb:hover {
-            background: #555;
-        }
+        .modal-dialog-scrollable .modal-body { overflow-x: hidden; }
+        
+        .table > :not(caption) > * > * { padding: 1.25rem 0.75rem; }
+        
+        .breadcrumb-item + .breadcrumb-item::before { content: "›"; color: #adb5bd; font-size: 1.2rem; line-height: 1; }
+        .text-start { text-align: left !important; }
+        .text-end { text-align: right !important; }
     </style>
 </div>

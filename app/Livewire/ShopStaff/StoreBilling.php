@@ -346,39 +346,10 @@ class StoreBilling extends Component
         // Check for open session
         $this->currentSession = POSSession::getTodaySession(Auth::id());
 
-        // If no session exists OR session is closed, auto-create with 0 cash in hand
+        // If no session exists OR session is closed, show cash-in-hand modal
         if (!$this->currentSession || $this->currentSession->isClosed()) {
-            // Always start with 0 cash in hand for each day
             $this->openingCashAmount = 0;
-
-            // Auto-submit opening cash with 0 amount
-            try {
-                DB::beginTransaction();
-
-                // Check if a closed session exists for today
-                $existingSession = POSSession::where('user_id', Auth::id())
-                    ->whereDate('session_date', now()->toDateString())
-                    ->where('status', 'closed')
-                    ->first();
-
-                if ($existingSession) {
-                    // Reopen existing closed session with 0 opening cash
-                    $existingSession->update([
-                        'status' => 'open',
-                        'opening_cash' => 0,
-                        'closed_at' => null,
-                    ]);
-                    $this->currentSession = $existingSession;
-                } else {
-                    // Create new POS session with 0 opening cash
-                    $this->currentSession = POSSession::openSession(Auth::id(), 0);
-                }
-
-                DB::commit();
-            } catch (\Exception $e) {
-                DB::rollBack();
-                Log::error('Failed to auto-initialize POS session: ' . $e->getMessage());
-            }
+            $this->showOpeningCashModal = true;
         }
 
         $this->loadCustomers();
@@ -390,6 +361,14 @@ class StoreBilling extends Component
         $this->loadProducts();
         $this->tempChequeDate = now()->format('Y-m-d');
         $this->loadWarrantySettings();
+    }
+
+    /**
+     * Load Warranty Settings from database
+     */
+    public function loadWarrantySettings()
+    {
+        $this->warrantyThreshold = Setting::where('key', 'warranty_min_amount')->value('value') ?? 1000;
     }
 
     /**

@@ -551,6 +551,67 @@
     </div>
 </aside>
 
+{{-- ================= OPENING CASH IN HAND MODAL ================= --}}
+@if($showOpeningCashModal)
+<div class="fixed inset-0 z-[5000] flex items-center justify-center p-4">
+    <div class="fixed inset-0 bg-slate-900/80 backdrop-blur-md"></div>
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden relative transform transition-all z-10">
+        {{-- Header --}}
+        <div class="bg-gradient-to-r from-[#161b97] to-[#12167d] px-6 py-5 text-center">
+            <div class="w-16 h-16 rounded-full bg-white/15 border-2 border-white/30 flex items-center justify-center mx-auto mb-3">
+                <span class="material-symbols-outlined text-white text-3xl">account_balance_wallet</span>
+            </div>
+            <h3 class="font-black text-lg text-white uppercase tracking-widest">Cash in Hand</h3>
+            <p class="text-[10px] text-blue-200 font-bold uppercase tracking-wider mt-1">Enter opening cash to start your POS session</p>
+        </div>
+        {{-- Body --}}
+        <div class="p-6 space-y-4">
+            <div>
+                <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-2">Opening Cash Amount</label>
+                <div class="relative flex items-center">
+                    <span class="absolute left-4 text-sm font-black text-slate-400 pointer-events-none">Rs.</span>
+                    <input type="number"
+                        class="w-full pl-12 pr-4 py-4 bg-slate-50 border-2 border-slate-200 rounded-xl text-2xl font-black text-slate-800 outline-none focus:border-[#161b97] transition-colors text-center"
+                        wire:model="openingCashAmount"
+                        min="0" step="0.01"
+                        placeholder="0.00"
+                        x-init="$nextTick(() => { $el.focus(); $el.select(); })"
+                        @keydown.enter.prevent="$wire.submitOpeningCash()">
+                </div>
+            </div>
+            <div class="bg-blue-50 border border-blue-200 rounded-xl p-3">
+                <div class="flex items-start gap-2">
+                    <span class="material-symbols-outlined text-blue-500 text-base mt-0.5">info</span>
+                    <p class="text-[10px] text-blue-700 font-bold leading-relaxed">
+                        Enter the total cash available in your register before starting sales.
+                        You can enter <strong>0</strong> if starting with no cash.
+                    </p>
+                </div>
+            </div>
+        </div>
+        {{-- Footer --}}
+        <div class="px-6 pb-6">
+            <button class="w-full bg-[#161b97] hover:bg-blue-800 text-white font-black py-4 rounded-xl flex items-center justify-center gap-2 shadow-xl shadow-blue-500/20 transition-all text-sm uppercase tracking-widest"
+                wire:click="submitOpeningCash"
+                wire:loading.attr="disabled"
+                wire:target="submitOpeningCash">
+                <span wire:loading wire:target="submitOpeningCash">
+                    <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                </span>
+                <span wire:loading.remove wire:target="submitOpeningCash">
+                    <span class="material-symbols-outlined text-xl">play_arrow</span>
+                </span>
+                <span wire:loading.remove wire:target="submitOpeningCash">Start POS Session</span>
+                <span wire:loading wire:target="submitOpeningCash">Starting...</span>
+            </button>
+        </div>
+    </div>
+</div>
+@endif
+
 {{-- MODALS WRAPPER --}}
 @if($showPaymentModal || $showSaleDiscountModal || $showCustomerModal || $showSaleModal || $showCloseRegisterModal || $showWalkingCustomerModal)
 <div class="fixed inset-0 z-[3000] flex items-center justify-center p-4">

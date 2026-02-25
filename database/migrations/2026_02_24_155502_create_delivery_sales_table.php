@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('delivery_sales', function (Blueprint $table) {
             $table->id();
             $table->foreignId('sale_id')->constrained('sales')->onDelete('cascade');
-            $table->enum('delivery_method', ['Post', 'Domestic'])->default('Post');
+            $table->enum('delivery_method', ['Post', 'Domex'])->default('Post');
             $table->enum('payment_method', ['Cash on Delivery', 'Online Payment'])->default('Cash on Delivery');
             $table->enum('status', ['Processing', 'Packed', 'Delivered'])->default('Processing');
             $table->timestamps();

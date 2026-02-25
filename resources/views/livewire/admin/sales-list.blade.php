@@ -102,7 +102,7 @@
                     <select class="form-select" wire:model.live="deliveryStatusFilter">
                         <option value="all">All</option>
                         <option value="Processing">Processing</option>
-                        <option value="Shipped">Shipped</option>
+                        <option value="Packed">Packed</option>
                         <option value="Delivered">Delivered</option>
                         <option value="Cancelled">Cancelled</option>
                     </select>
@@ -172,7 +172,7 @@
                             </td>
                             <td wire:click="viewSale({{ $sale->id }})" style="cursor:pointer">
                                 @if($sale->deliverySale)
-                                <span class="badge bg-dark font-monospace">{{ $sale->deliverySale->delivery_barcode }}</span>
+                                <span class="badge text-dark">{{ $sale->deliverySale->delivery_barcode }}</span>
                                 @else
                                 <span class="text-muted">-</span>
                                 @endif
@@ -202,7 +202,7 @@
                             </td>
                             <td class="text-center" wire:click="viewSale({{ $sale->id }})" style="cursor:pointer">
                                 @if($sale->deliverySale)
-                                <span class="badge bg-info text-dark">{{ $sale->deliverySale->payment_method }}</span>
+                                <span class="badge  text-dark">{{ $sale->deliverySale->payment_method }}</span>
                                 @endif
                             </td>
                             <td class="text-center">
@@ -210,24 +210,33 @@
                                 @php
                                     $statusColors = [
                                         'Processing' => 'warning',
-                                        'Shipped' => 'primary',
+                                        'Packed' => 'primary',
                                         'Delivered' => 'success',
                                         'Cancelled' => 'danger',
                                     ];
                                     $color = $statusColors[$sale->deliverySale->status] ?? 'secondary';
+                                    $isLocked = in_array($sale->deliverySale->status, ['Delivered', 'Cancelled']);
                                 @endphp
-                                <div class="dropdown">
-                                    <button class="btn btn-sm btn-{{ $color }} dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                                        {{ $sale->deliverySale->status }}
-                                    </button>
-                                    <ul class="dropdown-menu dropdown-menu-end">
-                                        <li><button class="dropdown-item" wire:click="updateDeliveryStatus({{ $sale->id }}, 'Processing')"><i class="bi bi-clock text-warning me-2"></i>Processing</button></li>
-                                        <li><button class="dropdown-item" wire:click="updateDeliveryStatus({{ $sale->id }}, 'Shipped')"><i class="bi bi-truck text-primary me-2"></i>Shipped</button></li>
-                                        <li><button class="dropdown-item" wire:click="updateDeliveryStatus({{ $sale->id }}, 'Delivered')"><i class="bi bi-check-circle text-success me-2"></i>Delivered</button></li>
-                                        <li><hr class="dropdown-divider"></li>
-                                        <li><button class="dropdown-item" wire:click="updateDeliveryStatus({{ $sale->id }}, 'Cancelled')"><i class="bi bi-x-circle text-danger me-2"></i>Cancelled</button></li>
-                                    </ul>
-                                </div>
+                                @if($isLocked)
+                                    {{-- Locked status — show static badge with lock icon --}}
+                                    <span class="badge bg-{{ $color }} px-3 py-2">
+                                        <i class="bi bi-lock-fill me-1"></i> {{ $sale->deliverySale->status }}
+                                    </span>
+                                @else
+                                    {{-- Changeable status — show dropdown --}}
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-{{ $color }} dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                            {{ $sale->deliverySale->status }}
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end">
+                                            <li><button class="dropdown-item" wire:click="updateDeliveryStatus({{ $sale->id }}, 'Processing')"><i class="bi bi-clock text-warning me-2"></i>Processing</button></li>
+                                            <li><button class="dropdown-item" wire:click="updateDeliveryStatus({{ $sale->id }}, 'Packed')"><i class="bi bi-truck text-primary me-2"></i>Packed</button></li>
+                                            <li><button class="dropdown-item" wire:click="updateDeliveryStatus({{ $sale->id }}, 'Delivered')"><i class="bi bi-check-circle text-success me-2"></i>Delivered</button></li>
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li><button class="dropdown-item" wire:click="updateDeliveryStatus({{ $sale->id }}, 'Cancelled')"><i class="bi bi-x-circle text-danger me-2"></i>Cancelled</button></li>
+                                        </ul>
+                                    </div>
+                                @endif
                                 @endif
                             </td>
                             <td class="text-end pe-4">
@@ -240,12 +249,16 @@
                                     </button>
                                     <ul class="dropdown-menu dropdown-menu-end">
                                         <li><button class="dropdown-item" wire:click="viewSale({{ $sale->id }})"><i class="bi bi-eye text-primary me-2"></i>View</button></li>
+                                        @if(!$sale->deliverySale || !in_array($sale->deliverySale->status, ['Delivered', 'Cancelled']))
                                         <li><button class="dropdown-item" wire:click="editSale({{ $sale->id }})"><i class="bi bi-pencil-square text-info me-2"></i>Edit</button></li>
                                         <li><hr class="dropdown-divider"></li>
+                                        @endif
                                         <li><button class="dropdown-item" wire:click="printInvoice({{ $sale->id }})"><i class="bi bi-printer text-success me-2"></i>Print</button></li>
                                         <li><button class="dropdown-item" wire:click="downloadInvoice({{ $sale->id }})"><i class="bi bi-download text-success me-2"></i>Download PDF</button></li>
+                                        @if(!$sale->deliverySale || !in_array($sale->deliverySale->status, ['Delivered', 'Cancelled']))
                                         <li><hr class="dropdown-divider"></li>
                                         <li><button class="dropdown-item" wire:click="deleteSale({{ $sale->id }})"><i class="bi bi-trash text-danger me-2"></i>Delete</button></li>
+                                        @endif
                                     </ul>
                                 </div>
                             </td>
@@ -563,7 +576,7 @@
 
         {{-- ==================== EDIT SALE MODAL ==================== --}}
         <div wire:ignore.self class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true" data-bs-backdrop="static">
-            <div class="modal-dialog modal-lg">
+            <div class="modal-dialog modal-xl">
                 <div class="modal-content">
                     <div class="modal-header bg-dark text-white">
                         <h5 class="modal-title fw-bold">
@@ -578,89 +591,199 @@
                                 <label class="form-label fw-semibold">Delivery Status</label>
                                 <select class="form-select" wire:model.live="editDeliveryStatus">
                                     <option value="Processing">Processing</option>
-                                    <option value="Shipped">Shipped</option>
+                                    <option value="Packed">Packed</option>
                                     <option value="Delivered">Delivered</option>
                                     <option value="Cancelled">Cancelled</option>
                                 </select>
                             </div>
 
-                            {{-- Payment Status --}}
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold">Payment Status</label>
-                                <select class="form-select" wire:model.live="editPaymentStatus">
-                                    <option value="paid">Paid</option>
-                                    <option value="partial">Partial</option>
-                                    <option value="pending">Pending</option>
-                                </select>
+                            {{-- Delivery Charge --}}
+                            <div class="col-md-3">
+                                <label class="form-label fw-semibold">Delivery Charge</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">Rs</span>
+                                    <input type="number" class="form-control" wire:model.live="editDeliveryCharge" min="0" step="0.01">
+                                </div>
                             </div>
 
-                            {{-- Delivery Method --}}
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold">Delivery Method</label>
-                                <select class="form-select" wire:model="editDeliveryMethod">
-                                    <option value="Standard">Standard</option>
-                                    <option value="Express">Express</option>
-                                    <option value="Same Day">Same Day</option>
-                                    <option value="Pickup">Pickup</option>
-                                </select>
-                            </div>
-
-                            {{-- Payment Method --}}
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold">Payment Method</label>
-                                <select class="form-select" wire:model="editPaymentMethod">
-                                    <option value="Cash">Cash</option>
-                                    <option value="Card">Card</option>
-                                    <option value="Bank Transfer">Bank Transfer</option>
-                                    <option value="Cheque">Cheque</option>
-                                </select>
+                            {{-- Live Sale Total (computed from items + delivery charge) --}}
+                            <div class="col-md-3">
+                                <label class="form-label fw-semibold">Sale Total</label>
+                                <input type="text" class="form-control fw-bold text-primary" value="Rs. {{ number_format(collect($editSaleItems)->sum('total') + floatval($editDeliveryCharge), 2) }}" readonly>
                             </div>
 
                             {{-- Customer Details --}}
                             <div class="col-12">
                                 <label class="form-label fw-semibold">Customer Details</label>
-                                <textarea class="form-control" wire:model="editCustomerDetails" rows="3" placeholder="Customer name, address, phone..."></textarea>
+                                <textarea class="form-control" wire:model="editCustomerDetails" rows="2" placeholder="Customer name, address, phone..."></textarea>
                             </div>
 
-                            {{-- Notes --}}
+                            {{-- ===== Product Search & Add ===== --}}
                             <div class="col-12">
-                                <label class="form-label fw-semibold">Notes</label>
-                                <textarea class="form-control" wire:model="editNotes" rows="2" placeholder="Optional notes..."></textarea>
-                            </div>
-
-                            {{-- Payment Balance Section --}}
-                            @if($editDueAmount > 0)
-                            <div class="col-12">
-                                <div class="card bg-light">
-                                    <div class="card-body">
-                                        <h6 class="fw-bold mb-3"><i class="bi bi-cash-coin me-2"></i>Payment Balance</h6>
-                                        <div class="row g-2 align-items-center">
-                                            <div class="col-md-4">
-                                                <label class="form-label small fw-semibold">Due Amount</label>
-                                                <input type="text" class="form-control" value="Rs.{{ number_format($editDueAmount, 2) }}" readonly>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <label class="form-label small fw-semibold">Pay Balance</label>
-                                                <div class="input-group">
-                                                    <span class="input-group-text">Rs</span>
-                                                    <input type="number" class="form-control" wire:model.live="editPayBalanceAmount" min="0" step="0.01">
-                                                </div>
-                                            </div>
-                                            <div class="col-md-4 d-flex gap-2 mt-4">
-                                                <button class="btn btn-success btn-sm" wire:click="payFullBalance">Pay Full</button>
-                                                <button class="btn btn-outline-secondary btn-sm" wire:click="resetPayBalance">Reset</button>
-                                            </div>
-                                        </div>
+                                <label class="form-label fw-semibold">
+                                    <i class="bi bi-plus-circle me-1"></i> Add Product
+                                </label>
+                                <div class="position-relative">
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-search"></i></span>
+                                        <input type="text" class="form-control"
+                                            wire:model.live.debounce.300ms="editProductSearch"
+                                            placeholder="Search by product name, code, or barcode..."
+                                            autocomplete="off">
                                     </div>
+
+                                    {{-- Search Results Dropdown --}}
+                                    @if(count($editProductResults) > 0)
+                                    <div class="position-absolute w-100 bg-white border rounded-bottom shadow-lg" style="z-index: 1050; max-height: 250px; overflow-y: auto;">
+                                        @foreach($editProductResults as $result)
+                                        <button type="button"
+                                            class="d-flex align-items-center w-100 border-0 bg-white px-3 py-2 text-start product-search-item"
+                                            wire:click="addEditProduct({{ $result['id'] }})"
+                                            style="cursor: pointer;"
+                                            onmouseover="this.style.backgroundColor='#f0f4ff'" onmouseout="this.style.backgroundColor='#fff'">
+                                            <div class="me-3">
+                                                <i class="bi bi-box-seam text-primary"></i>
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <div class="fw-semibold">{{ $result['name'] }}</div>
+                                                <small class="text-muted">Code: {{ $result['code'] }}</small>
+                                            </div>
+                                            <div class="text-end">
+                                                <span class="fw-bold text-success">Rs. {{ number_format($result['selling_price'], 2) }}</span>
+                                                @if($result['discount_price'] > 0)
+                                                <br><small class="text-danger">Disc: Rs. {{ number_format($result['selling_price'] - $result['discount_price'], 2) }}</small>
+                                                @endif
+                                            </div>
+                                        </button>
+                                        @endforeach
+                                    </div>
+                                    @endif
                                 </div>
                             </div>
-                            @endif
+
+                            {{-- ===== Product Items Table (Editable) ===== --}}
+                            <div class="col-12">
+                                <label class="form-label fw-semibold mb-2">
+                                    <i class="bi bi-box-seam me-1"></i> Product Items
+                                    <span class="badge bg-primary ms-1">{{ count($editSaleItems) }}</span>
+                                </label>
+                                <div class="table-responsive border rounded">
+                                    <table class="table table-hover table-sm align-middle mb-0">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th class="ps-3" style="width: 5%;">#</th>
+                                                <th style="width: 28%;">Product</th>
+                                                <th class="text-center" style="width: 12%;">Qty</th>
+                                                <th class="text-center" style="width: 16%;">Unit Price</th>
+                                                <th class="text-end" style="width: 13%;">Discount</th>
+                                                <th class="text-end" style="width: 16%;">Total</th>
+                                                <th class="text-center" style="width: 10%;">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @forelse($editSaleItems as $idx => $item)
+                                            <tr wire:key="edit-item-{{ $idx }}">
+                                                <td class="ps-3 text-muted">{{ $idx + 1 }}</td>
+                                                <td>
+                                                    <div class="fw-semibold small">{{ $item['product_name'] }}</div>
+                                                    <small class="text-muted">{{ $item['product_code'] }}</small>
+                                                </td>
+                                                <td class="text-center">
+                                                    <input type="number"
+                                                        class="form-control form-control-sm text-center"
+                                                        style="width: 70px; margin: 0 auto;"
+                                                        value="{{ $item['quantity'] }}"
+                                                        min="1"
+                                                        wire:change="updateEditItemQty({{ $idx }}, $event.target.value)">
+                                                </td>
+                                                <td class="text-center">
+                                                    <input type="number"
+                                                        class="form-control form-control-sm text-end"
+                                                        style="width: 110px; margin: 0 auto;"
+                                                        value="{{ $item['unit_price'] }}"
+                                                        min="0"
+                                                        step="0.01"
+                                                        wire:change="updateEditItemPrice({{ $idx }}, $event.target.value)">
+                                                </td>
+                                                <td class="text-end text-danger small">
+                                                    - Rs. {{ number_format($item['discount'], 2) }}
+                                                </td>
+                                                <td class="text-end fw-bold">
+                                                    Rs. {{ number_format($item['total'], 2) }}
+                                                </td>
+                                                <td class="text-center">
+                                                    <button type="button"
+                                                        class="btn btn-sm btn-outline-danger"
+                                                        wire:click="removeEditItem({{ $idx }})"
+                                                        wire:confirm="Remove this product from the sale?"
+                                                        title="Remove item">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                            @empty
+                                            <tr>
+                                                <td colspan="7" class="text-center text-muted py-4">
+                                                    <i class="bi bi-inbox display-6 d-block mb-2 opacity-25"></i>
+                                                    No items. Use search above to add products.
+                                                </td>
+                                            </tr>
+                                            @endforelse
+                                        </tbody>
+                                        @if(count($editSaleItems) > 0)
+                                        <tfoot class="table-light">
+                                            <tr>
+                                                <td colspan="5" class="text-end fw-bold py-2">Subtotal:</td>
+                                                <td class="text-end fw-bold py-2">
+                                                    Rs. {{ number_format(collect($editSaleItems)->sum(fn($i) => $i['unit_price'] * $i['quantity']), 2) }}
+                                                </td>
+                                                <td></td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="5" class="text-end fw-bold text-danger py-2">Total Discount:</td>
+                                                <td class="text-end fw-bold text-danger py-2">
+                                                    - Rs. {{ number_format(collect($editSaleItems)->sum('discount'), 2) }}
+                                                </td>
+                                                <td></td>
+                                            </tr>
+                                            <tr class="table-primary">
+                                                <td colspan="5" class="text-end fw-bold py-2 fs-6">Items Total:</td>
+                                                <td class="text-end fw-bold py-2 fs-6">
+                                                    Rs. {{ number_format(collect($editSaleItems)->sum('total'), 2) }}
+                                                </td>
+                                                <td></td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="5" class="text-end fw-bold py-2">Delivery Charge:</td>
+                                                <td class="text-end fw-bold py-2">
+                                                    + Rs. {{ number_format(floatval($editDeliveryCharge), 2) }}
+                                                </td>
+                                                <td></td>
+                                            </tr>
+                                            <tr class="table-success">
+                                                <td colspan="5" class="text-end fw-bold py-2 fs-5">Grand Total:</td>
+                                                <td class="text-end fw-bold py-2 fs-5 text-success">
+                                                    Rs. {{ number_format(collect($editSaleItems)->sum('total') + floatval($editDeliveryCharge), 2) }}
+                                                </td>
+                                                <td></td>
+                                            </tr>
+                                        </tfoot>
+                                        @endif
+                                    </table>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" wire:click="closeModals">Cancel</button>
-                        <button type="button" class="btn btn-primary" wire:click="updateSale">
-                            <i class="bi bi-check-circle me-1"></i> Update Sale
+                        <button type="button" class="btn btn-primary" wire:click="updateSale"
+                            wire:loading.attr="disabled" wire:target="updateSale">
+                            <span wire:loading wire:target="updateSale">
+                                <i class="spinner-border spinner-border-sm me-1"></i> Saving...
+                            </span>
+                            <span wire:loading.remove wire:target="updateSale">
+                                <i class="bi bi-check-circle me-1"></i> Update Sale
+                            </span>
                         </button>
                     </div>
                 </div>

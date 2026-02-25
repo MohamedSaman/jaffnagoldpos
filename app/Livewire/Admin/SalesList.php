@@ -10,6 +10,8 @@ use App\Models\Sale;
 use App\Models\Customer;
 use App\Models\SaleItem;
 use App\Models\ProductStock;
+use App\Models\ProductDetail;
+use App\Models\ProductPrice;
 use App\Models\ReturnsProduct;
 use App\Models\DeliverySale;
 use Illuminate\Support\Facades\DB;
@@ -48,6 +50,13 @@ class SalesList extends Component
     public $editDeliveryMethod;
     public $editPaymentMethod;
     public $editCustomerDetails;
+    public $editDeliveryCharge = 0;
+    public $editSaleItems = [];
+
+    // Edit product search
+    public $editProductSearch = '';
+    public $editProductResults = [];
+    public $editRemovedItemIds = []; // track DB item IDs to delete on save
 
     // Return properties
     public $returnItems = [];
@@ -103,7 +112,7 @@ class SalesList extends Component
 
     public function editSale($saleId)
     {
-        $query = Sale::with(['customer', 'deliverySale'])->where('sale_type', $this->getSaleType());
+        $query = Sale::with(['customer', 'deliverySale', 'items'])->where('sale_type', $this->getSaleType());
         if ($this->isStaff()) {
             $query->where('user_id', Auth::id());
         }
@@ -118,12 +127,30 @@ class SalesList extends Component
             $this->editPaidAmount = $sale->total_amount - $sale->due_amount;
             $this->editPayBalanceAmount = 0;
 
+            // Load sale items for display
+            $this->editSaleItems = $sale->items->map(function ($item) {
+                return [
+                    'sale_item_id' => $item->id,
+                    'product_id' => $item->product_id,
+                    'product_name' => $item->product_name,
+                    'product_code' => $item->product_code,
+                    'quantity' => $item->quantity,
+                    'unit_price' => $item->unit_price,
+                    'discount_per_unit' => $item->discount_per_unit,
+                    'discount' => $item->discount_per_unit * $item->quantity,
+                    'total' => $item->total,
+                ];
+            })->toArray();
+
+            $this->editRemovedItemIds = [];
+
             // Load delivery sale info
             if ($sale->deliverySale) {
                 $this->editDeliveryStatus = $sale->deliverySale->status;
                 $this->editDeliveryMethod = $sale->deliverySale->delivery_method;
                 $this->editPaymentMethod = $sale->deliverySale->payment_method;
                 $this->editCustomerDetails = $sale->deliverySale->customer_details;
+                $this->editDeliveryCharge = $sale->deliverySale->delivery_charge ?? 0;
             }
 
             $this->showEditModal = true;
@@ -323,48 +350,121 @@ class SalesList extends Component
 
     public function updateSale()
     {
-        $this->validate([
-            'editPaymentStatus' => 'required|in:paid,partial,pending',
-            'editDueAmount' => 'required|numeric|min:0',
-            'editPaidAmount' => 'required|numeric|min:0',
-            'editPayBalanceAmount' => 'required|numeric|min:0',
-        ]);
-
         try {
-            $sale = Sale::with('deliverySale')->find($this->editSaleId);
+            DB::transaction(function () {
+                $sale = Sale::with(['deliverySale', 'items'])->find($this->editSaleId);
+                if (!$sale) return;
 
-            if ($sale) {
-                $totalAmount = $sale->total_amount;
-                $paidAmount = $this->editPaidAmount;
-                $dueAmount = $this->editDueAmount;
-
-                if (($paidAmount + $dueAmount) != $totalAmount) {
-                    $dueAmount = $totalAmount - $paidAmount;
+                // --- 1. Delete removed items & restore stock ---
+                if (!empty($this->editRemovedItemIds)) {
+                    $removedItems = SaleItem::whereIn('id', $this->editRemovedItemIds)->get();
+                    foreach ($removedItems as $removedItem) {
+                        $stock = ProductStock::where('product_id', $removedItem->product_id)->first();
+                        if ($stock) {
+                            $stock->available_stock += $removedItem->quantity;
+                            if ($stock->sold_count >= $removedItem->quantity) {
+                                $stock->sold_count -= $removedItem->quantity;
+                            }
+                            $stock->save();
+                        }
+                        $removedItem->delete();
+                    }
                 }
 
+                // --- 2. Update existing items & add new items ---
+                $newSubtotal = 0;
+                $newDiscount = 0;
+
+                foreach ($this->editSaleItems as $item) {
+                    $qty = max(1, intval($item['quantity']));
+                    $unitPrice = floatval($item['unit_price']);
+                    $discountPerUnit = floatval($item['discount_per_unit'] ?? 0);
+                    $lineTotal = ($unitPrice - $discountPerUnit) * $qty;
+                    $totalDiscount = $discountPerUnit * $qty;
+
+                    if (!empty($item['sale_item_id'])) {
+                        // Existing item — update
+                        $dbItem = SaleItem::find($item['sale_item_id']);
+                        if ($dbItem) {
+                            $oldQty = $dbItem->quantity;
+                            $qtyDiff = $qty - $oldQty;
+
+                            // Adjust stock
+                            if ($qtyDiff != 0) {
+                                $stock = ProductStock::where('product_id', $dbItem->product_id)->first();
+                                if ($stock) {
+                                    $stock->available_stock -= $qtyDiff;
+                                    $stock->sold_count += $qtyDiff;
+                                    $stock->save();
+                                }
+                            }
+
+                            $dbItem->update([
+                                'quantity' => $qty,
+                                'unit_price' => $unitPrice,
+                                'discount_per_unit' => $discountPerUnit,
+                                'total_discount' => $totalDiscount,
+                                'total' => $lineTotal,
+                            ]);
+                        }
+                    } else {
+                        // New item — create & deduct stock
+                        SaleItem::create([
+                            'sale_id' => $sale->id,
+                            'product_id' => $item['product_id'],
+                            'product_code' => $item['product_code'],
+                            'product_name' => $item['product_name'],
+                            'quantity' => $qty,
+                            'unit_price' => $unitPrice,
+                            'discount_per_unit' => $discountPerUnit,
+                            'total_discount' => $totalDiscount,
+                            'total' => $lineTotal,
+                        ]);
+
+                        $stock = ProductStock::where('product_id', $item['product_id'])->first();
+                        if ($stock) {
+                            $stock->available_stock -= $qty;
+                            $stock->sold_count += $qty;
+                            $stock->save();
+                        }
+                    }
+
+                    $newSubtotal += $unitPrice * $qty;
+                    $newDiscount += $totalDiscount;
+                }
+
+                $newTotal = $newSubtotal - $newDiscount;
+
+                // --- 3. Add delivery charge to total ---
+                $deliveryCharge = max(0, floatval($this->editDeliveryCharge));
+                $newTotal += $deliveryCharge;
+
+                // --- 4. Update sale totals ---
                 $sale->update([
-                    'customer_id' => $this->editCustomerId,
-                    'payment_status' => $this->editPaymentStatus,
-                    'notes' => $this->editNotes,
-                    'due_amount' => $dueAmount,
-                    'payment_type' => $this->editPaymentStatus === 'paid' ? 'full' : 'partial',
+                    'subtotal' => $newSubtotal,
+                    'discount_amount' => $newDiscount,
+                    'total_amount' => $newTotal,
+                    'due_amount' => $newTotal, // reset due to new total
+                    'payment_status' => 'pending',
                 ]);
 
-                // Update delivery sale details
+                // --- 5. Update delivery sale details ---
                 if ($sale->deliverySale) {
                     $sale->deliverySale->update([
                         'status' => $this->editDeliveryStatus,
-                        'delivery_method' => $this->editDeliveryMethod,
-                        'payment_method' => $this->editPaymentMethod,
                         'customer_details' => $this->editCustomerDetails,
+                        'delivery_charge' => $deliveryCharge,
                     ]);
                 }
+            });
 
-                $this->showEditModal = false;
-                $this->resetEditForm();
-                $this->dispatch('hideModal', 'editModal');
-                $this->dispatch('showToast', ['type' => 'success', 'message' => 'Sale updated successfully!']);
-            }
+            $this->showEditModal = false;
+            $this->resetEditForm();
+            $this->dispatch('hideModal', 'editModal');
+            $this->dispatch('showToast', ['type' => 'success', 'message' => 'Sale updated successfully!']);
+
+            // Force page reload to refresh the sales list with updated data
+            $this->js('setTimeout(() => location.reload(), 500)');
         } catch (\Exception $e) {
             $this->dispatch('showToast', ['type' => 'error', 'message' => 'Error updating sale: ' . $e->getMessage()]);
         }
@@ -389,11 +489,19 @@ class SalesList extends Component
 
     public function deleteSale($saleId)
     {
-        $query = Sale::where('sale_type', $this->getSaleType());
+        $query = Sale::with('deliverySale')->where('sale_type', $this->getSaleType());
         if ($this->isStaff()) {
             $query->where('user_id', Auth::id());
         }
-        $this->selectedSale = $query->find($saleId);
+        $sale = $query->find($saleId);
+
+        // Block deletion if delivery status is Delivered or Cancelled
+        if ($sale && $sale->deliverySale && in_array($sale->deliverySale->status, ['Delivered', 'Cancelled'])) {
+            $this->dispatch('showToast', ['type' => 'error', 'message' => 'Cannot delete this sale — delivery status is "' . $sale->deliverySale->status . '".']);
+            return;
+        }
+
+        $this->selectedSale = $sale;
         $this->showDeleteModal = true;
         $this->dispatch('showModal', 'deleteModal');
     }
@@ -517,13 +625,137 @@ class SalesList extends Component
         $this->editDeliveryMethod = '';
         $this->editPaymentMethod = '';
         $this->editCustomerDetails = '';
+        $this->editDeliveryCharge = 0;
+        $this->editSaleItems = [];
+        $this->editProductSearch = '';
+        $this->editProductResults = [];
+        $this->editRemovedItemIds = [];
+    }
+
+    // === Edit Modal: Product Search ===
+    public function updatedEditProductSearch()
+    {
+        $search = trim($this->editProductSearch);
+        if (strlen($search) < 2) {
+            $this->editProductResults = [];
+            return;
+        }
+
+        $this->editProductResults = ProductDetail::with('price')
+            ->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('code', 'like', "%{$search}%")
+                  ->orWhere('barcode', 'like', "%{$search}%");
+            })
+            ->limit(8)
+            ->get()
+            ->map(function ($p) {
+                return [
+                    'id' => $p->id,
+                    'code' => $p->code,
+                    'name' => $p->name,
+                    'selling_price' => $p->price ? $p->price->selling_price : 0,
+                    'discount_price' => $p->price ? ($p->price->discount_price ?? 0) : 0,
+                ];
+            })
+            ->toArray();
+    }
+
+    public function addEditProduct($productId)
+    {
+        $product = ProductDetail::with('price')->find($productId);
+        if (!$product) return;
+
+        // Check if product already in the list
+        foreach ($this->editSaleItems as $idx => $item) {
+            if ($item['product_id'] == $productId) {
+                $this->editSaleItems[$idx]['quantity'] += 1;
+                $this->editSaleItems[$idx]['total'] = ($this->editSaleItems[$idx]['unit_price'] - $this->editSaleItems[$idx]['discount_per_unit']) * $this->editSaleItems[$idx]['quantity'];
+                $this->editProductSearch = '';
+                $this->editProductResults = [];
+                return;
+            }
+        }
+
+        $sellingPrice = $product->price ? $product->price->selling_price : 0;
+        $discountPrice = $product->price ? ($product->price->discount_price ?? 0) : 0;
+        $discountPerUnit = $discountPrice > 0 ? ($sellingPrice - $discountPrice) : 0;
+
+        $this->editSaleItems[] = [
+            'sale_item_id' => null, // new item
+            'product_id' => $product->id,
+            'product_code' => $product->code,
+            'product_name' => $product->name,
+            'quantity' => 1,
+            'unit_price' => $sellingPrice,
+            'discount_per_unit' => $discountPerUnit,
+            'discount' => $discountPerUnit,
+            'total' => $sellingPrice - $discountPerUnit,
+        ];
+
+        $this->editProductSearch = '';
+        $this->editProductResults = [];
+    }
+
+    public function removeEditItem($index)
+    {
+        if (isset($this->editSaleItems[$index])) {
+            $item = $this->editSaleItems[$index];
+            // If it's an existing DB item, track it for deletion on save
+            if (!empty($item['sale_item_id'])) {
+                $this->editRemovedItemIds[] = $item['sale_item_id'];
+            }
+            unset($this->editSaleItems[$index]);
+            $this->editSaleItems = array_values($this->editSaleItems);
+        }
+    }
+
+    public function updateEditItemQty($index, $qty)
+    {
+        if (isset($this->editSaleItems[$index])) {
+            $qty = max(1, intval($qty));
+            $this->editSaleItems[$index]['quantity'] = $qty;
+            $this->editSaleItems[$index]['discount'] = $this->editSaleItems[$index]['discount_per_unit'] * $qty;
+            $this->editSaleItems[$index]['total'] = ($this->editSaleItems[$index]['unit_price'] - $this->editSaleItems[$index]['discount_per_unit']) * $qty;
+        }
+    }
+
+    public function updateEditItemPrice($index, $price)
+    {
+        if (isset($this->editSaleItems[$index])) {
+            $price = max(0, floatval($price));
+            $this->editSaleItems[$index]['unit_price'] = $price;
+            $qty = $this->editSaleItems[$index]['quantity'];
+            $this->editSaleItems[$index]['total'] = ($price - $this->editSaleItems[$index]['discount_per_unit']) * $qty;
+        }
     }
 
     public function updateDeliveryStatus($saleId, $status)
     {
         try {
-            $sale = Sale::with('deliverySale')->where('sale_type', $this->getSaleType())->find($saleId);
+            $sale = Sale::with(['deliverySale', 'items'])->where('sale_type', $this->getSaleType())->find($saleId);
             if ($sale && $sale->deliverySale) {
+                // Block status change if current status is Delivered or Cancelled
+                $currentStatus = $sale->deliverySale->status;
+                if (in_array($currentStatus, ['Delivered', 'Cancelled'])) {
+                    $this->dispatch('showToast', ['type' => 'error', 'message' => 'Cannot change status — delivery is already "' . $currentStatus . '".']);
+                    return;
+                }
+
+                // If changing to Cancelled, restore stock for all items in this sale
+                if ($status === 'Cancelled') {
+                    foreach ($sale->items as $item) {
+                        $productStock = ProductStock::where('product_id', $item->product_id)->first();
+                        if ($productStock) {
+                            $productStock->available_stock += $item->quantity;
+                            if ($productStock->sold_count >= $item->quantity) {
+                                $productStock->sold_count -= $item->quantity;
+                            }
+                            $productStock->save();
+                        }
+                    }
+                }
+
                 $sale->deliverySale->update(['status' => $status]);
                 $this->dispatch('showToast', ['type' => 'success', 'message' => 'Delivery status updated to ' . $status . '!']);
             }

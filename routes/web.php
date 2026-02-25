@@ -99,6 +99,8 @@ use App\Livewire\DeliveryMan\DeliveryManPaymentList;
 use App\Livewire\ShopStaff\ShopStaffDashboard;
 use App\Livewire\ShopStaff\ShopStaffProductList;
 use App\Livewire\ShopStaff\StoreBilling as ShopStaffStoreBilling;
+use App\Livewire\ShopStaff\ShopStaffSalesList;
+use App\Livewire\ShopStaff\ShopStaffExpenses;
 
 /*
 |--------------------------------------------------------------------------
@@ -561,4 +563,7 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',
         Route::get('/dashboard', ShopStaffDashboard::class)->name('dashboard');
         Route::get('/products', ShopStaffProductList::class)->name('products');
         Route::get('/store-billing', ShopStaffStoreBilling::class)->name('store-billing');
+        Route::get('/sales', ShopStaffSalesList::class)->name('sales');
+        Route::get('/expenses', ShopStaffExpenses::class)->name('expenses');
+        Route::get('/print/sale/{id}', [App\Http\Controllers\Admin\PrintController::class, 'printSale'])->name('print.sale');
     });
