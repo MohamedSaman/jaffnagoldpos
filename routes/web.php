@@ -76,7 +76,6 @@ use App\Livewire\Admin\Deposits;
 use App\Livewire\Admin\ListCustomerReceipt;
 use App\Livewire\Admin\ListSupplierReceipt;
 use App\Livewire\Admin\ReturnCheque;
-use App\Livewire\ShopStaff\DeliveryPacking as ShopStaffDeliveryPacking;
 use App\Livewire\Admin\ReturnSupplier;
 use App\Livewire\Admin\ListSupplierReturn;
 use App\Livewire\Admin\ProfitLoss;
@@ -101,6 +100,8 @@ use App\Livewire\ShopStaff\ShopStaffProductList;
 use App\Livewire\ShopStaff\StoreBilling as ShopStaffStoreBilling;
 use App\Livewire\ShopStaff\ShopStaffSalesList;
 use App\Livewire\ShopStaff\ShopStaffExpenses;
+use App\Livewire\ShopStaff\DeliveryPacking as ShopStaffDeliveryPacking;
+
 
 /*
 |--------------------------------------------------------------------------

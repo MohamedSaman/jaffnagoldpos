@@ -125,7 +125,7 @@
 
         {{-- ═══════════════ HEADER ═══════════════ --}}
         <div class="bg-white/80 backdrop-blur-xl border-b border-slate-200/60 sticky top-0 z-40">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div class="max-w-8xl mx-auto px-6 sm:px-8 lg:px-12 py-4">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-4">
                         <div
@@ -147,7 +147,7 @@
             </div>
         </div>
 
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div class="max-w-8xl mx-auto px-6 sm:px-8 lg:px-12 py-6">
 
             {{-- ═══════════════ SUCCESS ALERT ═══════════════ --}}
             @if (session()->has('success'))
@@ -507,9 +507,8 @@
         <div class="fixed inset-0 z-[5000] flex items-center justify-center p-4">
             <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" wire:click="closeModal"></div>
 
-            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl relative z-10 transform transition-all animate-fade-in flex flex-col"
+            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl relative z-10 transform transition-all animate-fade-in flex flex-col"
                 style="max-height: 85vh;">
-
                 {{-- Modal Header (fixed) --}}
                 <div
                     class="bg-gradient-to-r from-amber-500 to-orange-500 px-5 py-4 flex items-center justify-between rounded-t-2xl shrink-0">
@@ -606,38 +605,64 @@
                             <table class="w-full">
                                 <thead>
                                     <tr class="bg-slate-100/80">
-                                        <th
-                                            class="px-4 py-2.5 text-left text-[9px] font-black text-slate-500 uppercase tracking-widest">
-                                            #</th>
-                                        <th
-                                            class="px-4 py-2.5 text-left text-[9px] font-black text-slate-500 uppercase tracking-widest">
-                                            Product</th>
-                                        <th
-                                            class="px-4 py-2.5 text-center text-[9px] font-black text-slate-500 uppercase tracking-widest">
-                                            Qty</th>
+                                        <th class="px-4 py-2.5 text-left text-[9px] font-black text-slate-500 uppercase tracking-widest">#</th>
+                                        <th class="px-4 py-2.5 text-left text-[9px] font-black text-slate-500 uppercase tracking-widest">Product</th>
+                                        <th class="px-4 py-2.5 text-center text-[9px] font-black text-slate-500 uppercase tracking-widest">Qty</th>
+                                        <th class="px-4 py-2.5 text-right text-[9px] font-black text-slate-500 uppercase tracking-widest">Price</th>
+                                        <th class="px-4 py-2.5 text-right text-[9px] font-black text-slate-500 uppercase tracking-widest">Total</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-slate-100">
+                                    @php $itemsTotal = 0; @endphp
                                     @foreach($modalSale->items as $idx => $item)
+                                        @php
+                                            $lineTotal = $item->total ?? ($item->unit_price * $item->quantity);
+                                            $itemsTotal += $lineTotal;
+                                        @endphp
                                         <tr class="hover:bg-white transition-colors">
                                             <td class="px-4 py-3">
-                                                <span
-                                                    class="w-6 h-6 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-[10px] font-black text-slate-500">{{ $idx + 1 }}</span>
+                                                <span class="w-6 h-6 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-[10px] font-black text-slate-500">{{ $idx + 1 }}</span>
                                             </td>
                                             <td class="px-4 py-3">
-                                                <p class="text-sm font-bold text-slate-700">
-                                                    {{ $item->product->name ?? $item->product_name ?? 'Product' }}</p>
+                                                <p class="text-sm font-bold text-slate-700">{{ $item->product->name ?? $item->product_name ?? 'Product' }}</p>
                                                 @if($item->variant_value)
                                                     <p class="text-[10px] text-slate-400 font-medium">{{ $item->variant_value }}</p>
                                                 @endif
                                             </td>
                                             <td class="px-4 py-3 text-center">
-                                                <span
-                                                    class="inline-flex items-center justify-center w-9 h-9 bg-white border-2 border-[#161b97]/15 rounded-xl text-base font-black text-[#161b97]">{{ $item->quantity }}</span>
+                                                <span class="inline-flex items-center justify-center w-9 h-9 bg-white border-2 border-[#161b97]/15 rounded-xl text-base font-black text-[#161b97]">{{ $item->quantity }}</span>
+                                            </td>
+                                            <td class="px-4 py-3 text-right">
+                                                <p class="text-sm font-medium text-slate-600">Rs. {{ number_format($item->unit_price, 2) }}</p>
+                                            </td>
+                                            <td class="px-4 py-3 text-right">
+                                                <p class="text-sm font-bold text-slate-800">Rs. {{ number_format($lineTotal, 2) }}</p>
                                             </td>
                                         </tr>
                                     @endforeach
                                 </tbody>
+                                <tfoot>
+                                    <tr class="bg-slate-100/50 border-t-2 border-slate-200">
+                                        <td colspan="4" class="px-4 py-2.5 text-right text-[10px] font-black text-slate-500 uppercase tracking-widest">Subtotal</td>
+                                        <td class="px-4 py-2.5 text-right text-sm font-bold text-slate-700">Rs. {{ number_format($itemsTotal, 2) }}</td>
+                                    </tr>
+                                    @if($modalSale->discount_amount && $modalSale->discount_amount > 0)
+                                        <tr class="bg-slate-100/30">
+                                            <td colspan="4" class="px-4 py-2 text-right text-[10px] font-black text-red-500 uppercase tracking-widest">Discount</td>
+                                            <td class="px-4 py-2 text-right text-sm font-bold text-red-500">- Rs. {{ number_format($modalSale->discount_amount, 2) }}</td>
+                                        </tr>
+                                    @endif
+                                    @if($modalSale->deliverySale && $modalSale->deliverySale->delivery_charge > 0)
+                                        <tr class="bg-slate-100/30">
+                                            <td colspan="4" class="px-4 py-2 text-right text-[10px] font-black text-slate-500 uppercase tracking-widest">Delivery Charge</td>
+                                            <td class="px-4 py-2 text-right text-sm font-bold text-slate-700">Rs. {{ number_format($modalSale->deliverySale->delivery_charge, 2) }}</td>
+                                        </tr>
+                                    @endif
+                                    <tr class="bg-[#161b97]/5 border-t-2 border-[#161b97]/20">
+                                        <td colspan="4" class="px-4 py-3 text-right text-xs font-black text-[#161b97] uppercase tracking-widest">Grand Total</td>
+                                        <td class="px-4 py-3 text-right text-base font-black text-[#161b97]">Rs. {{ number_format($modalSale->total_amount, 2) }}</td>
+                                    </tr>
+                                </tfoot>
                             </table>
                         </div>
                     </div>
