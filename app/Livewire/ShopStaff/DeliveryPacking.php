@@ -20,11 +20,19 @@ class DeliveryPacking extends Component
     public $totalCount = 0;
     public $pendingCount = 0;
     public $packedCount = 0;
-    public $canceledCount = 0;
+    public $deliveredCount = 0;
+    public $completedCount = 0;
 
-    // Modal state
+    // Modal state (only for pending orders packing view)
     public $showModal = false;
     public $modalSale = null;
+
+    // Confirmation modal state
+    public $showConfirmModal = false;
+    public $confirmAction = '';
+    public $confirmTitle = '';
+    public $confirmMessage = '';
+    public $confirmSaleId = null;
 
     public function mount()
     {
@@ -46,40 +54,44 @@ class DeliveryPacking extends Component
     {
         $query = Sale::query();
 
-        // Filter by delivery status or special 'canceled' (uses sale.status)
+        // Filter by delivery status
         if ($this->filterStatus && $this->filterStatus !== 'all') {
-            if ($this->filterStatus === 'canceled') {
-                $query->where('status', 'rejected');
-            } else {
-                $query->where('delivery_status', $this->filterStatus);
-            }
+            $query->where('delivery_status', $this->filterStatus);
         } else {
-            // default to pending when not 'all'
             if (!$this->filterStatus) {
                 $query->where('delivery_status', 'pending');
             }
         }
+
         if ($this->search) {
-            $query->where(function ($q) {
-                $q->where('order_no', 'like', '%' . $this->search . '%')
-                    ->orWhere('walking_customer_name', 'like', '%' . $this->search . '%')
-                    ->orWhereHas('customer', function ($cq) {
-                        $cq->where('name', 'like', '%' . $this->search . '%');
+            $searchTerm = '%' . $this->search . '%';
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('sale_id', 'like', $searchTerm)
+                    ->orWhere('invoice_number', 'like', $searchTerm)
+                    ->orWhere('walking_customer_name', 'like', $searchTerm)
+                    ->orWhereHas('customer', function ($cq) use ($searchTerm) {
+                        $cq->where('name', 'like', $searchTerm);
+                    })
+                    ->orWhereHas('deliverySale', function ($dq) use ($searchTerm) {
+                        $dq->where('delivery_barcode', 'like', $searchTerm);
                     });
             });
         }
+
         if ($this->todayOnly) {
             $query->whereDate('created_at', now()->toDateString());
         }
+
         $this->sales = $query->with(['items.product', 'customer', 'deliverySale'])->orderBy('created_at', 'desc')->get();
     }
 
     protected function loadOverview()
     {
-        $this->totalCount = Sale::count();
+        $this->totalCount = Sale::whereIn('delivery_status', ['pending', 'packed', 'delivered', 'completed'])->count();
         $this->pendingCount = Sale::where('delivery_status', 'pending')->count();
         $this->packedCount = Sale::where('delivery_status', 'packed')->count();
-        $this->canceledCount = Sale::where('status', 'rejected')->count();
+        $this->deliveredCount = Sale::where('delivery_status', 'delivered')->count();
+        $this->completedCount = Sale::where('delivery_status', 'completed')->count();
     }
 
     public function setFilter($status)
@@ -88,6 +100,9 @@ class DeliveryPacking extends Component
         $this->loadSales();
     }
 
+    /**
+     * Show packing modal (only for pending orders)
+     */
     public function showPackingModal($saleId)
     {
         $this->modalSale = Sale::with(['items.product', 'customer', 'deliverySale'])->find($saleId);
@@ -96,35 +111,25 @@ class DeliveryPacking extends Component
 
     /**
      * Get display customer name for a sale.
-     * Checks: customer relationship -> walking_customer_name -> deliverySale->customer_details -> fallback
      */
     public function getCustomerDisplayName($sale)
     {
-        // 1. If there is a linked customer record (not Walking Customer)
         if ($sale->customer && $sale->customer->name && $sale->customer->name !== 'Walking Customer') {
             return $sale->customer->name;
         }
-
-        // 2. If walking_customer_name is filled
         if (!empty($sale->walking_customer_name)) {
             return $sale->walking_customer_name;
         }
-
-        // 3. If deliverySale has customer_details
         if ($sale->deliverySale && !empty($sale->deliverySale->customer_details)) {
-            // Extract just the name from "Customer: Name | Phone: xxx" format or return as-is
             $details = $sale->deliverySale->customer_details;
             if (preg_match('/Customer:\s*([^|]+)/i', $details, $matches)) {
                 return trim($matches[1]);
             }
             return $details;
         }
-
-        // 4. Walking Customer with name
         if ($sale->customer && $sale->customer->name === 'Walking Customer') {
             return 'Walk-in Customer';
         }
-
         return 'Walk-in Customer';
     }
 
@@ -136,36 +141,23 @@ class DeliveryPacking extends Component
         if ($sale->customer && $sale->customer->phone) {
             return $sale->customer->phone;
         }
-
         if (!empty($sale->walking_customer_phone)) {
             return $sale->walking_customer_phone;
         }
-
         if ($sale->deliverySale && !empty($sale->deliverySale->customer_details)) {
-            if (preg_match('/Phone:\s*([^|\n]+)/i', $sale->deliverySale->customer_details, $matches)) {
+            if (preg_match('/Phone:\s*([^\|\n]+)/i', $sale->deliverySale->customer_details, $matches)) {
                 return trim($matches[1]);
             }
         }
-
         return null;
     }
 
     /**
-     * Get delivery info for a sale
+     * Get delivery barcode for display
      */
-    public function getDeliveryInfo($sale)
+    public function getDeliveryBarcode($sale)
     {
-        if (!$sale->deliverySale) {
-            return null;
-        }
-
-        return [
-            'method' => $sale->deliverySale->delivery_method ?? 'N/A',
-            'payment' => $sale->deliverySale->payment_method ?? 'N/A',
-            'barcode' => $sale->deliverySale->delivery_barcode ?? null,
-            'charge' => $sale->deliverySale->delivery_charge ?? 0,
-            'customer_details' => $sale->deliverySale->customer_details ?? null,
-        ];
+        return $sale->deliverySale->delivery_barcode ?? $sale->sale_id ?? 'N/A';
     }
 
     public function closeModal()
@@ -174,16 +166,89 @@ class DeliveryPacking extends Component
         $this->modalSale = null;
     }
 
-    public function markPacked()
+    /**
+     * Show confirmation dialog before status change.
+     * Works from both modal (for pending) and directly from card (for packed/delivered).
+     */
+    public function confirmStatusChange($action, $saleId = null)
     {
-        if ($this->modalSale) {
-            $this->modalSale->delivery_status = 'packed';
-            $this->modalSale->save();
-            $this->closeModal();
-            $this->loadOverview();
-            $this->loadSales();
-            session()->flash('success', 'Sale marked as packed!');
+        $this->confirmAction = $action;
+        $this->confirmSaleId = $saleId;
+
+        switch ($action) {
+            case 'packed':
+                $this->confirmTitle = 'Mark as Packed?';
+                $this->confirmMessage = 'Are you sure this order is fully packed and ready for delivery?';
+                break;
+            case 'delivered':
+                $this->confirmTitle = 'Mark as Delivered?';
+                $this->confirmMessage = 'Are you sure this order has been delivered to the customer?';
+                break;
+            case 'completed':
+                $this->confirmTitle = 'Complete this Order?';
+                $this->confirmMessage = 'Are you sure you want to mark this order as completed? This is the final step.';
+                break;
         }
+
+        $this->showConfirmModal = true;
+    }
+
+    public function cancelConfirm()
+    {
+        $this->showConfirmModal = false;
+        $this->confirmAction = '';
+        $this->confirmSaleId = null;
+    }
+
+    /**
+     * Execute the confirmed status change
+     */
+    public function executeStatusChange()
+    {
+        $action = $this->confirmAction;
+
+        // Get the sale - either from modal (pending) or directly by ID (packed/delivered)
+        $sale = null;
+        if ($this->confirmSaleId) {
+            $sale = Sale::find($this->confirmSaleId);
+        } elseif ($this->modalSale) {
+            $sale = $this->modalSale;
+        }
+
+        if (!$sale || !$action) {
+            $this->cancelConfirm();
+            return;
+        }
+
+        $this->showConfirmModal = false;
+        $this->confirmAction = '';
+        $this->confirmSaleId = null;
+
+        switch ($action) {
+            case 'packed':
+                $sale->delivery_status = 'packed';
+                $sale->save();
+                session()->flash('success', 'Order marked as packed successfully!');
+                break;
+
+            case 'delivered':
+                $sale->delivery_status = 'delivered';
+                $sale->delivered_at = now();
+                $sale->delivered_by = auth()->id();
+                $sale->save();
+                session()->flash('success', 'Order marked as delivered successfully!');
+                break;
+
+            case 'completed':
+                $sale->delivery_status = 'completed';
+                $sale->save();
+                session()->flash('success', 'Order completed successfully!');
+                break;
+        }
+
+        $this->closeModal();
+        $this->loadOverview();
+        $this->loadSales();
     }
 
     public function render()
@@ -195,5 +260,3 @@ class DeliveryPacking extends Component
         ]);
     }
 }
-
-
