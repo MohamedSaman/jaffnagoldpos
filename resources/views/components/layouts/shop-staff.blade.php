@@ -453,6 +453,7 @@
                         <i class="bi bi-wallet2"></i> <span>Daily Expenses</span>
                     </a>
                 </li>
+
                 
                 @php
                     $staffType = auth()->user()->staff_type ?? 'shop_staff';
@@ -472,6 +473,11 @@
                     </a>
                 </li>
                 @endif
+                                                <li>
+                    <a class="nav-link {{ request()->routeIs('shop-staff.delivery-packing') ? 'active' : '' }}" href="{{ route('shop-staff.delivery-packing') }}">
+                        <i class="bi bi-wallet2"></i> <span>Delivey Packing</span>
+                    </a>
+                </li>
             </ul>
         </div>
 

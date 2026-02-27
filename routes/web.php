@@ -76,7 +76,7 @@ use App\Livewire\Admin\Deposits;
 use App\Livewire\Admin\ListCustomerReceipt;
 use App\Livewire\Admin\ListSupplierReceipt;
 use App\Livewire\Admin\ReturnCheque;
-
+use App\Livewire\ShopStaff\DeliveryPacking as ShopStaffDeliveryPacking;
 use App\Livewire\Admin\ReturnSupplier;
 use App\Livewire\Admin\ListSupplierReturn;
 use App\Livewire\Admin\ProfitLoss;
@@ -566,4 +566,6 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',
         Route::get('/sales', ShopStaffSalesList::class)->name('sales');
         Route::get('/expenses', ShopStaffExpenses::class)->name('expenses');
         Route::get('/print/sale/{id}', [App\Http\Controllers\Admin\PrintController::class, 'printSale'])->name('print.sale');
+        Route::get('/delivery-packing', ShopStaffDeliveryPacking::class)->name('delivery-packing');
+
     });
