@@ -139,10 +139,25 @@
                     <form wire:submit.prevent="addExpense">
                         <div class="mb-3">
                             <label class="form-label">Expense Type <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control @error('expense_type') is-invalid @enderror" wire:model="expense_type" placeholder="Enter expense type...">
+                            <select class="form-select @error('expense_type') is-invalid @enderror" wire:model="expense_type">
+                                <option value="">-- Select Type --</option>
+                                @foreach($expenseTypes as $type)
+                                    <option value="{{ $type }}">{{ $type }}</option>
+                                @endforeach
+                            </select>
                             @error('expense_type')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
+
+                            {{-- Show custom input when 'Other' selected --}}
+                            @if($expense_type === 'Other')
+                                <div class="mt-2">
+                                    <input type="text" class="form-control @error('customExpenseType') is-invalid @enderror" wire:model="customExpenseType" placeholder="Enter expense type...">
+                                    @error('customExpenseType')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            @endif
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Amount (Rs.) <span class="text-danger">*</span></label>

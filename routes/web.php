@@ -17,6 +17,8 @@ use App\Livewire\Admin\SupplierList;
 use App\Livewire\Admin\ViewPayments;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Cache;
 use App\Livewire\Admin\AdminDashboard;
 use App\Livewire\Admin\ManageCustomer;
 use App\Livewire\Admin\ProductBrandlist;
@@ -123,6 +125,58 @@ Route::get('/', CustomLogin::class)->name('welcome')->middleware('guest');
 Route::get('/product-image/{identifier}', [ProductImageController::class, 'show'])->name('product-image.show');
 Route::post('/product-image/{identifier}/upload', [ProductImageController::class, 'upload'])->name('product-image.upload');
 Route::get('/product-image-serve/{filename}', [ProductImageController::class, 'serveImage'])->name('product-image.serve');
+
+// Public proxy route for gold price (avoids CORS and rate-limit from browser)
+Route::get('/api/gold-price', function () {
+    $cacheKey = 'gold_price_v1';
+
+    // Cache the raw array data (not a Response) to avoid serialization issues
+    $data = Cache::remember($cacheKey, 60, function () {
+        try {
+            $goldResp = Http::get('https://data-asg.goldprice.org/dbXRates/USD');
+            if (!$goldResp->ok()) {
+                return ['error' => 'gold_endpoint_failed', 'status' => 502];
+            }
+            $goldJson = $goldResp->json();
+            $xauPrice = data_get($goldJson, 'items.0.xauPrice');
+            if (!$xauPrice) {
+                return ['error' => 'no_xau_price', 'status' => 502];
+            }
+
+            $gramsPerOunce = 31.1034768;
+            $perGramUSD = $xauPrice / $gramsPerOunce;
+
+            // Try exchange rate
+            $rateResp = Http::get('https://open.er-api.com/v6/latest/USD');
+            $lkrRate = null;
+            if ($rateResp->ok()) {
+                $rateJson = $rateResp->json();
+                $lkrRate = data_get($rateJson, 'rates.LKR');
+            }
+
+            $perGramLKR = $lkrRate ? ($perGramUSD * $lkrRate) : null;
+
+            return [
+                'xau' => $xauPrice,
+                'per_gram_usd' => $perGramUSD,
+                'per_gram_lkr' => $perGramLKR,
+                'lkr_rate' => $lkrRate,
+                'ts' => now()->toISOString(),
+            ];
+        } catch (\Exception $e) {
+            // return a simple array so it can be cached/returned safely
+            return ['error' => 'exception', 'message' => $e->getMessage(), 'status' => 500];
+        }
+    });
+
+    // If the cached data indicates an error, respond with appropriate status
+    if (isset($data['error'])) {
+        $status = $data['status'] ?? 500;
+        return response()->json($data, $status);
+    }
+
+    return response()->json($data);
+});
 
 // Custom logout route
 Route::post('/logout', function (Request $request) {

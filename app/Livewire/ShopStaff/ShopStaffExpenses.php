@@ -23,6 +23,13 @@ class ShopStaffExpenses extends Component
     protected $paginationTheme = 'bootstrap';
 
     public $expense_type = '';
+    // Pre-defined expense types for dropdown
+    public $expenseTypes = [
+        'Sadhaka',
+        'Refreshment',
+        'Other',
+    ];
+    public $customExpenseType = '';
     public $amount = '';
     public $description = '';
     public $expense_date = '';
@@ -59,6 +66,15 @@ class ShopStaffExpenses extends Component
 
     public function addExpense()
     {
+        // If user selected 'Other', ensure a custom type is provided and use it
+        if ($this->expense_type === 'Other') {
+            if (trim($this->customExpenseType) === '') {
+                $this->addError('customExpenseType', 'Please enter expense type');
+                return;
+            }
+            $this->expense_type = trim($this->customExpenseType);
+        }
+
         $this->validate();
 
         try {
@@ -127,6 +143,7 @@ class ShopStaffExpenses extends Component
         $this->amount = '';
         $this->description = '';
         $this->expense_date = date('Y-m-d');
+        $this->customExpenseType = '';
         $this->resetValidation();
     }
 

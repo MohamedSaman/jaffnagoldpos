@@ -1082,10 +1082,19 @@ class StoreBilling extends Component
     // Ensure amountReceived is always numeric
     public function updatedAmountReceived($value)
     {
-        if ($value === '' || !is_numeric($value)) {
+        // Sanitize incoming value: remove non-numeric except dot
+        if ($value === null || $value === '') {
+            $this->amountReceived = 0;
+            return;
+        }
+
+        // Remove commas or any non-digit/non-dot characters that may be sent from client
+        $clean = preg_replace('/[^0-9.]/', '', (string) $value);
+
+        if ($clean === '' || !is_numeric($clean)) {
             $this->amountReceived = 0;
         } else {
-            $this->amountReceived = (float) $value;
+            $this->amountReceived = (float) $clean;
         }
     }
 
@@ -1802,8 +1811,9 @@ class StoreBilling extends Component
             'price' => 0,
             'quantity' => 1,
             'discount' => 0,
-            'discount_type' => 'fixed',
-            'discount_percentage' => 0,
+            // Make custom products default to percentage discount mode (matches regular product behavior)
+            'discount_type' => 'percentage',
+            'discount_percentage' => 10,
             'total' => 0,
             'stock' => 9999,
             'pending' => 0,

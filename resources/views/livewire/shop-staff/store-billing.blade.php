@@ -881,14 +881,18 @@
 
                         {{-- Cash Form --}}
                         @if($paymentMethod === 'cash')
-                            <div class="space-y-3">
+                            <div class="space-y-3" x-data="{ localAmount: '{{ $amountReceived ?? 0 }}', grandTotal: '{{ $grandTotal ?? 0 }}' }">
                                 <div>
                                     <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-1.5">Amount Received</label>
                                     <div class="relative flex items-center">
                                         <span class="absolute left-3 text-[10px] font-black text-slate-400 pointer-events-none">Rs.</span>
-                                        <input type="number"
+                                        <input type="text"
+                                            inputmode="numeric"
+                                            pattern="[0-9]*"
                                             class="w-full pl-9 pr-3 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl text-xl font-black text-slate-800 outline-none focus:border-[#161b97] transition-colors"
-                                            wire:model.live="amountReceived"
+                                            oninput="this.value = this.value.replace(/[^0-9\.]/g, '')"
+                                            wire:model.debounce.300ms="amountReceived"
+                                            @input="localAmount = $event.target.value"
                                             x-init="$nextTick(() => $el.focus())">
                                     </div>
                                 </div>
@@ -897,21 +901,25 @@
                                         <span class="material-symbols-outlined text-emerald-600 text-base">currency_exchange</span>
                                         <span class="text-[9px] font-black text-emerald-700 uppercase tracking-widest">Balance to Return</span>
                                     </div>
-                                    <span class="text-lg font-black text-emerald-700">Rs. {{ number_format(max(0, (float) ($amountReceived ?: 0) - (float) ($grandTotal ?? 0)), 2) }}</span>
+                                    <span class="text-lg font-black text-emerald-700">Rs. <span x-text="(() => { let a=parseFloat(localAmount||0); let g=parseFloat(grandTotal||0); if(isNaN(a)) a=0; if(isNaN(g)) g=0; return (Math.max(0,a-g)).toFixed(2); })()">{{ number_format(max(0, (float) ($amountReceived ?: 0) - (float) ($grandTotal ?? 0)), 2) }}</span></span>
                                 </div>
                             </div>
                         @endif
 
                         {{-- Bank Transfer Form --}}
                         @if($paymentMethod === 'bank_transfer')
-                            <div class="space-y-2.5">
+                            <div class="space-y-2.5" x-data="{ localBankAmount: '{{ $bankTransferAmount ?? 0 }}', grandTotal: '{{ $grandTotal ?? 0 }}' }">
                                 <div>
                                     <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-1.5">Amount</label>
                                     <div class="relative flex items-center">
                                         <span class="absolute left-3 text-[10px] font-black text-slate-400 pointer-events-none">Rs.</span>
-                                        <input type="number"
+                                        <input type="text"
+                                            inputmode="numeric"
+                                            pattern="[0-9]*"
                                             class="w-full pl-9 pr-3 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl text-xl font-black text-slate-800 outline-none focus:border-[#161b97] transition-colors"
-                                            wire:model.live="bankTransferAmount">
+                                            oninput="this.value = this.value.replace(/[^0-9\.]/g, '')"
+                                            wire:model.debounce.300ms="bankTransferAmount"
+                                            @input="localBankAmount = $event.target.value">
                                     </div>
                                 </div>
                                 <div>
