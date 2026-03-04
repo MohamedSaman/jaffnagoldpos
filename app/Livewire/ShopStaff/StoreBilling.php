@@ -2594,10 +2594,21 @@ class StoreBilling extends Component
                     }
                 } else {
                     // Single payment (cash / cheque / bank_transfer)
+                    // For cash, save the actual sale amount (grandTotal), not the tendered amount.
+                    // Amount tendered is stored separately for change-calculation display.
+                    $actualPaymentAmount = $this->paymentMethod === 'cash'
+                        ? round(min(floatval($this->grandTotal), floatval($this->totalPaidAmount)), 2)
+                        : round(floatval($this->totalPaidAmount), 2);
+
+                    $amountTendered = $this->paymentMethod === 'cash'
+                        ? round(floatval($this->totalPaidAmount), 2)
+                        : null;
+
                     $payment = Payment::create([
                         'customer_id' => $customer->id,
                         'sale_id' => $sale->id,
-                        'amount' => round(floatval($this->totalPaidAmount), 2),
+                        'amount' => $actualPaymentAmount,
+                        'amount_tendered' => $amountTendered,
                         'payment_method' => $this->paymentMethod,
                         'payment_date' => now(),
                         'is_completed' => true,
@@ -2610,8 +2621,8 @@ class StoreBilling extends Component
                             'payment_reference' => 'CASH-' . now()->format('YmdHis'),
                         ]);
 
-                        // Update cash in hands - add cash payment
-                        $this->updateCashInHands(round(floatval($this->totalPaidAmount), 2));
+                        // Update cash in hands - add only actual sale amount (change is returned to customer)
+                        $this->updateCashInHands($actualPaymentAmount);
                     } elseif ($this->paymentMethod === 'cheque') {
                         // Create cheque records
                         foreach ($this->cheques as $cheque) {

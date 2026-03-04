@@ -1014,7 +1014,7 @@
 
         {{-- SALE PREVIEW MODAL (Invoice) --}}
         @if($showSaleModal && $createdSale)
-            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-3xl overflow-hidden relative transform transition-all flex flex-col">
+            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-3xl overflow-hidden relative transform transition-all flex flex-col max-h-[90vh]">
                 {{-- Header --}}
                 <div class="bg-gradient-to-r from-slate-900 to-slate-800 px-5 py-3.5 flex items-center justify-between shrink-0">
                     <div class="flex items-center gap-3">
@@ -1035,7 +1035,7 @@
                 </div>
 
                 {{-- Invoice Content --}}
-                <div class="p-2 bg-white flex justify-center" id="printableInvoice">
+                <div class="flex-1 overflow-y-auto p-2 bg-white flex justify-center" id="printableInvoice">
                     <div class="receipt-container" style="width: 76mm; padding: 0 3mm; background: white; color: #000; line-height: 1.2; font-size: 12px; box-sizing: border-box;">
                         <!-- Thermal Receipt Header -->
                         <div style="text-align:center; font-weight:bold; padding-top: 3mm;">
@@ -1132,7 +1132,9 @@
                             <div style="border-bottom: 1px dashed #000; margin: 5px 0;"></div>
 
                             @php
-                                $totalReceived = $createdSale->payments->sum('amount');
+                                $totalReceived = $createdSale->payments->sum(function($p) {
+                                    return $p->amount_tendered ?? $p->amount;
+                                });
                                 $balanceAmount = max(0, $totalReceived - $createdSale->total_amount);
                             @endphp
                             <div style="display: flex; justify-content: space-between; font-weight: bold;">

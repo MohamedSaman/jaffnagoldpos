@@ -75,15 +75,15 @@ class Products extends Component
 
     // Edit form fields
     public $editId, $editCode, $editName, $editModel, $editBrand, $editCategory, $editImage, $existingImage,
-    $editDescription, $editBarcode, $editStatus, $editSupplierPrice, $editRetailPrice, $editWholesalePrice,
-    $editDiscountPrice, $editDamageStock;
+        $editDescription, $editBarcode, $editStatus, $editSupplier, $editSupplierPrice, $editRetailPrice, $editWholesalePrice,
+        $editDiscountPrice, $editDamageStock;
 
     // Track original pricing mode when opening edit modal so we don't accidentally delete variant rows
     public $original_pricing_mode = 'single';
 
     // Stock Adjustment fields
     public $adjustmentProductId, $adjustmentProductName, $adjustmentAvailableStock, $adjustmentDamageStock,
-    $damageQuantity, $availableQuantity;
+        $damageQuantity, $availableQuantity;
 
     // View Product
     public $viewProduct;
@@ -1230,6 +1230,7 @@ class Products extends Component
         $this->editDescription = $product->description;
         $this->editBarcode = $product->barcode;
         $this->editStatus = $product->status;
+        $this->editSupplier = $product->supplier_id;
         $this->editSupplierPrice = $product->price->supplier_price ?? 0;
         $this->editRetailPrice = $product->price->retail_price ?? 0;
         $this->editWholesalePrice = $product->price->wholesale_price ?? 0;
@@ -1297,6 +1298,7 @@ class Products extends Component
             'editModel' => 'nullable|string|max:255',
             'editBrand' => 'required|exists:brand_lists,id',
             'editCategory' => 'required|exists:category_lists,id',
+            'editSupplier' => 'nullable|exists:product_suppliers,id',
             'editImage' => 'nullable|string|max:100000',
             'editDescription' => 'nullable|string|max:1000',
             'editBarcode' => 'nullable|string|max:255|unique:product_details,barcode,' . $this->editId,
@@ -1358,6 +1360,7 @@ class Products extends Component
                 'description' => $this->editDescription,
                 'barcode' => $this->editBarcode,
                 'status' => $this->editStatus,
+                'supplier_id' => $this->editSupplier,
             ]);
 
             // Determine effective pricing mode
