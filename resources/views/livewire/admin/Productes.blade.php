@@ -1112,7 +1112,7 @@
                                             </div>
                                             <div class="col-md-4">
                                                 <div
-                                                    class="price-card text-center p-3 border border-success rounded-3 bg-success bg-opacity-10 h-100">
+                                                    class="price-card text-center p-3 border border-success rounded-3 bg-white h-100">
                                                     <small class="text-success d-block mb-2 fw-semibold">Retail
                                                         Price</small>
                                                     <h4 class="fw-bold text-success mb-0">
