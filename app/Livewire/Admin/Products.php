@@ -355,8 +355,7 @@ class Products extends Component
                     'brand_lists.brand_name',
                     'category_lists.category_name'
                 )
-                ->orderByRaw("CASE WHEN product_details.code LIKE 'G-%' THEN 1 ELSE 0 END ASC")
-                ->orderBy('product_details.code', 'asc')
+                ->orderBy('product_details.id', 'desc')
                 ->paginate($this->perPage);
         } else {
             // Admin sees all products - group by product to avoid duplicates from variants
@@ -414,8 +413,7 @@ class Products extends Component
                     'brand_lists.brand_name',
                     'category_lists.category_name'
                 )
-                ->orderByRaw("CASE WHEN product_details.code LIKE 'G-%' THEN 1 ELSE 0 END ASC")
-                ->orderBy('product_details.code', 'asc')
+                ->orderBy('product_details.id', 'desc')
                 ->paginate($this->perPage);
         }
 
