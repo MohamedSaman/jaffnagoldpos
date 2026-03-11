@@ -76,7 +76,7 @@ class Products extends Component
     // Edit form fields
     public $editId, $editCode, $editName, $editModel, $editBrand, $editCategory, $editImage, $existingImage,
         $editDescription, $editBarcode, $editStatus, $editSupplier, $editSupplierPrice, $editRetailPrice, $editWholesalePrice,
-        $editDiscountPrice, $editDamageStock;
+        $editDiscountPrice, $editDamageStock, $editAvailableStock;
 
     // Track original pricing mode when opening edit modal so we don't accidentally delete variant rows
     public $original_pricing_mode = 'single';
@@ -243,15 +243,15 @@ class Products extends Component
         // Set default status
         $this->status = 'active';
 
-        // Set default stock values
-        $this->available_stock = 0;
-        $this->damage_stock = 0;
+        // Set default stock values (null = empty input, placeholder shows 0)
+        $this->available_stock = null;
+        $this->damage_stock = null;
 
-        // Set default prices
-        $this->supplier_price = 0;
-        $this->retail_price = 0;
-        $this->wholesale_price = 0;
-        $this->discount_price = 0;
+        // Set default prices (null = empty input, placeholder shows 0)
+        $this->supplier_price = null;
+        $this->retail_price = null;
+        $this->wholesale_price = null;
+        $this->discount_price = null;
 
         // Set default purchase date to today
         $this->purchaseDate = date('Y-m-d');
@@ -1055,6 +1055,7 @@ class Products extends Component
         $this->editRetailPrice = $singlePrice->retail_price ?? 0;
         $this->editWholesalePrice = $singlePrice->wholesale_price ?? 0;
         $this->editDiscountPrice = $singlePrice->discount_price ?? 0;
+        $this->editAvailableStock = $singleStock->available_stock ?? 0;
         $this->editDamageStock = $singleStock->damage_stock ?? 0;
 
         // Force single mode for edit
@@ -1094,6 +1095,7 @@ class Products extends Component
             'editRetailPrice' => 'required|numeric|min:0',
             'editWholesalePrice' => 'required|numeric|min:0',
             'editDiscountPrice' => 'nullable|numeric|min:0|lte:editRetailPrice',
+            'editAvailableStock' => 'required|integer|min:0',
             'editDamageStock' => 'required|integer|min:0',
         ];
     }
@@ -1167,7 +1169,7 @@ class Products extends Component
                 ]
             );
 
-            // Update or create single stock (preserve existing available_stock)
+            // Update or create single stock
             ProductStock::updateOrCreate(
                 [
                     'product_id' => $product->id,
@@ -1175,8 +1177,8 @@ class Products extends Component
                     'variant_value' => null,
                 ],
                 [
+                    'available_stock' => $this->editAvailableStock ?? 0,
                     'damage_stock' => $this->editDamageStock ?? 0,
-                    // Don't override available_stock or total_stock here
                 ]
             );
 

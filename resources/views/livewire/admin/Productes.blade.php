@@ -1421,7 +1421,7 @@
                                             <div class="input-group">
                                                 <span class="input-group-text">Rs.</span>
                                                 <input type="number" step="0.01" class="form-control"
-                                                    id="supplier_price" wire:model="supplier_price">
+                                                    id="supplier_price" wire:model="supplier_price" placeholder="0">
                                             </div>
                                         </div>
                                     </div>
@@ -1433,7 +1433,7 @@
                                             <div class="input-group">
                                                 <span class="input-group-text">Rs.</span>
                                                 <input type="number" step="0.01" class="form-control" id="retail_price"
-                                                    wire:model="retail_price">
+                                                    wire:model="retail_price" placeholder="0">
                                             </div>
                                         </div>
                                     </div>
@@ -1445,7 +1445,7 @@
                                             <div class="input-group">
                                                 <span class="input-group-text">Rs.</span>
                                                 <input type="number" step="0.01" class="form-control" id="wholesale_price"
-                                                    wire:model="wholesale_price">
+                                                    wire:model="wholesale_price" placeholder="0">
                                             </div>
                                         </div>
                                     </div>
@@ -1456,7 +1456,7 @@
                                             <label for="available_stock" class="form-label fw-semibold">Available
                                                 Stock:</label>
                                             <input type="number" class="form-control" id="available_stock"
-                                                wire:model="available_stock" min="0" value="0">
+                                                wire:model="available_stock" min="0" placeholder="0">
                                             @if($barcodeMode === 'edit')
                                             <small class="text-info"><i class="bi bi-info-circle me-1"></i>Enter
                                                 quantity to ADD to existing stock</small>
@@ -1471,7 +1471,7 @@
                                             <label for="damage_stock" class="form-label fw-semibold">Damage
                                                 Stock:</label>
                                             <input type="number" class="form-control" id="damage_stock"
-                                                wire:model="damage_stock" min="0" value="0">
+                                                wire:model="damage_stock" min="0" placeholder="0">
                                             @if($barcodeMode === 'edit')
                                             <small class="text-info"><i class="bi bi-info-circle me-1"></i>Enter
                                                 quantity to ADD to existing damage stock</small>
@@ -1812,6 +1812,30 @@
                                                 <input type="number" step="0.01" class="form-control"
                                                     id="editWholesalePrice" wire:model="editWholesalePrice">
                                             </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-md-4">
+                                        <div class="mb-1">
+                                            <label for="editAvailableStock" class="form-label fw-semibold">Available
+                                                Stock:</label>
+                                            <input type="number" class="form-control" id="editAvailableStock"
+                                                wire:model="editAvailableStock" min="0">
+                                            @error('editAvailableStock')
+                                            <span class="text-danger small">* {{ $message }}</span>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="mb-1">
+                                            <label for="editDamageStock" class="form-label fw-semibold">Damage
+                                                Stock:</label>
+                                            <input type="number" class="form-control" id="editDamageStock"
+                                                wire:model="editDamageStock" min="0">
+                                            @error('editDamageStock')
+                                            <span class="text-danger small">* {{ $message }}</span>
+                                            @enderror
                                         </div>
                                     </div>
                                 </div>
