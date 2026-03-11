@@ -437,6 +437,12 @@ class Products extends Component
     // 🔹 Validation Rules for Create
     protected function rules()
     {
+        // Enforce single pricing mode only
+        $this->pricing_mode = 'single';
+        $this->variant_id = null;
+        $this->variant_prices = [];
+        $this->variant_key_map = [];
+
         // If in barcode edit mode, adjust unique rules to exclude current product
         $excludeId = $this->barcodeLookupProductId;
         $codeUniqueRule = $excludeId
@@ -456,41 +462,17 @@ class Products extends Component
             'image' => 'nullable|string|max:10000',
             'description' => 'nullable|string|max:1000',
             'barcode' => $barcodeUniqueRule,
-            'pricing_mode' => 'required|in:single,variant',
+            'pricing_mode' => 'required|in:single',
         ];
 
-        // Add validation rules based on pricing mode
-        if ($this->pricing_mode === 'single') {
-            $rules = array_merge($rules, [
-                'supplier_price' => 'required|numeric|min:0',
-                'retail_price' => 'required|numeric|min:0|gte:supplier_price',
-                'wholesale_price' => 'required|numeric|min:0|gte:supplier_price',
-                'discount_price' => 'nullable|numeric|min:0|lte:retail_price',
-                'available_stock' => 'required|integer|min:0',
-                'damage_stock' => 'nullable|integer|min:0',
-            ]);
-        } else {
-            // Variant-based pricing validation
-            $rules = array_merge($rules, [
-                'variant_id' => 'required|exists:product_variants,id',
-                'variant_prices' => 'required|array|min:1',
-            ]);
-
-            // Add validation for each variant value's prices
-            if (!empty($this->variant_id)) {
-                $variant = ProductVariant::find($this->variant_id);
-                if ($variant && !empty($variant->variant_values)) {
-                    $sortedValues = $this->sortVariantValues($variant->variant_values);
-                    foreach ($sortedValues as $value) {
-                        $k = $this->sanitizeVariantKey($value);
-                        $rules["variant_prices.{$k}.supplier_price"] = 'required|numeric|min:0';
-                        $rules["variant_prices.{$k}.retail_price"] = "required|numeric|min:0|gte:variant_prices.{$k}.supplier_price";
-                        $rules["variant_prices.{$k}.wholesale_price"] = "required|numeric|min:0|gte:variant_prices.{$k}.supplier_price";
-                        $rules["variant_prices.{$k}.stock"] = 'required|integer|min:0';
-                    }
-                }
-            }
-        }
+        $rules = array_merge($rules, [
+            'supplier_price' => 'required|numeric|min:0',
+            'retail_price' => 'required|numeric|min:0|gte:supplier_price',
+            'wholesale_price' => 'required|numeric|min:0|gte:supplier_price',
+            'discount_price' => 'nullable|numeric|min:0|lte:retail_price',
+            'available_stock' => 'required|integer|min:0',
+            'damage_stock' => 'nullable|integer|min:0',
+        ]);
 
         return $rules;
     }
@@ -632,42 +614,27 @@ class Products extends Component
             $this->supplier = $product->supplier_id;
             $this->status = $product->status;
 
-            // Load pricing
-            if ($product->price) {
-                $this->supplier_price = $product->price->supplier_price ?? 0;
-                $this->retail_price = $product->price->retail_price ?? 0;
-                $this->wholesale_price = $product->price->wholesale_price ?? 0;
-                $this->discount_price = $product->price->discount_price ?? 0;
+            // Load pricing (prefer single row, fallback to first available price for legacy records)
+            $singlePrice = $product->price
+                ?? $product->prices->where('pricing_mode', 'single')->first()
+                ?? $product->prices->first();
+
+            if ($singlePrice) {
+                $this->supplier_price = $singlePrice->supplier_price ?? 0;
+                $this->retail_price = $singlePrice->retail_price ?? 0;
+                $this->wholesale_price = $singlePrice->wholesale_price ?? 0;
+                $this->discount_price = $singlePrice->discount_price ?? 0;
             }
 
             // Load stock - reset to 0 so user enters NEW quantity to add (will be incremented)
             $this->available_stock = 0;
             $this->damage_stock = 0;
 
-            // Handle variants
-            if ($product->variant_id) {
-                $this->pricing_mode = 'variant';
-                $this->variant_id = $product->variant_id;
-                $values = $product->variant ? ($product->variant->variant_values ?? []) : [];
-                $sorted = $this->sortVariantValues($values);
-                $this->variant_prices = [];
-                $this->variant_key_map = [];
-                foreach ($sorted as $val) {
-                    $k = $this->sanitizeVariantKey($val);
-                    $this->variant_key_map[$k] = (string) $val;
-                    $price = $product->prices->firstWhere('variant_value', $val);
-                    $stock = $product->stocks->firstWhere('variant_value', $val);
-                    $this->variant_prices[$k] = [
-                        'supplier_price' => $price->supplier_price ?? 0,
-                        'retail_price' => $price->retail_price ?? 0,
-                        'wholesale_price' => $price->wholesale_price ?? 0,
-                        'distributor_price' => $price->distributor_price ?? 0,
-                        'stock' => 0, // Reset to 0 so user enters NEW quantity to add
-                    ];
-                }
-            } else {
-                $this->pricing_mode = 'single';
-            }
+            // Force single mode only
+            $this->pricing_mode = 'single';
+            $this->variant_id = null;
+            $this->variant_prices = [];
+            $this->variant_key_map = [];
 
             $this->js("Swal.fire({icon: 'info', title: 'Product Found', text: 'Barcode matched an existing product. You are now in Update mode.', timer: 2000, showConfirmButton: false})");
         } else {
@@ -714,106 +681,58 @@ class Products extends Component
                 'supplier_id' => $this->supplier,
             ]);
 
-            if ($this->pricing_mode === 'single') {
-                // Update single pricing
-                ProductPrice::updateOrCreate(
-                    [
-                        'product_id' => $product->id,
-                        'pricing_mode' => 'single',
-                        'variant_id' => null,
-                        'variant_value' => null,
-                    ],
-                    [
-                        'supplier_price' => $this->supplier_price ?? 0,
-                        'selling_price' => $this->retail_price ?? 0,
-                        'retail_price' => $this->retail_price ?? 0,
-                        'wholesale_price' => $this->wholesale_price ?? 0,
-                        'distributor_price' => null,
-                        'discount_price' => $this->discount_price ?? 0,
-                    ]
-                );
+            // Force product to single mode and clean variant rows
+            $product->update(['variant_id' => null]);
+            ProductPrice::where('product_id', $product->id)
+                ->where('pricing_mode', 'variant')
+                ->delete();
+            ProductStock::where('product_id', $product->id)
+                ->whereNotNull('variant_id')
+                ->delete();
 
-                // Update stock - INCREMENT existing stock instead of replacing
-                $existingStock = ProductStock::where('product_id', $product->id)
-                    ->whereNull('variant_id')
-                    ->whereNull('variant_value')
-                    ->first();
+            // Update single pricing
+            ProductPrice::updateOrCreate(
+                [
+                    'product_id' => $product->id,
+                    'pricing_mode' => 'single',
+                    'variant_id' => null,
+                    'variant_value' => null,
+                ],
+                [
+                    'supplier_price' => $this->supplier_price ?? 0,
+                    'selling_price' => $this->retail_price ?? 0,
+                    'retail_price' => $this->retail_price ?? 0,
+                    'wholesale_price' => $this->wholesale_price ?? 0,
+                    'distributor_price' => null,
+                    'discount_price' => $this->discount_price ?? 0,
+                ]
+            );
 
-                if ($existingStock) {
-                    $newAvailable = ($existingStock->available_stock ?? 0) + ($this->available_stock ?? 0);
-                    $newDamage = ($existingStock->damage_stock ?? 0) + ($this->damage_stock ?? 0);
-                    $existingStock->update([
-                        'available_stock' => $newAvailable,
-                        'damage_stock' => $newDamage,
-                        'total_stock' => $newAvailable + $newDamage,
-                    ]);
-                } else {
-                    ProductStock::create([
-                        'product_id' => $product->id,
-                        'variant_id' => null,
-                        'variant_value' => null,
-                        'available_stock' => $this->available_stock ?? 0,
-                        'damage_stock' => $this->damage_stock ?? 0,
-                        'total_stock' => ($this->available_stock ?? 0) + ($this->damage_stock ?? 0),
-                        'sold_count' => 0,
-                        'restocked_quantity' => 0,
-                    ]);
-                }
+            // Update stock - INCREMENT existing stock instead of replacing
+            $existingStock = ProductStock::where('product_id', $product->id)
+                ->whereNull('variant_id')
+                ->whereNull('variant_value')
+                ->first();
+
+            if ($existingStock) {
+                $newAvailable = ($existingStock->available_stock ?? 0) + ($this->available_stock ?? 0);
+                $newDamage = ($existingStock->damage_stock ?? 0) + ($this->damage_stock ?? 0);
+                $existingStock->update([
+                    'available_stock' => $newAvailable,
+                    'damage_stock' => $newDamage,
+                    'total_stock' => $newAvailable + $newDamage,
+                ]);
             } else {
-                // Variant mode - update prices and INCREMENT stock for each variant
-                $variant = ProductVariant::find($this->variant_id);
-                if ($variant) {
-                    $values = is_array($variant->variant_values) ? $variant->variant_values : [];
-                    foreach ($this->sortVariantValues($values) as $val) {
-                        $k = $this->sanitizeVariantKey($val);
-                        $priceData = $this->variant_prices[$k] ?? [];
-                        $variantValue = trim((string) $val);
-
-                        // Update price
-                        ProductPrice::updateOrCreate(
-                            [
-                                'product_id' => $product->id,
-                                'variant_id' => $variant->id,
-                                'variant_value' => $variantValue,
-                            ],
-                            [
-                                'pricing_mode' => 'variant',
-                                'supplier_price' => $priceData['supplier_price'] ?? 0,
-                                'selling_price' => $priceData['retail_price'] ?? 0,
-                                'retail_price' => $priceData['retail_price'] ?? 0,
-                                'wholesale_price' => $priceData['wholesale_price'] ?? 0,
-                                'distributor_price' => null,
-                                'discount_price' => 0,
-                            ]
-                        );
-
-                        // INCREMENT stock
-                        $addQty = $priceData['stock'] ?? 0;
-                        $existingStock = ProductStock::where('product_id', $product->id)
-                            ->where('variant_id', $variant->id)
-                            ->where('variant_value', $variantValue)
-                            ->first();
-
-                        if ($existingStock) {
-                            $newAvailable = ($existingStock->available_stock ?? 0) + $addQty;
-                            $existingStock->update([
-                                'available_stock' => $newAvailable,
-                                'total_stock' => $newAvailable + ($existingStock->damage_stock ?? 0),
-                            ]);
-                        } else {
-                            ProductStock::create([
-                                'product_id' => $product->id,
-                                'variant_id' => $variant->id,
-                                'variant_value' => $variantValue,
-                                'available_stock' => $addQty,
-                                'damage_stock' => 0,
-                                'total_stock' => $addQty,
-                                'sold_count' => 0,
-                                'restocked_quantity' => 0,
-                            ]);
-                        }
-                    }
-                }
+                ProductStock::create([
+                    'product_id' => $product->id,
+                    'variant_id' => null,
+                    'variant_value' => null,
+                    'available_stock' => $this->available_stock ?? 0,
+                    'damage_stock' => $this->damage_stock ?? 0,
+                    'total_stock' => ($this->available_stock ?? 0) + ($this->damage_stock ?? 0),
+                    'sold_count' => 0,
+                    'restocked_quantity' => 0,
+                ]);
             }
 
             // ── Auto-create Purchase Order + Items ──
@@ -848,19 +767,10 @@ class Products extends Component
 
         $totalAmount = 0;
 
-        // Calculate total amount based on pricing mode
-        if ($this->pricing_mode === 'single') {
-            $qty = $this->available_stock ?? 0;
-            $unitPrice = $this->supplier_price ?? 0;
-            $totalAmount = $qty * $unitPrice;
-        } else {
-            // Variant mode - sum all variant items
-            foreach ($this->variant_prices as $key => $priceData) {
-                $qty = $priceData['stock'] ?? 0;
-                $unitPrice = $priceData['supplier_price'] ?? 0;
-                $totalAmount += $qty * $unitPrice;
-            }
-        }
+        // Single mode only
+        $qty = $this->available_stock ?? 0;
+        $unitPrice = $this->supplier_price ?? 0;
+        $totalAmount = $qty * $unitPrice;
 
         // Create the purchase order
         $purchaseOrder = PurchaseOrder::create([
@@ -874,47 +784,19 @@ class Products extends Component
         ]);
 
         // Create purchase order items
-        if ($this->pricing_mode === 'single') {
-            $qty = $this->available_stock ?? 0;
-            if ($qty > 0) {
-                PurchaseOrderItem::create([
-                    'order_id' => $purchaseOrder->id,
-                    'product_id' => $product->id,
-                    'variant_id' => null,
-                    'variant_value' => null,
-                    'quantity' => $qty,
-                    'received_quantity' => $qty,
-                    'unit_price' => $this->supplier_price ?? 0,
-                    'discount' => 0,
-                    'discount_type' => 'fixed',
-                    'status' => 'received',
-                ]);
-            }
-        } else {
-            // Variant mode
-            $variant = ProductVariant::find($this->variant_id);
-            if ($variant) {
-                $values = is_array($variant->variant_values) ? $variant->variant_values : [];
-                foreach ($this->sortVariantValues($values) as $val) {
-                    $k = $this->sanitizeVariantKey($val);
-                    $priceData = $this->variant_prices[$k] ?? [];
-                    $qty = $priceData['stock'] ?? 0;
-                    if ($qty > 0) {
-                        PurchaseOrderItem::create([
-                            'order_id' => $purchaseOrder->id,
-                            'product_id' => $product->id,
-                            'variant_id' => $variant->id,
-                            'variant_value' => trim((string) $val),
-                            'quantity' => $qty,
-                            'received_quantity' => $qty,
-                            'unit_price' => $priceData['supplier_price'] ?? 0,
-                            'discount' => 0,
-                            'discount_type' => 'fixed',
-                            'status' => 'received',
-                        ]);
-                    }
-                }
-            }
+        if ($qty > 0) {
+            PurchaseOrderItem::create([
+                'order_id' => $purchaseOrder->id,
+                'product_id' => $product->id,
+                'variant_id' => null,
+                'variant_value' => null,
+                'quantity' => $qty,
+                'received_quantity' => $qty,
+                'unit_price' => $this->supplier_price ?? 0,
+                'discount' => 0,
+                'discount_type' => 'fixed',
+                'status' => 'received',
+            ]);
         }
     }
 
@@ -925,6 +807,12 @@ class Products extends Component
     // 🔹 Create Product
     public function createProduct()
     {
+        // Enforce single pricing mode only
+        $this->pricing_mode = 'single';
+        $this->variant_id = null;
+        $this->variant_prices = [];
+        $this->variant_key_map = [];
+
         // Clean up image field - treat empty strings as null
         if (empty(trim($this->image ?? ''))) {
             $this->image = null;
@@ -937,16 +825,6 @@ class Products extends Component
             $this->code = 'PROD-' . strtoupper(Str::random(8));
             Log::info('Auto-generated product code for createProduct', ['code' => $this->code]);
         }
-        // Debug: Check what variant_prices contains
-        if ($this->pricing_mode === 'variant' && $this->variant_id) {
-            $variant = ProductVariant::find($this->variant_id);
-            Log::info('=== VARIANT PRICES DEBUG ===', [
-                'variant_values_from_db' => $variant ? $variant->variant_values : 'null',
-                'variant_prices_keys' => array_keys($this->variant_prices),
-                'variant_prices_full' => $this->variant_prices,
-            ]);
-        }
-
         // Validate the form data
         $validatedData = $this->validate();
 
@@ -969,100 +847,35 @@ class Products extends Component
                 'brand_id' => $this->brand,
                 'category_id' => $this->category,
                 'supplier_id' => $this->supplier,
-                'variant_id' => $this->variant_id, // Set variant if product uses variants
+                'variant_id' => null,
             ]);
 
             Log::info('ProductDetail created', ['id' => $product->id ?? null, 'code' => $product->code ?? null]);
 
-            if ($this->pricing_mode === 'single') {
-                // Single price mode
-                // Step 2: Create ProductPrice with product_id reference
-                ProductPrice::create([
-                    'product_id' => $product->id,
-                    'variant_id' => null,
-                    'pricing_mode' => 'single',
-                    'supplier_price' => $this->supplier_price ?? 0,
-                    'selling_price' => $this->retail_price ?? $this->supplier_price ?? 0,
-                    'retail_price' => $this->retail_price ?? 0,
-                    'wholesale_price' => $this->wholesale_price ?? 0,
-                    'distributor_price' => null,
-                    'discount_price' => $this->discount_price ?? 0,
-                ]);
+            // Step 2: Create ProductPrice with product_id reference
+            ProductPrice::create([
+                'product_id' => $product->id,
+                'variant_id' => null,
+                'pricing_mode' => 'single',
+                'supplier_price' => $this->supplier_price ?? 0,
+                'selling_price' => $this->retail_price ?? $this->supplier_price ?? 0,
+                'retail_price' => $this->retail_price ?? 0,
+                'wholesale_price' => $this->wholesale_price ?? 0,
+                'distributor_price' => null,
+                'discount_price' => $this->discount_price ?? 0,
+            ]);
 
-                // Step 3: Create ProductStock with product_id reference
-                ProductStock::create([
-                    'product_id' => $product->id,
-                    'available_stock' => $this->available_stock ?? 0,
-                    'damage_stock' => $this->damage_stock ?? 0,
-                    'total_stock' => ($this->available_stock ?? 0) + ($this->damage_stock ?? 0),
-                    'sold_count' => 0,
-                    'restocked_quantity' => 0,
-                ]);
+            // Step 3: Create ProductStock with product_id reference
+            ProductStock::create([
+                'product_id' => $product->id,
+                'available_stock' => $this->available_stock ?? 0,
+                'damage_stock' => $this->damage_stock ?? 0,
+                'total_stock' => ($this->available_stock ?? 0) + ($this->damage_stock ?? 0),
+                'sold_count' => 0,
+                'restocked_quantity' => 0,
+            ]);
 
-                Log::info('Created single price and stock for product', ['product_id' => $product->id]);
-            } else {
-                // Variant-based pricing mode
-                // Use selected variant
-                $variant = ProductVariant::find($this->variant_id);
-
-                if ($variant) {
-                    $totalStock = 0;
-
-                    // Debug: Log what we're receiving
-                    Log::info('Creating variant product', [
-                        'variant_id' => $this->variant_id,
-                        'variant_values' => $variant->variant_values,
-                        'variant_prices_received' => $this->variant_prices,
-                    ]);
-
-                    // Create price and stock for each variant value (sorted order)
-                    $values = is_array($variant->variant_values) ? $variant->variant_values : [];
-                    $sortedValues = $this->sortVariantValues($values);
-
-                    foreach ($sortedValues as $value) {
-                        $sanitized = $this->sanitizeVariantKey($value);
-                        $priceData = $this->variant_prices[$sanitized] ?? [];
-
-                        // Normalize variant value for consistent DB matching
-                        $variantValue = trim((string) $value);
-
-                        Log::info("Processing variant value: {$variantValue}", [
-                            'sanitized_key' => $sanitized,
-                            'price_data' => $priceData,
-                            'has_data' => !empty($priceData),
-                        ]);
-
-                        // Create price for this variant value
-                        ProductPrice::create([
-                            'product_id' => $product->id,
-                            'variant_id' => $variant->id,
-                            'variant_value' => $variantValue,
-                            'pricing_mode' => 'variant',
-                            'supplier_price' => $priceData['supplier_price'] ?? 0,
-                            'selling_price' => $priceData['retail_price'] ?? 0,
-                            'retail_price' => $priceData['retail_price'] ?? 0,
-                            'wholesale_price' => $priceData['wholesale_price'] ?? 0,
-                            'distributor_price' => null,
-                            'discount_price' => 0,
-                        ]);
-
-                        // Create stock for this variant value
-                        ProductStock::create([
-                            'product_id' => $product->id,
-                            'variant_id' => $variant->id,
-                            'variant_value' => $variantValue,
-                            'available_stock' => $priceData['stock'] ?? 0,
-                            'damage_stock' => 0,
-                            'total_stock' => $priceData['stock'] ?? 0,
-                            'sold_count' => 0,
-                            'restocked_quantity' => 0,
-                        ]);
-
-                        $totalStock += $priceData['stock'] ?? 0;
-                    }
-                    Log::info('Created variant prices and stocks', ['product_id' => $product->id, 'total_stock' => $totalStock]);
-                }
-            }
+            Log::info('Created single price and stock for product', ['product_id' => $product->id]);
 
             // ── Auto-create Purchase Order + Items ──
             $this->createPurchaseRecord($product);
@@ -1231,50 +1044,24 @@ class Products extends Component
         $this->editBarcode = $product->barcode;
         $this->editStatus = $product->status;
         $this->editSupplier = $product->supplier_id;
-        $this->editSupplierPrice = $product->price->supplier_price ?? 0;
-        $this->editRetailPrice = $product->price->retail_price ?? 0;
-        $this->editWholesalePrice = $product->price->wholesale_price ?? 0;
-        $this->editDiscountPrice = $product->price->discount_price ?? 0;
-        $this->editDamageStock = $product->stock->damage_stock ?? 0;
+        $singlePrice = $product->price
+            ?? $product->prices->where('pricing_mode', 'single')->first()
+            ?? $product->prices->first();
+        $singleStock = $product->stock
+            ?? $product->stocks->whereNull('variant_id')->first()
+            ?? $product->stocks->first();
 
-        // If variant data exists, prepare variant edit state
-        if (($product->variant_id ?? null) !== null || ($product->prices && $product->prices->isNotEmpty())) {
-            $this->pricing_mode = 'variant';
-            $this->variant_id = $product->variant_id ?? $product->variant->id ?? null;
+        $this->editSupplierPrice = $singlePrice->supplier_price ?? 0;
+        $this->editRetailPrice = $singlePrice->retail_price ?? 0;
+        $this->editWholesalePrice = $singlePrice->wholesale_price ?? 0;
+        $this->editDiscountPrice = $singlePrice->discount_price ?? 0;
+        $this->editDamageStock = $singleStock->damage_stock ?? 0;
 
-            // Build variant_key_map and populate variant_prices with existing data
-            $values = [];
-            if ($product->variant && is_array($product->variant->variant_values)) {
-                $values = $product->variant->variant_values;
-            } elseif ($product->prices && $product->prices->isNotEmpty()) {
-                $values = $product->prices->pluck('variant_value')->unique()->toArray();
-            }
-
-            $sorted = $this->sortVariantValues($values);
-            $this->variant_prices = [];
-            $this->variant_key_map = [];
-
-            foreach ($sorted as $val) {
-                $k = $this->sanitizeVariantKey($val);
-                $this->variant_key_map[$k] = (string) $val;
-
-                // try to find matching existing price/stock by variant_value
-                $price = $product->prices->firstWhere('variant_value', $val);
-                $stock = $product->stocks->firstWhere('variant_value', $val);
-
-                $this->variant_prices[$k] = [
-                    'supplier_price' => $price->supplier_price ?? 0,
-                    'retail_price' => $price->retail_price ?? 0,
-                    'wholesale_price' => $price->wholesale_price ?? 0,
-                    'stock' => $stock->available_stock ?? 0,
-                ];
-            }
-        } else {
-            $this->pricing_mode = 'single';
-            $this->variant_id = null;
-            $this->variant_prices = [];
-            $this->variant_key_map = [];
-        }
+        // Force single mode for edit
+        $this->pricing_mode = 'single';
+        $this->variant_id = null;
+        $this->variant_prices = [];
+        $this->variant_key_map = [];
 
         // Record original pricing mode so updateProduct can detect an intentional mode switch
         $this->original_pricing_mode = $this->pricing_mode;
@@ -1314,6 +1101,12 @@ class Products extends Component
     // 🔹 Update Product
     public function updateProduct()
     {
+        // Enforce single pricing mode only
+        $this->pricing_mode = 'single';
+        $this->variant_id = null;
+        $this->variant_prices = [];
+        $this->variant_key_map = [];
+
         // Clean up image field - treat empty strings as null
         if (empty(trim($this->editImage ?? ''))) {
             $this->editImage = null;
@@ -1321,25 +1114,6 @@ class Products extends Component
 
         // Build validation rules and validate the form data
         $rules = $this->updateRules();
-
-        // Treat the form as variant-based if the UI has variant inputs present
-        $hasVariantInput = !empty($this->variant_id) && !empty($this->variant_prices);
-        $isVariantMode = $this->pricing_mode === 'variant' || $hasVariantInput;
-
-        Log::info('updateProduct: validation mode', [
-            'pricing_mode' => $this->pricing_mode,
-            'hasVariantInput' => $hasVariantInput,
-            'variant_count' => count($this->variant_prices ?? []),
-        ]);
-
-        if ($isVariantMode) {
-            foreach ($this->variant_prices as $k => $vals) {
-                $rules["variant_prices.{$k}.supplier_price"] = 'required|numeric|min:0';
-                $rules["variant_prices.{$k}.retail_price"] = "required|numeric|min:0";
-                $rules["variant_prices.{$k}.wholesale_price"] = "required|numeric|min:0";
-                $rules["variant_prices.{$k}.stock"] = 'required|integer|min:0';
-            }
-        }
 
         // Use friendly attribute labels for validation messages
         $validatedData = $this->validate($rules, [], $this->attributes());
@@ -1363,155 +1137,52 @@ class Products extends Component
                 'supplier_id' => $this->editSupplier,
             ]);
 
-            // Determine effective pricing mode
-            $hasVariantInput = !empty($this->variant_id) && !empty($this->variant_prices);
-            $effectiveMode = $hasVariantInput || $this->pricing_mode === 'variant' ? 'variant' : 'single';
+            // ====== SINGLE PRICING MODE ONLY ======
+            $product->update(['variant_id' => null]);
 
-            Log::info('updateProduct: effectiveMode', [
+            // Delete variant prices/stocks
+            ProductPrice::where('product_id', $product->id)
+                ->where('pricing_mode', 'variant')
+                ->delete();
+
+            ProductStock::where('product_id', $product->id)
+                ->whereNotNull('variant_id')
+                ->delete();
+
+            // Update or create single price
+            ProductPrice::updateOrCreate(
+                [
+                    'product_id' => $product->id,
+                    'pricing_mode' => 'single',
+                    'variant_id' => null,
+                    'variant_value' => null,
+                ],
+                [
+                    'supplier_price' => $this->editSupplierPrice ?? 0,
+                    'selling_price' => $this->editRetailPrice ?? 0,
+                    'retail_price' => $this->editRetailPrice ?? 0,
+                    'wholesale_price' => $this->editWholesalePrice ?? 0,
+                    'distributor_price' => null,
+                    'discount_price' => $this->editDiscountPrice ?? 0,
+                ]
+            );
+
+            // Update or create single stock (preserve existing available_stock)
+            ProductStock::updateOrCreate(
+                [
+                    'product_id' => $product->id,
+                    'variant_id' => null,
+                    'variant_value' => null,
+                ],
+                [
+                    'damage_stock' => $this->editDamageStock ?? 0,
+                    // Don't override available_stock or total_stock here
+                ]
+            );
+
+            Log::info('updateProduct: Updated to single pricing mode', [
                 'product_id' => $product->id,
-                'pricing_mode' => $this->pricing_mode,
-                'hasVariantInput' => $hasVariantInput,
-                'variant_id' => $this->variant_id,
-                'variant_prices_count' => count($this->variant_prices ?? []),
             ]);
-
-            if ($effectiveMode === 'single') {
-                // ====== SINGLE PRICING MODE ======
-                $product->update(['variant_id' => null]);
-
-                // Delete all variant prices/stocks first (clean slate)
-                ProductPrice::where('product_id', $product->id)
-                    ->where('pricing_mode', 'variant')
-                    ->delete();
-
-                ProductStock::where('product_id', $product->id)
-                    ->whereNotNull('variant_id')
-                    ->delete();
-
-                // Update or create single price
-                ProductPrice::updateOrCreate(
-                    [
-                        'product_id' => $product->id,
-                        'pricing_mode' => 'single',
-                        'variant_id' => null,
-                        'variant_value' => null,
-                    ],
-                    [
-                        'supplier_price' => $this->editSupplierPrice ?? 0,
-                        'selling_price' => $this->editRetailPrice ?? 0,
-                        'retail_price' => $this->editRetailPrice ?? 0,
-                        'wholesale_price' => $this->editWholesalePrice ?? 0,
-                        'distributor_price' => null,
-                        'discount_price' => $this->editDiscountPrice ?? 0,
-                    ]
-                );
-
-                // Update or create single stock (preserve existing available_stock)
-                ProductStock::updateOrCreate(
-                    [
-                        'product_id' => $product->id,
-                        'variant_id' => null,
-                        'variant_value' => null,
-                    ],
-                    [
-                        'damage_stock' => $this->editDamageStock ?? 0,
-                        // Don't override available_stock or total_stock here
-                    ]
-                );
-
-                Log::info('updateProduct: Updated to single pricing mode', [
-                    'product_id' => $product->id,
-                ]);
-            } else {
-                // ====== VARIANT PRICING MODE ======
-                $product->update(['variant_id' => $this->variant_id]);
-
-                // Delete single price/stock records (clean slate for variants)
-                ProductPrice::where('product_id', $product->id)
-                    ->where('pricing_mode', 'single')
-                    ->whereNull('variant_id')
-                    ->delete();
-
-                ProductStock::where('product_id', $product->id)
-                    ->whereNull('variant_id')
-                    ->delete();
-
-                // Track processed variant values for cleanup
-                $processedValues = [];
-
-                foreach ($this->variant_prices as $k => $vals) {
-                    // Map sanitized key back to original display value and normalize
-                    $variantValue = trim((string) ($this->variant_key_map[$k] ?? $k));
-                    $processedValues[] = $variantValue;
-
-                    Log::info('updateProduct: upserting variant', [
-                        'product_id' => $product->id,
-                        'variant_id' => $this->variant_id,
-                        'sanitized_key' => $k,
-                        'variant_value' => $variantValue,
-                        'values' => $vals,
-                    ]);
-
-                    // Update or create variant price
-                    ProductPrice::updateOrCreate(
-                        [
-                            'product_id' => $product->id,
-                            'variant_id' => $this->variant_id,
-                            'variant_value' => $variantValue,
-                        ],
-                        [
-                            'pricing_mode' => 'variant',
-                            'supplier_price' => $vals['supplier_price'] ?? 0,
-                            'retail_price' => $vals['retail_price'] ?? 0,
-                            'selling_price' => $vals['retail_price'] ?? 0,
-                            'wholesale_price' => $vals['wholesale_price'] ?? 0,
-                            'distributor_price' => null,
-                            'discount_price' => 0,
-                        ]
-                    );
-
-                    // Update or create variant stock
-                    ProductStock::updateOrCreate(
-                        [
-                            'product_id' => $product->id,
-                            'variant_id' => $this->variant_id,
-                            'variant_value' => $variantValue,
-                        ],
-                        [
-                            'available_stock' => $vals['stock'] ?? 0,
-                            'damage_stock' => 0,
-                            'total_stock' => $vals['stock'] ?? 0,
-                            'sold_count' => 0,
-                        ]
-                    );
-                }
-
-                // Clean up obsolete variant prices/stocks (removed from UI)
-                if (!empty($processedValues)) {
-                    $deletedPrices = ProductPrice::where('product_id', $product->id)
-                        ->where('pricing_mode', 'variant')
-                        ->where('variant_id', $this->variant_id)
-                        ->whereNotIn('variant_value', $processedValues)
-                        ->delete();
-
-                    $deletedStocks = ProductStock::where('product_id', $product->id)
-                        ->where('variant_id', $this->variant_id)
-                        ->whereNotIn('variant_value', $processedValues)
-                        ->delete();
-
-                    Log::info('updateProduct: Cleaned up obsolete variant data', [
-                        'product_id' => $product->id,
-                        'deleted_prices' => $deletedPrices,
-                        'deleted_stocks' => $deletedStocks,
-                    ]);
-                }
-
-                Log::info('updateProduct: Updated to variant pricing mode', [
-                    'product_id' => $product->id,
-                    'variant_id' => $this->variant_id,
-                    'processed_values' => $processedValues,
-                ]);
-            }
 
             DB::commit();
 
