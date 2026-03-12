@@ -1401,35 +1401,42 @@ class Products extends Component
                 ->orderBy('id', 'asc')
                 ->get();
 
-            if ($batches->isEmpty()) {
-                DB::rollBack();
-                $this->js("Swal.fire('Error!', 'No active batches found for this product.', 'error')");
-                return;
-            }
+            if ($batches->isNotEmpty()) {
+                foreach ($batches as $batch) {
+                    if ($remainingDamage <= 0)
+                        break;
 
-            foreach ($batches as $batch) {
-                if ($remainingDamage <= 0)
-                    break;
+                    $deductQty = min($remainingDamage, $batch->remaining_quantity);
+                    $batch->remaining_quantity -= $deductQty;
 
-                $deductQty = min($remainingDamage, $batch->remaining_quantity);
-                $batch->remaining_quantity -= $deductQty;
+                    if ($batch->remaining_quantity == 0) {
+                        $batch->status = 'depleted';
+                    }
 
-                if ($batch->remaining_quantity == 0) {
-                    $batch->status = 'depleted';
+                    $batch->save();
+                    $remainingDamage -= $deductQty;
+
+                    Log::info("Damage added: Deducted {$deductQty} from batch {$batch->batch_number}");
                 }
 
-                $batch->save();
-                $remainingDamage -= $deductQty;
-
-                Log::info("Damage added: Deducted {$deductQty} from batch {$batch->batch_number}");
-            }
-
-            // Check if we have enough stock in batches
-            if ($remainingDamage > 0) {
-                DB::rollBack();
-                $availableInBatches = $batches->sum('remaining_quantity');
-                $this->js("Swal.fire('Error!', 'Not enough stock in batches! Available: {$availableInBatches}, Required: {$damageQty}', 'error')");
-                return;
+                // Check if we have enough stock in batches
+                if ($remainingDamage > 0) {
+                    // Not enough in batches, but still allow if available_stock covers it
+                    if ($damageQty > $currentAvailable) {
+                        DB::rollBack();
+                        $this->js("Swal.fire('Error!', 'Not enough available stock! Available: {$currentAvailable}, Required: {$damageQty}', 'error')");
+                        return;
+                    }
+                    Log::info("Batch stock insufficient by {$remainingDamage}, but available_stock covers it.");
+                }
+            } else {
+                // No batches exist - just check available stock directly
+                if ($damageQty > $currentAvailable) {
+                    DB::rollBack();
+                    $this->js("Swal.fire('Error!', 'Not enough available stock! Available: {$currentAvailable}, Required: {$damageQty}', 'error')");
+                    return;
+                }
+                Log::info("No batches found for product {$product->id}. Deducting directly from stock.");
             }
 
             // Update stock table

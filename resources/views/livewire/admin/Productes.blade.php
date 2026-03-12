@@ -1104,7 +1104,7 @@
                                         <div class="row g-3">
                                             <div class="col-md-4">
                                                 <div class="price-card text-center p-3 border rounded-3 h-100">
-                                                    <small class="text-muted d-block mb-2">Supplier Price</small>
+                                                    <small cseelass="text-muted d-block mb-2">Supplier Price</small>
                                                     <h4 class="fw-bold text-secondary mb-0">
                                                         Rs.{{ number_format($viewProduct->price->supplier_price ?? 0, 2) }}
                                                     </h4>
