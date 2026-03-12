@@ -22,6 +22,63 @@ class BarcodePrint extends Component
     public $selectedProducts = [];
     public $selectAll = false;
 
+    // Instant barcode print modal
+    public $showLookupModal = false;
+    public $lookupCode = '';
+    public $lookupProduct = null;
+
+    public function openLookupModal()
+    {
+        $this->reset(['lookupCode', 'lookupProduct']);
+        $this->showLookupModal = true;
+    }
+
+    public function closeLookupModal()
+    {
+        $this->showLookupModal = false;
+        $this->reset(['lookupCode', 'lookupProduct']);
+    }
+
+    public function searchProduct()
+    {
+        $code = trim($this->lookupCode);
+        if (empty($code)) {
+            $this->lookupProduct = null;
+            return;
+        }
+
+        $product = ProductDetail::leftJoin('product_prices', function ($join) {
+            $join->on('product_details.id', '=', 'product_prices.product_id')
+                ->where('product_prices.pricing_mode', '=', 'single')
+                ->whereNull('product_prices.variant_id');
+        })
+            ->leftJoin('product_stocks', function ($join) {
+                $join->on('product_details.id', '=', 'product_stocks.product_id')
+                    ->whereNull('product_stocks.variant_id');
+            })
+            ->select('product_details.*', 'product_prices.retail_price', 'product_stocks.available_stock')
+            ->where(function ($q) use ($code) {
+                $q->where('product_details.code', $code)
+                    ->orWhere('product_details.barcode', $code);
+            })
+            ->first();
+
+        if ($product) {
+            $this->lookupProduct = [
+                'id' => $product->id,
+                'name' => $product->name,
+                'code' => $product->code,
+                'barcode' => $product->barcode,
+                'retail_price' => number_format($product->retail_price ?? 0, 2),
+                'available_stock' => $product->available_stock ?? 0,
+                'image' => $product->image,
+            ];
+        } else {
+            $this->lookupProduct = null;
+            $this->js("Swal.fire({icon: 'error', title: 'Not Found', text: 'No product found with this code.', timer: 2000, showConfirmButton: false})");
+        }
+    }
+
     public function updatingSearch()
     {
         $this->resetPage();

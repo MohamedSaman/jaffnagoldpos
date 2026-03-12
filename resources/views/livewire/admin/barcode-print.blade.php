@@ -122,6 +122,9 @@
                 </h3>
                 <p class="text-muted mb-0">Print QR code labels for newly generated products</p>
             </div>
+            <button class="btn btn-print-all" wire:click="openLookupModal">
+                <i class="bi bi-search me-2"></i> Instant Barcode Print
+            </button>
         </div>
 
         {{-- Stats Row --}}
@@ -321,6 +324,85 @@
             </div>
         </div>
     </div>
+
+    {{-- Instant Barcode Print Modal --}}
+    @if($showLookupModal)
+    <div class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.5);">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="border-radius: 12px; overflow: hidden;">
+                <div class="modal-header border-0 pb-0" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                    <h5 class="modal-title text-white fw-bold">
+                        <i class="bi bi-upc-scan me-2"></i> Instant Barcode Print
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" wire:click="closeLookupModal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    {{-- Search Input --}}
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold text-dark">Enter Product Code or Barcode</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="bi bi-upc text-primary"></i></span>
+                            <input type="text" class="form-control form-control-lg" wire:model="lookupCode"
+                                wire:keydown.enter="searchProduct"
+                                placeholder="e.g. PRD-001 or barcode number" autofocus>
+                            <button class="btn btn-primary" wire:click="searchProduct">
+                                <i class="bi bi-search"></i> Search
+                            </button>
+                        </div>
+                    </div>
+
+                    {{-- Product Details --}}
+                    @if($lookupProduct)
+                    <div class="border rounded-3 p-3 bg-light mt-3">
+                        <div class="d-flex align-items-start gap-3">
+                            {{-- QR Preview --}}
+                            <div class="flex-shrink-0">
+                                <div class="qr-display" style="width: 80px; height: 80px;">
+                                    <div class="lookup-qr" id="lookup-qr-code"
+                                        data-barcode="{{ $lookupProduct['barcode'] }}"></div>
+                                </div>
+                            </div>
+                            {{-- Details --}}
+                            <div class="flex-grow-1">
+                                <h6 class="fw-bold text-dark mb-1">{{ $lookupProduct['name'] }}</h6>
+                                <table class="table table-sm table-borderless mb-0" style="font-size: 0.9rem;">
+                                    <tr>
+                                        <td class="text-muted py-0" style="width: 110px;">Product Code</td>
+                                        <td class="py-0 fw-medium">{{ $lookupProduct['code'] }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-muted py-0">Barcode</td>
+                                        <td class="py-0"><code>{{ $lookupProduct['barcode'] }}</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-muted py-0">Retail Price</td>
+                                        <td class="py-0 fw-bold text-success">Rs.{{ $lookupProduct['retail_price'] }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-muted py-0">Available Stock</td>
+                                        <td class="py-0">
+                                            <span class="badge {{ $lookupProduct['available_stock'] > 0 ? 'bg-success' : 'bg-danger' }}">
+                                                {{ $lookupProduct['available_stock'] }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-3">
+                        <button class="btn btn-print-all w-100"
+                            onclick="printSingleLabel('{{ $lookupProduct['barcode'] }}', '{{ addslashes($lookupProduct['name']) }}', '{{ $lookupProduct['code'] }}', '{{ $lookupProduct['retail_price'] }}')">
+                            <i class="bi bi-printer me-2"></i> Print Label
+                        </button>
+                    </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
 
     @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
@@ -640,6 +722,23 @@
         if (typeof Livewire !== 'undefined') {
             Livewire.hook('morph.updated', () => {
                 setTimeout(renderQRCodes, 150);
+                setTimeout(renderLookupQR, 150);
+            });
+        }
+
+        // Render QR code in the lookup modal
+        function renderLookupQR() {
+            const el = document.getElementById('lookup-qr-code');
+            if (!el || !el.dataset.barcode) return;
+            if (el.querySelector('canvas') || el.querySelector('img')) return;
+            el.innerHTML = '';
+            new QRCode(el, {
+                text: el.dataset.barcode,
+                width: 65,
+                height: 65,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.M
             });
         }
 
