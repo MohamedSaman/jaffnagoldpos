@@ -212,6 +212,7 @@
                                 <th>Barcode</th>
                                 <th>QR Preview</th>
                                 <th>Retail Price</th>
+                                <th>Available Stock</th>
                                 <th>Created</th>
                                 <th class="text-center">Actions</th>
                             </tr>
@@ -256,9 +257,6 @@
                                     @endif
                                 </td>
                                 <td>
-                                    <span class="fw-bold text-success">Rs.{{ number_format($product->retail_price ?? 0, 2) }}</span>
-                                </td>
-                                <td>
                                     <span class="fw-medium text-dark">{{ $product->name }}</span>
                                 </td>
                                 <td>
@@ -272,6 +270,12 @@
                                         <div class="product-qr" id="qr-{{ $product->id }}"
                                             data-barcode="{{ $product->barcode }}"></div>
                                     </div>
+                                </td>
+                                <td>
+                                    <span class="fw-bold text-success">Rs.{{ number_format($product->retail_price ?? 0, 2) }}</span>
+                                </td>
+                                <td>
+                                    <span class="badge {{ ($product->available_stock ?? 0) > 0 ? 'bg-success' : 'bg-danger' }}">{{ $product->available_stock ?? 0 }}</span>
                                 </td>
                                 <td>
                                     <small class="text-muted">{{ $product->created_at->format('d M Y') }}</small>
@@ -294,7 +298,7 @@
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="10" class="text-center py-5">
+                                <td colspan="11" class="text-center py-5">
                                     <div class="py-4">
                                         <i class="bi bi-check-circle text-success" style="font-size: 3rem;"></i>
                                         <h5 class="mt-3 fw-bold text-dark">All Barcodes Printed!</h5>

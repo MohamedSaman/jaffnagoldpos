@@ -50,7 +50,11 @@ class BarcodePrint extends Component
                 ->where('product_prices.pricing_mode', '=', 'single')
                 ->whereNull('product_prices.variant_id');
         })
-            ->select('product_details.*', 'product_prices.retail_price')
+            ->leftJoin('product_stocks', function ($join) {
+                $join->on('product_details.id', '=', 'product_stocks.product_id')
+                    ->whereNull('product_stocks.variant_id');
+            })
+            ->select('product_details.*', 'product_prices.retail_price', 'product_stocks.available_stock')
             ->where('product_details.barcode_printed', 'No')
             ->whereNotNull('product_details.barcode')
             ->where('product_details.barcode', '!=', '')
@@ -105,7 +109,11 @@ class BarcodePrint extends Component
                 ->where('product_prices.pricing_mode', '=', 'single')
                 ->whereNull('product_prices.variant_id');
         })
-            ->select('product_details.*', 'product_prices.retail_price')
+            ->leftJoin('product_stocks', function ($join) {
+                $join->on('product_details.id', '=', 'product_stocks.product_id')
+                    ->whereNull('product_stocks.variant_id');
+            })
+            ->select('product_details.*', 'product_prices.retail_price', 'product_stocks.available_stock')
             ->where('product_details.barcode_printed', 'No')
             ->whereNotNull('product_details.barcode')
             ->where('product_details.barcode', '!=', '')
