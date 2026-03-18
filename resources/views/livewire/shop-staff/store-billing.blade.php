@@ -483,62 +483,12 @@
                 {{-- Product Grid Area --}}
                 <div class="flex-1 overflow-y-auto custom-scrollbar pr-1">
                     <div class="grid grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-1.5 pb-4">
-                        @forelse($products as $product)
-                                @php
-                                    $isLow = ($product['stock'] ?? 0) <= 5 && ($product['stock'] ?? 0) > 0;
-                                    $isOut = ($product['stock'] ?? 0) <= 0;
-                                @endphp
-                                        <div class="group bg-white border border-slate-200 rounded-lg shadow-sm hover:border-[#161b97]/60 hover:shadow-md transition-all cursor-pointer relative flex flex-col h-full overflow-hidden"
-                                        wire:click="addToCart({{ json_encode($product) }})">
-
-                                        {{-- Batch Status --}}
-                                        <div class="absolute top-1 right-1 z-10">
-                                            @if($isOut)
-                                                <span class="bg-red-500 text-[6px] text-white font-black px-1 py-0.5 rounded-sm uppercase tracking-tighter">Out</span>
-                                            @elseif($isLow)
-                                                <span class="bg-amber-500 text-[6px] text-white font-black px-1 py-0.5 rounded-sm uppercase tracking-tighter">Low</span>
-                                            @else
-                                                <span class="bg-green-500 text-[6px] text-white font-black px-1 py-0.5 rounded-sm uppercase tracking-tighter">In Stock</span>
-                                            @endif
-                                        </div>
-
-                                        {{-- Product Image --}}
-                                        <div class="aspect-[4/3] bg-slate-50 flex items-center justify-center p-2">
-                                            <img src="{{ $this->getImageUrl($product['image']) }}"
-                                                onerror="this.onerror=null;this.src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSrn_80I-lMAa0pVBNmFmQ7VI6l4rr74JW-eQ&s';"
-                                                class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500"
-                                                alt="{{ $product['name'] }}">
-                                        </div>
-
-                                        {{-- Product Details --}}
-                                        <div class="p-1.5 flex flex-col flex-1 bg-white">
-                                            <p class="text-[7px] text-slate-400 font-mono uppercase">{{ $product['code'] }}</p>
-                                            <h3 class="text-[9px] font-bold text-slate-800 leading-tight mb-1 break-words line-clamp-2" title="{{ $product['name'] }}">{{ $product['name'] }}</h3>
-
-                                            <div class="mt-auto flex items-end justify-between">
-                                                <div class="flex flex-col">
-                                                    <span class="text-[#161b97] font-black text-[11px] leading-none tracking-tighter">Rs. {{ number_format($product['price'], 0) }}</span>
-                                                    <span class="text-[7px] text-slate-400 font-bold mt-0.5">
-                                                        <span class="{{ ($product['stock'] ?? 0) <= 5 ? 'text-amber-500' : 'text-green-600' }}">Avail: {{ $product['stock'] }}</span>
-                                                        @if(($product['pending'] ?? 0) > 0)
-                                                            | <span class="text-orange-500">Pend: {{ $product['pending'] }}</span>
-                                                        @endif
-                                                    </span>
-                                                </div>
-                                                <div class="bg-slate-100 p-1 rounded group-hover:bg-[#161b97] group-hover:text-white transition-all">
-                                                    <span class="material-symbols-outlined text-sm font-black">add</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                            </div>
-                        @empty
                         <div class="col-span-full py-32 text-center">
                             <div class="bg-slate-50 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-4 border border-slate-100">
                                 <span class="material-symbols-outlined text-5xl text-slate-200">inventory_2</span>
                             </div>
-                            <p class="text-slate-300 font-black uppercase tracking-widest text-xs">No products in this category</p>
+                            <p class="text-slate-300 font-black uppercase tracking-widest text-xs">Product list is empty</p>
                         </div>
-                    @endforelse
                 </div>
     </div>
     </section>
